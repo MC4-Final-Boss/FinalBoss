@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Tanko
   - Gaspi
+  - BasicBox
   layers:
   - Default
   - TransparentFX
@@ -42,4 +43,16 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Basic Platform
+    uniqueID: 2504659593
+    locked: 0
+  - name: Moving Platform & Other Object
+    uniqueID: 2287411149
+    locked: 0
+  - name: Player
+    uniqueID: 2411606017
+    locked: 0
+  - name: Water
+    uniqueID: 1090059781
     locked: 0
