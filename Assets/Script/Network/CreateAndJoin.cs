@@ -38,7 +38,6 @@ public class CreateAndJoin : MonoBehaviourPunCallbacks
             Debug.LogWarning("Room name is empty");
             return;
         }
-
         PhotonNetwork.CreateRoom(input_CreateJoin.text);
     }
 
@@ -49,7 +48,6 @@ public class CreateAndJoin : MonoBehaviourPunCallbacks
             Debug.LogError("Not connected to Master Server. Can't join room.");
             return;
         }
-
         PhotonNetwork.JoinRoom(input_CreateJoin.text);
     }
 
