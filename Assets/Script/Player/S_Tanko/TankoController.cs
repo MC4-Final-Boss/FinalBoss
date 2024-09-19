@@ -13,8 +13,7 @@ public class TankoController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        // animator = GetComponent<Animator>();
-
+        //animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -40,6 +39,8 @@ public class TankoController : MonoBehaviour
         {
             // animator.SetBool("Idle", false);
             // animator.SetBool("Run", true);
+
+
         }
 
     }
