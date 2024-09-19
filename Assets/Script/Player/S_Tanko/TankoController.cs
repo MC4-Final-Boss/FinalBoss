@@ -8,12 +8,12 @@ public class TankoController : MonoBehaviour
     private Vector2 direction;
 
     [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private Animator animator;
+    //[SerializeField] private Animator animator;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
+        //animator = GetComponent<Animator>();
 
     }
 
@@ -34,14 +34,14 @@ public class TankoController : MonoBehaviour
         if (horizontalAxis == 0f)
         {
             //animator.SetTrigger("Idle");
-            animator.SetBool("Idle", true);
-            animator.SetBool("Run", false);
+            //animator.SetBool("Idle", true);
+            //animator.SetBool("Run", false);
         }
         else
         {
             //animator.SetTrigger("Walk");
-            animator.SetBool("Idle", false);
-            animator.SetBool("Run", true);
+            //animator.SetBool("Idle", false);
+            //animator.SetBool("Run", true);
         }
 
     }
@@ -51,7 +51,7 @@ public class TankoController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            animator.SetTrigger("Jump");
+            //animator.SetTrigger("Jump");
         }
     }
 
@@ -59,11 +59,11 @@ public class TankoController : MonoBehaviour
     {
         if (horizontalAxis < 0)
         {
-            transform.localScale = new Vector3(-5, 5, 5);
+            transform.localScale = new Vector3(-1, 1, 1);
         }
         else if (horizontalAxis > 0)
         {
-            transform.localScale = new Vector3(5, 5, 5);
+            transform.localScale = new Vector3(1, 1, 1);
         }
     }
 }
