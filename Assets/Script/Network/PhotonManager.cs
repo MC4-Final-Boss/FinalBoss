@@ -4,31 +4,32 @@ using UnityEngine;
 
 public class PhotonManager : MonoBehaviourPunCallbacks
 {
-    private void Start()
+    void Start()
     {
-        // Connect to Photon server
-        Debug.Log("Connecting to Photon...");
-        PhotonNetwork.ConnectUsingSettings();
-    }
-
-    public override void OnConnectedToMaster()
-    {
-        Debug.Log("Connected to Master Server");
-        PhotonNetwork.JoinLobby();
-    }
-
-    public override void OnJoinedLobby()
-    {
-        Debug.Log("Joined Lobby, joining or creating room...");
-        PhotonNetwork.JoinOrCreateRoom("Room1", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+        if (!PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.ConnectUsingSettings();
+        }
     }
 
     public override void OnJoinedRoom()
     {
-        Debug.Log("Joined Room successfully. Spawning player...");
+        Debug.Log("Joined Room successfully.");
 
         Vector3 spawnPosition = new Vector3(Random.Range(-5, 5), Random.Range(-5, 5), 0);
-        GameObject player = PhotonNetwork.Instantiate("Character", spawnPosition, Quaternion.identity);
+
+        // Spawn Tanko jika Player 1, Gaspi jika Player 2
+        GameObject player;
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 1) 
+        {
+            // Player 1 menjadi Tanko
+            player = PhotonNetwork.Instantiate("Tanko", spawnPosition, Quaternion.identity);
+        } 
+        else 
+        {
+            // Player 2 menjadi Gaspi
+            player = PhotonNetwork.Instantiate("Gaspi", spawnPosition, Quaternion.identity);
+        }
 
         if (player != null)
         {
@@ -40,9 +41,14 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public override void OnPlayerEnteredRoom(Player newPlayer)
+    public override void OnConnectedToMaster()
     {
-        Debug.Log("New player joined the room: " + newPlayer.NickName);
+        Debug.Log("Connected to Master Server");
+        PhotonNetwork.AutomaticallySyncScene = true;
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.LogWarning("Disconnected from server. Cause: " + cause.ToString());
     }
 }
-

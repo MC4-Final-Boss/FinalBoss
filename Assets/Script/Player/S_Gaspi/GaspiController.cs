@@ -1,10 +1,10 @@
 using UnityEngine;
 using Photon.Pun;
 
-public class TankoController : MonoBehaviourPun, IPunObservable
+public class GaspiController : MonoBehaviourPun, IPunObservable
 {
-    [SerializeField] private float movementSpeed = 10f;
-    [SerializeField] private float jumpForce = 5f;
+    [SerializeField] private float movementSpeed = 7f;  // Gaspi lebih cepat dari Tanko
+    [SerializeField] private float jumpForce = 7f;
     public float horizontalAxis;
     private Vector2 direction;
 
@@ -60,7 +60,7 @@ public class TankoController : MonoBehaviourPun, IPunObservable
 
     void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.UpArrow))  // Gunakan tombol panah atas untuk lompat
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             //animator.SetTrigger("Jump");
@@ -78,6 +78,7 @@ public class TankoController : MonoBehaviourPun, IPunObservable
             transform.localScale = new Vector3(5, 5, 5);
         }
     }
+
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
