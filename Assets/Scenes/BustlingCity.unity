@@ -663,6 +663,7 @@ RectTransform:
   m_SizeDelta: {x: 87.1498, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &223623231
+
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -707,6 +708,20 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &223623232
+
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 232175668}
+  - component: {fileID: 232175667}
+  m_Layer: 0
+  m_Name: playerRespawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &232175667
+
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -737,7 +752,21 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
 --- !u!222 &223623233
+
 CanvasRenderer:
+  m_GameObject: {fileID: 232175666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 661902b4a694a4433946bdb66e5d4996, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tankoPrefab: {fileID: 6242558577113583639, guid: 14046b99c4bac4d8ea2a2243614088fc, type: 3}
+  gaspiPrefab: {fileID: 7597840807742785255, guid: f6fb94bc66bfd40dbacdfa91f2f90c3c, type: 3}
+  initialSpawnPoints:
+  - {fileID: 0}
+  respawnDelay: 3
+--- !u!4 &232175668
+Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2100,6 +2129,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4946033245880991320, guid: 0b4726d0889a0424386c8b5b6aeb6c1c, type: 3}
   m_PrefabInstance: {fileID: 567785549}
   m_PrefabAsset: {fileID: 0}
+
 --- !u!1001 &577976179
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2210,6 +2240,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8771951793682881453, guid: 57c2ce356252b4bb7b2185fd8285f170, type: 3}
   m_PrefabInstance: {fileID: 577976179}
   m_PrefabAsset: {fileID: 0}
+
 --- !u!4 &577976181 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2591391534146544043, guid: f6fb94bc66bfd40dbacdfa91f2f90c3c, type: 3}
@@ -2333,6 +2364,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.32563865, y: 0.34529728}
   m_EdgeRadius: 0
+
 --- !u!1001 &584229527
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6325,12 +6357,26 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
+    
   m_SourcePrefab: {fileID: 100100000, guid: 4e53e9268c5af41c6a14d04ac855d377, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1901157192}
+  - {fileID: 577976179}
+  - {fileID: 2028248493}
+  - {fileID: 1100769272}
+  - {fileID: 1847947879}
+  - {fileID: 2070852712}
+  - {fileID: 1943037499}
+  - {fileID: 468144789}
+  - {fileID: 719018129}
+  - {fileID: 1334029495}
+  - {fileID: 252667575}
+  - {fileID: 1389912377}
+  - {fileID: 236982603}
+  - {fileID: 2125983715}
   - {fileID: 241507873938825463}
   - {fileID: 2028248493}
   - {fileID: 232175668}
