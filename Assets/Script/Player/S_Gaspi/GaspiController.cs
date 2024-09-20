@@ -1,17 +1,17 @@
 using UnityEngine;
 using Photon.Pun;
 
-public class TankoController : MonoBehaviourPun, IPunObservable
+public class GaspiController : MonoBehaviourPun, IPunObservable
 {
-    [SerializeField] private float movementSpeed = 10f;
-    [SerializeField] private float jumpForce = 5f;
+    [SerializeField] private float movementSpeed = 7f;  // Gaspi lebih cepat dari Tanko
+    [SerializeField] private float jumpForce = 7f;
     public float horizontalAxis;
     private Vector2 direction;
 
     private float lag;  // Track network lag
 
     [SerializeField] private Rigidbody2D rb;
-    // [SerializeField] private Animator animator;
+    //[SerializeField] private Animator animator;
 
     void Start()
     {
@@ -23,9 +23,6 @@ public class TankoController : MonoBehaviourPun, IPunObservable
             // Jika karakter ini bukan milik pemain lokal, nonaktifkan skrip kontrol ini
             this.enabled = false;
         }
-
-        //animator = GetComponent<Animator>();
-
     }
 
     void Update()
@@ -38,7 +35,7 @@ public class TankoController : MonoBehaviourPun, IPunObservable
 
         Movement();
         Jump();
-        // Facing();
+        Facing();
     }
 
     void Movement()
@@ -49,24 +46,24 @@ public class TankoController : MonoBehaviourPun, IPunObservable
 
         if (horizontalAxis == 0f)
         {
-            // animator.SetBool("Idle", true);
-            // animator.SetBool("Run", false);
+            //animator.SetTrigger("Idle");
+            //animator.SetBool("Idle", true);
+            //animator.SetBool("Run", false);
         }
         else
         {
-            // animator.SetBool("Idle", false);
-            // animator.SetBool("Run", true);
-
-
+            //animator.SetTrigger("Walk");
+            //animator.SetBool("Idle", false);
+            //animator.SetBool("Run", true);
         }
     }
 
     void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.UpArrow))  // Gunakan tombol panah atas untuk lompat
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            // animator.SetTrigger("Jump");
+            //animator.SetTrigger("Jump");
         }
     }
 
@@ -81,6 +78,7 @@ public class TankoController : MonoBehaviourPun, IPunObservable
             transform.localScale = new Vector3(5, 5, 5);
         }
     }
+
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
