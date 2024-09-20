@@ -7,7 +7,6 @@ TagManager:
   - Tanko
   - Gaspi
   - BasicBox
-  - Ground
   layers:
   - Default
   - TransparentFX

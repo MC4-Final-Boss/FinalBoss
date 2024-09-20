@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class MovingPlatform : MonoBehaviour
 {
-    public Vector3 targetPosition;
-    public float speed = 1.0f;
+    public Vector3 targetPosition;  
+    public float speed = 1.0f;    
 
-    private Vector3 initialPosition;
-    private bool movingToTarget = true;
+    private Vector3 initialPosition;  
+    private bool movingToTarget = true;  
 
     void Start()
     {
@@ -39,17 +39,4 @@ public class MovingPlatform : MonoBehaviour
     {
         transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
     }
-
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-
-        other.transform.SetParent(transform);
-
-    }
-
-    private void OnCollisionExit2D(Collision2D other) {
-        other.transform.SetParent(null);
-    }
-
-    
 }

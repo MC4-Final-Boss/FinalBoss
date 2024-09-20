@@ -44,6 +44,7 @@ public class CreateAndJoin : MonoBehaviourPunCallbacks
             Debug.LogWarning("Room name is empty");
             return;
         }
+
         PhotonNetwork.JoinRoom(input_CreateJoin.text);
     }
 

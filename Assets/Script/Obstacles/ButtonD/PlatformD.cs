@@ -32,6 +32,8 @@ public class PlatformD : MonoBehaviour
     private void Update()
     {
 
+
+
         if (buttonD1Status.buttonD1 && buttonD2Status.buttonD2)
         {
             Debug.Log("Start Move1 : " + buttonD1Status.buttonD1);
@@ -44,27 +46,21 @@ public class PlatformD : MonoBehaviour
             buttonActive = false;
         }
 
-        Vector3 targetPos = buttonActive ? targetPosition : initialPosition;
+        // if (platformMove)
+        // {
+            Vector3 targetPos = buttonActive ? targetPosition : initialPosition;
 
-        movementPlatform.transform.position = Vector3.MoveTowards(
-            movementPlatform.transform.position,
-            targetPos,
-            platformSpeed * Time.deltaTime
-        );
+            movementPlatform.transform.position = Vector3.MoveTowards(
+                movementPlatform.transform.position,
+                targetPos,
+                platformSpeed * Time.deltaTime
+            );
 
-        if (Vector3.Distance(movementPlatform.transform.position, targetPos) < 0.01f)
-        {
-            platformMove = false;
-        }
+            if (Vector3.Distance(movementPlatform.transform.position, targetPos) < 0.01f)
+            {
+                platformMove = false;
+            }
+        // }
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        other.transform.SetParent(transform);
-    }
-
-    private void OnCollisionExit2D(Collision2D other)
-    {
-        other.transform.SetParent(null);
-    }
 }
