@@ -1,5 +1,7 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.Experimental.GlobalIllumination;
 
 public class TankoController : MonoBehaviourPun, IPunObservable
 {
@@ -7,11 +9,13 @@ public class TankoController : MonoBehaviourPun, IPunObservable
     [SerializeField] private float jumpForce = 5f;
     public float horizontalAxis;
     private Vector2 direction;
-
+    private int jumpLeft = 1;
     private float lag;  // Track network lag
+
 
     [SerializeField] private Rigidbody2D rb;
     // [SerializeField] private Animator animator;
+
 
     void Start()
     {
@@ -63,10 +67,11 @@ public class TankoController : MonoBehaviourPun, IPunObservable
 
     void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && jumpLeft > 0)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             // animator.SetTrigger("Jump");
+            jumpLeft = jumpLeft - 1;
         }
     }
 
@@ -79,6 +84,14 @@ public class TankoController : MonoBehaviourPun, IPunObservable
         else if (horizontalAxis > 0)
         {
             transform.localScale = new Vector3(5, 5, 5);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Ground"))
+        {
+            jumpLeft = 1;
         }
     }
 
@@ -101,4 +114,7 @@ public class TankoController : MonoBehaviourPun, IPunObservable
             direction += rb.velocity * lag;  // Predict the new position based on the lag
         }
     }
+
+
 }
+
