@@ -11,7 +11,7 @@ public class TankoController : MonoBehaviourPun, IPunObservable
     private float lag;  // Track network lag
 
     [SerializeField] private Rigidbody2D rb;
-    //[SerializeField] private Animator animator;
+    // [SerializeField] private Animator animator;
 
     void Start()
     {
@@ -23,6 +23,9 @@ public class TankoController : MonoBehaviourPun, IPunObservable
             // Jika karakter ini bukan milik pemain lokal, nonaktifkan skrip kontrol ini
             this.enabled = false;
         }
+
+        //animator = GetComponent<Animator>();
+
     }
 
     void Update()
@@ -35,7 +38,7 @@ public class TankoController : MonoBehaviourPun, IPunObservable
 
         Movement();
         Jump();
-        Facing();
+        // Facing();
     }
 
     void Movement()
@@ -46,15 +49,15 @@ public class TankoController : MonoBehaviourPun, IPunObservable
 
         if (horizontalAxis == 0f)
         {
-            //animator.SetTrigger("Idle");
-            //animator.SetBool("Idle", true);
-            //animator.SetBool("Run", false);
+            // animator.SetBool("Idle", true);
+            // animator.SetBool("Run", false);
         }
         else
         {
-            //animator.SetTrigger("Walk");
-            //animator.SetBool("Idle", false);
-            //animator.SetBool("Run", true);
+            // animator.SetBool("Idle", false);
+            // animator.SetBool("Run", true);
+
+
         }
     }
 
@@ -63,7 +66,7 @@ public class TankoController : MonoBehaviourPun, IPunObservable
         if (Input.GetKeyDown(KeyCode.Space))
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            //animator.SetTrigger("Jump");
+            // animator.SetTrigger("Jump");
         }
     }
 

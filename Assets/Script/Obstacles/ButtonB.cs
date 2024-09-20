@@ -11,7 +11,6 @@ public class ButtonB
     private Vector3 initialPosition;
     private bool platformMove = false;
     private bool buttonActive = false;
-    private bool isAtTargetPosition = false;
 
     private void Start()
     {
