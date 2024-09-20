@@ -744,6 +744,55 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 223623229}
   m_CullTransparentMesh: 1
+--- !u!1 &232175666
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 232175668}
+  - component: {fileID: 232175667}
+  m_Layer: 0
+  m_Name: playerRespawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &232175667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 232175666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 661902b4a694a4433946bdb66e5d4996, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tankoPrefab: {fileID: 6242558577113583639, guid: 14046b99c4bac4d8ea2a2243614088fc, type: 3}
+  gaspiPrefab: {fileID: 7597840807742785255, guid: f6fb94bc66bfd40dbacdfa91f2f90c3c, type: 3}
+  initialSpawnPoints:
+  - {fileID: 0}
+  respawnDelay: 3
+--- !u!4 &232175668
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 232175666}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5.8, y: -2.8736603, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &233370098
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2163,8 +2212,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &577976181 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 3691456931050437857, guid: 57c2ce356252b4bb7b2185fd8285f170, type: 3}
-  m_PrefabInstance: {fileID: 577976179}
+  m_CorrespondingSourceObject: {fileID: 2591391534146544043, guid: f6fb94bc66bfd40dbacdfa91f2f90c3c, type: 3}
+  m_PrefabInstance: {fileID: 241507873938825463}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &577976182
 MonoBehaviour:
@@ -6200,11 +6249,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6338967485850488698, guid: 0b4726d0889a0424386c8b5b6aeb6c1c, type: 3}
       propertyPath: m_SortingLayer
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6338967485850488698, guid: 0b4726d0889a0424386c8b5b6aeb6c1c, type: 3}
       propertyPath: m_SortingLayerID
-      value: -1790307703
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6282,8 +6331,9 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1901157192}
-  - {fileID: 577976179}
+  - {fileID: 241507873938825463}
   - {fileID: 2028248493}
+  - {fileID: 232175668}
   - {fileID: 1100769272}
   - {fileID: 1847947879}
   - {fileID: 2070852712}

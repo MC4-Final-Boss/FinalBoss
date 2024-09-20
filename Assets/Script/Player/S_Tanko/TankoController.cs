@@ -1,14 +1,17 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using Photon.Pun;
 using UnityEngine.Experimental.GlobalIllumination;
 
-public class TankoController : MonoBehaviour
+public class TankoController : MonoBehaviourPun, IPunObservable
 {
     [SerializeField] private float movementSpeed = 10f;
     [SerializeField] private float jumpForce = 5f;
     public float horizontalAxis;
     private Vector2 direction;
     private int jumpLeft = 1;
+
+    private float lag;  // Track network lag
 
     [SerializeField] private Rigidbody2D rb;
     // [SerializeField] private Animator animator;
@@ -17,11 +20,26 @@ public class TankoController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        // Cek apakah karakter ini dimiliki oleh pemain lokal
+        if (!photonView.IsMine)
+        {
+            // Jika karakter ini bukan milik pemain lokal, nonaktifkan skrip kontrol ini
+            this.enabled = false;
+        }
+
         //animator = GetComponent<Animator>();
+
     }
 
     void Update()
     {
+        // Jika karakter bukan milik pemain lokal, jangan jalankan input
+        if (!photonView.IsMine)
+        {
+            return;
+        }
+
         Movement();
         Jump();
         // Facing();
@@ -45,7 +63,6 @@ public class TankoController : MonoBehaviour
 
 
         }
-
     }
 
     void Jump()
@@ -67,6 +84,26 @@ public class TankoController : MonoBehaviour
         else if (horizontalAxis > 0)
         {
             transform.localScale = new Vector3(5, 5, 5);
+        }
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            // Send player's position to the other clients
+            stream.SendNext(rb.position);
+            stream.SendNext(rb.velocity);
+        }
+        else
+        {
+            // Receive the position and velocity from other clients
+            direction = (Vector2)stream.ReceiveNext();
+            rb.velocity = (Vector2)stream.ReceiveNext();
+
+            // Calculate lag
+            lag = Mathf.Abs((float)(PhotonNetwork.Time - info.SentServerTime));
+            direction += rb.velocity * lag;  // Predict the new position based on the lag
         }
     }
     
