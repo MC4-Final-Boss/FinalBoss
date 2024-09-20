@@ -71,11 +71,11 @@ public class GaspiController : MonoBehaviourPun, IPunObservable
     {
         if (horizontalAxis < 0)
         {
-            transform.localScale = new Vector3(-5, 5, 5);
+            transform.localScale = new Vector3((float)-0.3, (float)0.3, (float)0.3);
         }
         else if (horizontalAxis > 0)
         {
-            transform.localScale = new Vector3(5, 5, 5);
+            transform.localScale = new Vector3((float)0.3, (float)0.3, (float)0.3);
         }
     }
 
