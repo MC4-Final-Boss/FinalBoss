@@ -3,7 +3,7 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.Experimental.GlobalIllumination;
 
-public class TankoController : MonoBehaviour
+public class TankoController : MonoBehaviourPun, IPunObservable
 {
     [SerializeField] private float movementSpeed = 10f;
     [SerializeField] private float jumpForce = 5f;
@@ -20,11 +20,26 @@ public class TankoController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        // Cek apakah karakter ini dimiliki oleh pemain lokal
+        if (!photonView.IsMine)
+        {
+            // Jika karakter ini bukan milik pemain lokal, nonaktifkan skrip kontrol ini
+            this.enabled = false;
+        }
+
         //animator = GetComponent<Animator>();
+
     }
 
     void Update()
     {
+        // Jika karakter bukan milik pemain lokal, jangan jalankan input
+        if (!photonView.IsMine)
+        {
+            return;
+        }
+
         Movement();
         Jump();
         // Facing();
@@ -48,7 +63,6 @@ public class TankoController : MonoBehaviour
 
 
         }
-
     }
 
     void Jump()
