@@ -6,7 +6,7 @@ using TMPro;
 public class CreateAndJoin : MonoBehaviourPunCallbacks
 {
     public TMP_InputField input_CreateJoin;
-    public string gameSceneName = "SampleScene"; // Nama scene game Anda
+    public string gameSceneName = "BustlingCity"; // Nama scene game Anda
 
     private void Start()
     {
