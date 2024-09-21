@@ -10,11 +10,10 @@ public class ButtonA : MonoBehaviour
     private Vector3 initialPosition;
     private bool platformMove = false;
     private bool buttonActive = false;
-    private bool isAtTargetPosition = false;
 
     private void Start()
     {
-        initialPosition = movementGround.transform.position;
+        initialPosition = movementGround.transform.localPosition;  
     }
 
     private void Update()
@@ -23,13 +22,14 @@ public class ButtonA : MonoBehaviour
         {
             Vector3 targetPos = buttonActive ? targetPosition : initialPosition;
 
-            movementGround.transform.position = Vector3.MoveTowards(
-                movementGround.transform.position,
+            Debug.Log("target position: " + targetPosition);
+            movementGround.transform.localPosition = Vector3.MoveTowards(
+                movementGround.transform.localPosition,  
                 targetPos,
                 moveSpeed * Time.deltaTime
             );
 
-            if (Vector3.Distance(movementGround.transform.position, targetPos) < 0.01f)
+            if (Vector3.Distance(movementGround.transform.localPosition, targetPos) < 0.01f)
             {
                 platformMove = false;
             }

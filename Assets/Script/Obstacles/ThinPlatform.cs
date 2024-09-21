@@ -5,8 +5,14 @@ using UnityEngine;
 public class ThinPlatform : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D other) {
-        if(other.gameObject.CompareTag("Tanko")){
-            Destroy(gameObject, 0.5f);
+        // if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi")){
+        //     Destroy(gameObject, 0.5f);
+        // }
+    }
+
+    private void OnTriggerExit2D(Collider2D other) {
+        if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi")){
+            Destroy(gameObject, 0.4f);
         }
     }
 } 
