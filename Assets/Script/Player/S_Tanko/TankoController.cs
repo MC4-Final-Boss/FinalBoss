@@ -1,6 +1,8 @@
 using Unity.VisualScripting;
+using Unity.VisualScripting;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.Experimental.GlobalIllumination;
 
 public class TankoController : MonoBehaviourPun, IPunObservable
@@ -10,11 +12,14 @@ public class TankoController : MonoBehaviourPun, IPunObservable
     public float horizontalAxis;
     private Vector2 direction;
     private int jumpLeft = 1;
+    private int jumpLeft = 1;
     private float lag;  // Track network lag
+
 
 
     [SerializeField] private Rigidbody2D rb;
     // [SerializeField] private Animator animator;
+
 
 
     void Start()
@@ -118,5 +123,8 @@ public class TankoController : MonoBehaviourPun, IPunObservable
     }
 
 
+
+
 }
+
 
