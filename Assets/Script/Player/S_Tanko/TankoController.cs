@@ -1,8 +1,9 @@
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
 
-public class TankoController : MonoBehaviour
+public class TankoController : NetworkBehaviour
 {
     [SerializeField] private float movementSpeed = 10f;
     [SerializeField] private float jumpForce = 5f;
@@ -28,6 +29,9 @@ public class TankoController : MonoBehaviour
 
     void Update()
     {
+        // if (!IsOwner) {
+        //     return;
+        // }
        
 
         Movement();
