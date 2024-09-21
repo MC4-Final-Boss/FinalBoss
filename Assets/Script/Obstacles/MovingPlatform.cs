@@ -10,7 +10,7 @@ public class MovingPlatform : MonoBehaviour
 
     void Start()
     {
-        initialPosition = transform.position;
+        initialPosition = transform.localPosition;
     }
 
     void Update()
@@ -19,7 +19,7 @@ public class MovingPlatform : MonoBehaviour
         {
             MoveTowards(targetPosition);
 
-            if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
+            if (Vector3.Distance(transform.localPosition, targetPosition) < 0.1f)
             {
                 movingToTarget = false;
             }
@@ -28,7 +28,7 @@ public class MovingPlatform : MonoBehaviour
         {
             MoveTowards(initialPosition);
 
-            if (Vector3.Distance(transform.position, initialPosition) < 0.1f)
+            if (Vector3.Distance(transform.localPosition, initialPosition) < 0.1f)
             {
                 movingToTarget = true;
             }
@@ -37,7 +37,7 @@ public class MovingPlatform : MonoBehaviour
 
     void MoveTowards(Vector3 target)
     {
-        transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
+        transform.localPosition = Vector3.MoveTowards(transform.localPosition, target, speed * Time.deltaTime);
     }
 
     private void OnCollisionEnter2D(Collision2D other)

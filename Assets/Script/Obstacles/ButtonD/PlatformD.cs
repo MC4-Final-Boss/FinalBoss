@@ -20,13 +20,13 @@ public class PlatformD : MonoBehaviour
     {
         buttonD1Status = buttonD1Object.GetComponent<ButtonD1>();
         buttonD2Status = buttonD2Object.GetComponent<ButtonD2>();
-        initialPosition = transform.position;
+        initialPosition = transform.localPosition;
 
     }
 
     void MoveTowards(Vector3 target)
     {
-        transform.position = Vector3.MoveTowards(transform.position, target, platformSpeed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.localPosition, target, platformSpeed * Time.deltaTime);
     }
 
     private void Update()
@@ -46,13 +46,13 @@ public class PlatformD : MonoBehaviour
 
         Vector3 targetPos = buttonActive ? targetPosition : initialPosition;
 
-        movementPlatform.transform.position = Vector3.MoveTowards(
-            movementPlatform.transform.position,
+        movementPlatform.transform.localPosition = Vector3.MoveTowards(
+            movementPlatform.transform.localPosition,
             targetPos,
             platformSpeed * Time.deltaTime
         );
 
-        if (Vector3.Distance(movementPlatform.transform.position, targetPos) < 0.01f)
+        if (Vector3.Distance(movementPlatform.transform.localPosition, targetPos) < 0.01f)
         {
             platformMove = false;
         }

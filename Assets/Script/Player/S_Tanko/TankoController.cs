@@ -1,20 +1,25 @@
 using Unity.VisualScripting;
+using Unity.VisualScripting;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.Experimental.GlobalIllumination;
 
 public class TankoController : MonoBehaviourPun, IPunObservable
 {
     [SerializeField] private float movementSpeed = 10f;
-    [SerializeField] private float jumpForce = 5f;
+    [SerializeField] private float jumpForce = 3f;
     public float horizontalAxis;
     private Vector2 direction;
+    private int jumpLeft = 1;
     private int jumpLeft = 1;
     private float lag;  // Track network lag
 
 
+
     [SerializeField] private Rigidbody2D rb;
     // [SerializeField] private Animator animator;
+
 
 
     void Start()
@@ -22,11 +27,11 @@ public class TankoController : MonoBehaviourPun, IPunObservable
         rb = GetComponent<Rigidbody2D>();
 
         // Cek apakah karakter ini dimiliki oleh pemain lokal
-        if (!photonView.IsMine)
-        {
-            // Jika karakter ini bukan milik pemain lokal, nonaktifkan skrip kontrol ini
-            this.enabled = false;
-        }
+        // if (!photonView.IsMine)
+        // {
+        //     // Jika karakter ini bukan milik pemain lokal, nonaktifkan skrip kontrol ini
+        //     this.enabled = false;
+        // }
 
         //animator = GetComponent<Animator>();
 
@@ -35,14 +40,14 @@ public class TankoController : MonoBehaviourPun, IPunObservable
     void Update()
     {
         // Jika karakter bukan milik pemain lokal, jangan jalankan input
-        if (!photonView.IsMine)
-        {
-            return;
-        }
+        // if (!photonView.IsMine)
+        // {
+        //     return;
+        // }
 
         Movement();
         Jump();
-        // Facing();
+        Facing();
     }
 
     void Movement()
@@ -67,33 +72,35 @@ public class TankoController : MonoBehaviourPun, IPunObservable
 
     void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && jumpLeft > 0)
+        if (Input.GetKeyDown(KeyCode.W) && jumpLeft > 0)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            // animator.SetTrigger("Jump");
-            jumpLeft = jumpLeft - 1;
-        }
-    }
-
-    void Facing()
-    {
-        if (horizontalAxis < 0)
-        {
-            transform.localScale = new Vector3(-5, 5, 5);
-        }
-        else if (horizontalAxis > 0)
-        {
-            transform.localScale = new Vector3(5, 5, 5);
+            jumpLeft--;
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Ground"))
+
+        jumpLeft = 1;
+        Debug.Log("Jump left: " + jumpLeft);
+    }
+
+
+    void Facing()
+    {
+        Vector3 playerScale = transform.localScale;
+
+        if (horizontalAxis < 0)
         {
-            jumpLeft = 1;
+            transform.localScale = new Vector3(-Mathf.Abs(playerScale.x), playerScale.y, playerScale.z);
+        }
+        else if (horizontalAxis > 0)
+        {
+            transform.localScale = new Vector3(Mathf.Abs(playerScale.x), playerScale.y, playerScale.z);
         }
     }
+
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -116,5 +123,8 @@ public class TankoController : MonoBehaviourPun, IPunObservable
     }
 
 
+
+
 }
+
 

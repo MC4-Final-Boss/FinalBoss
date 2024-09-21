@@ -4,8 +4,9 @@ using Photon.Pun;
 public class GaspiController : MonoBehaviourPun, IPunObservable
 {
     [SerializeField] private float movementSpeed = 7f;  // Gaspi lebih cepat dari Tanko
-    [SerializeField] private float jumpForce = 7f;
+    [SerializeField] private float jumpForce = 3f;
     public float horizontalAxis;
+    [SerializeField] int jumpLeft = 1;
     private Vector2 direction;
 
     private float lag;  // Track network lag
@@ -40,45 +41,67 @@ public class GaspiController : MonoBehaviourPun, IPunObservable
 
     void Movement()
     {
-        horizontalAxis = Input.GetAxis("Horizontal");
-        direction = new Vector2(horizontalAxis, 0);
-        transform.Translate(direction * Time.deltaTime * movementSpeed);
-
-        if (horizontalAxis == 0f)
+        // Modify the input for horizontal movement to use 'J' and 'L' keys
+        if (Input.GetKey(KeyCode.J))  // Move left
         {
-            //animator.SetTrigger("Idle");
-            //animator.SetBool("Idle", true);
-            //animator.SetBool("Run", false);
+            horizontalAxis = -1f;  // Moving left
+        }
+        else if (Input.GetKey(KeyCode.L))  // Move right
+        {
+            horizontalAxis = 1f;   // Moving right
         }
         else
         {
-            //animator.SetTrigger("Walk");
-            //animator.SetBool("Idle", false);
-            //animator.SetBool("Run", true);
+            horizontalAxis = 0f;   // Idle
         }
+
+        direction = new Vector2(horizontalAxis, 0);
+        transform.Translate(direction * Time.deltaTime * movementSpeed);  // Move character
+
+        // Optional: Uncomment for animations if required
+        // if (horizontalAxis == 0f)
+        // {
+        //     animator.SetTrigger("Idle");
+        //     animator.SetBool("Idle", true);
+        //     animator.SetBool("Run", false);
+        // }
+        // else
+        // {
+        //     animator.SetTrigger("Walk");
+        //     animator.SetBool("Idle", false);
+        //     animator.SetBool("Run", true);
+        // }
     }
 
     void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow))  // Gunakan tombol panah atas untuk lompat
+        if (Input.GetKeyDown(KeyCode.I) && jumpLeft > 0)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            //animator.SetTrigger("Jump");
+            jumpLeft--;
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+
+        jumpLeft = 1;
+        Debug.Log("Jump left: " + jumpLeft);
+    }
+    
     void Facing()
     {
+        Vector3 playerScale = transform.localScale;
+
         if (horizontalAxis < 0)
         {
-            transform.localScale = new Vector3((float)-0.3, (float)0.3, (float)0.3);
+            transform.localScale = new Vector3(-Mathf.Abs(playerScale.x), playerScale.y, playerScale.z);
         }
         else if (horizontalAxis > 0)
         {
-            transform.localScale = new Vector3((float)0.3, (float)0.3, (float)0.3);
+            transform.localScale = new Vector3(Mathf.Abs(playerScale.x), playerScale.y, playerScale.z);
         }
     }
-
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
