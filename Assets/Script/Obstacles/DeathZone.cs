@@ -8,12 +8,12 @@ public class DeathZone : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
         {
-            PlayerRespawn respawnScript = other.gameObject.GetComponent<PlayerRespawn>();
+            GaspiController respawnScript = other.gameObject.GetComponent<GaspiController>();
             
-            if (respawnScript != null)
-            {
-                respawnScript.RespawnPlayer(); 
-            }
+            // if (respawnScript != null)
+            // {
+            //     respawnScript.RespawnPlayer(); 
+            // }
         }
     }
 }

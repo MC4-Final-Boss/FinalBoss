@@ -1,9 +1,8 @@
 using Unity.VisualScripting;
 using UnityEngine;
-using Photon.Pun;
 using UnityEngine.Experimental.GlobalIllumination;
 
-public class TankoController : MonoBehaviourPun, IPunObservable
+public class TankoController : MonoBehaviour
 {
     [SerializeField] private float movementSpeed = 10f;
     [SerializeField] private float jumpForce = 5f;
@@ -21,12 +20,7 @@ public class TankoController : MonoBehaviourPun, IPunObservable
     {
         rb = GetComponent<Rigidbody2D>();
 
-        // Cek apakah karakter ini dimiliki oleh pemain lokal
-        if (!photonView.IsMine)
-        {
-            // Jika karakter ini bukan milik pemain lokal, nonaktifkan skrip kontrol ini
-            this.enabled = false;
-        }
+       
 
         //animator = GetComponent<Animator>();
 
@@ -34,11 +28,7 @@ public class TankoController : MonoBehaviourPun, IPunObservable
 
     void Update()
     {
-        // Jika karakter bukan milik pemain lokal, jangan jalankan input
-        if (!photonView.IsMine)
-        {
-            return;
-        }
+       
 
         Movement();
         Jump();
@@ -95,26 +85,7 @@ public class TankoController : MonoBehaviourPun, IPunObservable
         }
     }
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            // Send player's position to the other clients
-            stream.SendNext(rb.position);
-            stream.SendNext(rb.velocity);
-        }
-        else
-        {
-            // Receive the position and velocity from other clients
-            direction = (Vector2)stream.ReceiveNext();
-            rb.velocity = (Vector2)stream.ReceiveNext();
-
-            // Calculate lag
-            lag = Mathf.Abs((float)(PhotonNetwork.Time - info.SentServerTime));
-            direction += rb.velocity * lag;  // Predict the new position based on the lag
-        }
-    }
-
+    
 
 }
 
