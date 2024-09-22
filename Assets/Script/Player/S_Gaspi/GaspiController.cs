@@ -1,7 +1,7 @@
 using UnityEngine;
-using Photon.Pun;
+using Unity.Netcode;
 
-public class GaspiController : MonoBehaviourPun, IPunObservable
+public class GaspiController : NetworkBehaviour
 {
     [SerializeField] private float movementSpeed = 7f;  // Gaspi lebih cepat dari Tanko
     [SerializeField] private float jumpForce = 3f;
@@ -18,25 +18,18 @@ public class GaspiController : MonoBehaviourPun, IPunObservable
 
     void Start()
     {
+        // if (!IsOwner) return;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 
-        // Cek apakah karakter ini dimiliki oleh pemain lokal
-        if (!photonView.IsMine)
-        {
-            // Jika karakter ini bukan milik pemain lokal, nonaktifkan skrip kontrol ini
-            this.enabled = false;
-        }
+       
     }
 
     void Update()
     {
         // Jika karakter bukan milik pemain lokal, jangan jalankan input
-        if (!photonView.IsMine)
-        {
-            return;
-        }
-
+       
+        if (!IsOwner) return;
         Movement();
         Jump();
         Facing();
@@ -150,23 +143,5 @@ public class GaspiController : MonoBehaviourPun, IPunObservable
         }
     }
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            // Send player's position to the other clients
-            stream.SendNext(rb.position);
-            stream.SendNext(rb.velocity);
-        }
-        else
-        {
-            // Receive the position and velocity from other clients
-            direction = (Vector2)stream.ReceiveNext();
-            rb.velocity = (Vector2)stream.ReceiveNext();
-
-            // Calculate lag
-            lag = Mathf.Abs((float)(PhotonNetwork.Time - info.SentServerTime));
-            direction += rb.velocity * lag;  // Predict the new position based on the lag
-        }
-    }
+    
 }
