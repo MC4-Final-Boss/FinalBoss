@@ -1,8 +1,6 @@
 using Unity.VisualScripting;
-using Unity.VisualScripting;
 using UnityEngine;
 using Photon.Pun;
-using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.Experimental.GlobalIllumination;
 
 public class TankoController : MonoBehaviourPun, IPunObservable
@@ -12,19 +10,20 @@ public class TankoController : MonoBehaviourPun, IPunObservable
     public float horizontalAxis;
     private Vector2 direction;
     private int jumpLeft = 1;
-    private int jumpLeft = 1;
+    [SerializeField] int pressedPlayer = 0;
     private float lag;  // Track network lag
 
-
+    [SerializeField] private float fallThreshold = -15f;
 
     [SerializeField] private Rigidbody2D rb;
-    // [SerializeField] private Animator animator;
+    Animator animator;
 
 
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
 
         // Cek apakah karakter ini dimiliki oleh pemain lokal
         // if (!photonView.IsMine)
@@ -48,42 +47,102 @@ public class TankoController : MonoBehaviourPun, IPunObservable
         Movement();
         Jump();
         Facing();
+        Animations();
     }
+
 
     void Movement()
     {
-        horizontalAxis = Input.GetAxis("Horizontal");
-        direction = new Vector2(horizontalAxis, 0);
-        transform.Translate(direction * Time.deltaTime * movementSpeed);
-
-        if (horizontalAxis == 0f)
+        // Modify the input for horizontal movement to use 'A' and 'D' keys
+        if (Input.GetKey(KeyCode.A))  // Move left
         {
-            // animator.SetBool("Idle", true);
-            // animator.SetBool("Run", false);
+            horizontalAxis = -1f;  // Moving left
+        }
+        else if (Input.GetKey(KeyCode.D))  // Move right
+        {
+            horizontalAxis = 1f;   // Moving right
         }
         else
         {
-            // animator.SetBool("Idle", false);
-            // animator.SetBool("Run", true);
-
-
+            horizontalAxis = 0f;   // Idle
         }
+
+        direction = new Vector2(horizontalAxis, 0);
+        transform.Translate(direction * Time.deltaTime * movementSpeed);  // Move character
     }
+
 
     void Jump()
     {
         if (Input.GetKeyDown(KeyCode.W) && jumpLeft > 0)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            jumpLeft--;
+            if (pressedPlayer == 0)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                jumpLeft--;
+            }
         }
     }
 
+    void Animations()
+    {
+        animator.SetFloat("Moving", Mathf.Abs(horizontalAxis));
+
+    }
+
+
     private void OnTriggerEnter2D(Collider2D other)
     {
+        // Cek apakah objek yang memasuki trigger bukan "Tanko"
+        if (!other.gameObject.CompareTag("Gaspi"))
+        {
+            // Reset jumlah lompatan ketika objek lain masuk
+            jumpLeft = 1;
+        }
 
-        jumpLeft = 1;
-        Debug.Log("Jump left: " + jumpLeft);
+        // Cek apakah objek yang memasuki trigger adalah "Tanko"
+        else if (other.gameObject.CompareTag("Gaspi"))
+        {
+            // Cek apakah Tanko berada di atas Gaspi
+            if (other.transform.position.y > transform.position.y)
+            {
+                // Jika Tanko ada di atas Gaspi, cegah lompatan
+                Debug.Log("Tanko tidak bisa melompat, ada Tanko di atasnya!");
+                jumpLeft = 0;
+                pressedPlayer = 1;
+
+            }
+            else
+            {
+                jumpLeft = 1;
+            }
+        }
+
+        if (rb.velocity.y <= fallThreshold)
+        {
+
+            PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
+
+            if (respawnScript != null)
+            {
+                respawnScript.RespawnPlayer();
+                print("Player Death");
+            }
+
+        }
+
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        // Cek apakah objek yang keluar dari trigger adalah "Tanko"
+        if (other.gameObject.CompareTag("Gaspi"))
+        {
+            // Jika Tanko keluar dari trigger, Gaspi bisa melompat lagi
+            jumpLeft = 1;
+            pressedPlayer = 0;
+            Debug.Log("Tanko bisa melompat lagi, Tanko sudah tidak ada di atasnya!");
+        }
     }
 
 

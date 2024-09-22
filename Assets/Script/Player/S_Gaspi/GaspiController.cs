@@ -8,15 +8,18 @@ public class GaspiController : MonoBehaviourPun, IPunObservable
     public float horizontalAxis;
     [SerializeField] int jumpLeft = 1;
     private Vector2 direction;
-
+    [SerializeField] int pressedPlayer = 0;
     private float lag;  // Track network lag
 
+    [SerializeField] private float fallThreshold = -15f;
+
     [SerializeField] private Rigidbody2D rb;
-    //[SerializeField] private Animator animator;
+    Animator animator;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
 
         // Cek apakah karakter ini dimiliki oleh pemain lokal
         if (!photonView.IsMine)
@@ -37,6 +40,7 @@ public class GaspiController : MonoBehaviourPun, IPunObservable
         Movement();
         Jump();
         Facing();
+        Animations();
     }
 
     void Movement()
@@ -57,38 +61,81 @@ public class GaspiController : MonoBehaviourPun, IPunObservable
 
         direction = new Vector2(horizontalAxis, 0);
         transform.Translate(direction * Time.deltaTime * movementSpeed);  // Move character
-
-        // Optional: Uncomment for animations if required
-        // if (horizontalAxis == 0f)
-        // {
-        //     animator.SetTrigger("Idle");
-        //     animator.SetBool("Idle", true);
-        //     animator.SetBool("Run", false);
-        // }
-        // else
-        // {
-        //     animator.SetTrigger("Walk");
-        //     animator.SetBool("Idle", false);
-        //     animator.SetBool("Run", true);
-        // }
     }
 
     void Jump()
     {
         if (Input.GetKeyDown(KeyCode.I) && jumpLeft > 0)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            jumpLeft--;
+            if (pressedPlayer == 0)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                jumpLeft--;
+            }
         }
+    }
+
+    void Animations()
+    {
+        animator.SetFloat("Moving", Mathf.Abs(horizontalAxis));
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        // Cek apakah objek yang memasuki trigger bukan "Tanko"
+        if (!other.gameObject.CompareTag("Tanko"))
+        {
+            // Reset jumlah lompatan ketika objek lain masuk
+            jumpLeft = 1;
+        }
 
-        jumpLeft = 1;
-        Debug.Log("Jump left: " + jumpLeft);
+        // Cek apakah objek yang memasuki trigger adalah "Tanko"
+        else if (other.gameObject.CompareTag("Tanko"))
+        {
+            // Cek apakah Tanko berada di atas Gaspi
+            if (other.transform.position.y > transform.position.y)
+            {
+                // Jika Tanko ada di atas Gaspi, cegah lompatan
+                Debug.Log("Gaspi tidak bisa melompat, ada Tanko di atasnya!");
+                jumpLeft = 0;
+                pressedPlayer = 1;
+            }
+            else
+            {
+                jumpLeft = 1;
+            }
+        }
+
+        if (rb.velocity.y <= fallThreshold)
+        {
+
+            PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
+
+            if (respawnScript != null)
+            {
+                respawnScript.RespawnPlayer();
+                print("Player Death");
+            }
+
+        }
+
     }
-    
+
+  private void OnTriggerExit2D(Collider2D other)
+{
+    // Cek apakah objek yang keluar dari trigger adalah "Tanko"
+    if (other.gameObject.CompareTag("Tanko"))
+    {
+        // Jika Tanko keluar dari trigger, Gaspi bisa melompat lagi
+        jumpLeft = 1;
+            pressedPlayer = 0;
+
+            Debug.Log("Gaspi bisa melompat lagi, Tanko sudah tidak ada di atasnya!");
+    }
+}
+
+
     void Facing()
     {
         Vector3 playerScale = transform.localScale;
