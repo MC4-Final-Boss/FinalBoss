@@ -1,8 +1,9 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
+using Unity.Netcode;
 
-public class TankoController : MonoBehaviour
+public class TankoController : NetworkBehaviour
 {
     [SerializeField] private float movementSpeed = 10f;
     [SerializeField] private float jumpForce = 3f;
@@ -21,6 +22,7 @@ public class TankoController : MonoBehaviour
 
     void Start()
     {
+        // if (!IsOwner) return;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 
@@ -39,7 +41,7 @@ public class TankoController : MonoBehaviour
     {
         // Jika karakter bukan milik pemain lokal, jangan jalankan input
         
-
+        if (!IsOwner) return;
         Movement();
         Jump();
         Facing();

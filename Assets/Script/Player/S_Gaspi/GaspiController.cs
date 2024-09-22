@@ -1,6 +1,7 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class GaspiController : MonoBehaviour
+public class GaspiController : NetworkBehaviour
 {
     [SerializeField] private float movementSpeed = 7f;  // Gaspi lebih cepat dari Tanko
     [SerializeField] private float jumpForce = 3f;
@@ -17,6 +18,7 @@ public class GaspiController : MonoBehaviour
 
     void Start()
     {
+        // if (!IsOwner) return;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 
@@ -27,7 +29,7 @@ public class GaspiController : MonoBehaviour
     {
         // Jika karakter bukan milik pemain lokal, jangan jalankan input
        
-
+        if (!IsOwner) return;
         Movement();
         Jump();
         Facing();
