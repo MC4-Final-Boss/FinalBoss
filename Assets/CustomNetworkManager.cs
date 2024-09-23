@@ -1,51 +1,80 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class CustomNetworkManager : MonoBehaviour
+public class CustomNetworkManagerWithTag : MonoBehaviour
 {
-    public GameObject tankoPrefab; // Prefab for Player 1
-    public GameObject gaspiPrefab; // Prefab for Player 2
+    public GameObject tankoPrefab;
+    public GameObject gaspiPrefab;
 
-    private void Start()
-{
-    if (NetworkManager.Singleton != null)
+    private void OnEnable()
     {
+        // Subscribe to the OnClientConnectedCallback event
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
     }
-    else
+
+    private void OnDisable()
     {
-        Debug.LogError("NetworkManager not found. Make sure it is added to the scene.");
+        // Unsubscribe from the event when the object is disabled or destroyed
+        NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
     }
-}
-
-
-    // private void OnDestroy()
-    // {
-    //     // Unregister when destroyed
-    //     NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
-    // }
 
     private void OnClientConnected(ulong clientId)
     {
         if (NetworkManager.Singleton.IsServer)
         {
-            // Determine which prefab to spawn based on whether the client is the server
-            GameObject playerPrefab = clientId == NetworkManager.ServerClientId ? tankoPrefab : gaspiPrefab;
-
-            // Spawn the correct player prefab
-            GameObject playerInstance = Instantiate(playerPrefab, GetSpawnPosition(clientId), Quaternion.identity);
-
-            // Make it a networked object and assign it to the client
-            playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+            AssignPlayerPrefab(clientId);
         }
     }
 
-    private Vector3 GetSpawnPosition(ulong clientId)
+    private void AssignPlayerPrefab(ulong clientId)
     {
-        // Customize spawn positions based on player
-        if (clientId == NetworkManager.ServerClientId)
-            return new Vector3(-2, 0, 0); // Position for Tanko (Player 1)
+        GameObject playerPrefab;
+        string tagToAssign;
+
+        if (clientId == NetworkManager.Singleton.LocalClientId)
+        {
+            // Player 1 gets Tanko
+            playerPrefab = tankoPrefab;
+            tagToAssign = "Tanko";
+        }
         else
-            return new Vector3(2, 0, 0);  // Position for Gaspi (Player 2)
+        {
+            // Player 2 gets Gaspi
+            playerPrefab = gaspiPrefab;
+            tagToAssign = "Gaspi";
+        }
+
+        var spawnPosition = GetSpawnPositionForPlayer(clientId);
+        GameObject playerInstance = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
+
+        // Assign tag to the player instance
+        playerInstance.tag = tagToAssign;
+
+        // Spawn as a networked object
+        playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+
+        // Start observing (syncing) the player instance for network updates
+        SetupObserved(playerInstance);
+    }
+
+    private Vector3 GetSpawnPositionForPlayer(ulong clientId)
+    {
+        // Custom spawn positions
+        return clientId == 0 ? new Vector3(-5, 0, 0) : new Vector3(5, 0, 0);
+    }
+
+    private void SetupObserved(GameObject playerInstance)
+    {
+        // Add observed script or set up properties to observe
+        if (playerInstance.tag == "Tanko")
+        {
+            // Set up observing for Tanko (Player 1)
+            playerInstance.AddComponent<Player1Observed>(); 
+        }
+        else if (playerInstance.tag == "Gaspi")
+        {
+            // Set up observing for Gaspi (Player 2)
+            playerInstance.AddComponent<Player2Observed>(); 
+        }
     }
 }
