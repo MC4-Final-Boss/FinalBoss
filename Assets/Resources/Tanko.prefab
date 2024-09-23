@@ -12,12 +12,11 @@ GameObject:
   - component: {fileID: 5665804495778490437}
   - component: {fileID: 3824376924431759534}
   - component: {fileID: 3045698165415512405}
-  - component: {fileID: 1748032206933436521}
   - component: {fileID: 6030425025217413987}
   - component: {fileID: 6308060153940307148}
   - component: {fileID: -2447895623635322574}
-  - component: {fileID: 8510279841734732773}
-  - component: {fileID: -8509889834401766606}
+  - component: {fileID: -4744713457139514808}
+  - component: {fileID: 1350199637849042929}
   m_Layer: 0
   m_Name: Tanko
   m_TagString: Tanko
@@ -117,7 +116,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!61 &3045698165415512405
 BoxCollider2D:
@@ -150,7 +149,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 1
+  m_UsedByComposite: 0
   m_Offset: {x: 0.064463854, y: -0.79505897}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -164,63 +163,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 3.3684583, y: 6.4627414}
   m_EdgeRadius: 0
---- !u!66 &1748032206933436521
-CompositeCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8478861834695638335}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_GeometryType: 0
-  m_GenerationType: 0
-  m_EdgeRadius: 0
-  m_ColliderPaths:
-  - m_Collider: {fileID: 3045698165415512405}
-    m_ColliderPaths:
-    - - X: 4371732
-        Y: 6090779
-      - X: -4049413
-        Y: 6090779
-      - X: -4049413
-        Y: -10066074
-      - X: 4371732
-        Y: -10066074
-  m_CompositePaths:
-    m_Paths:
-    - - {x: 0.4371439, y: -1.0066074}
-      - {x: 0.4371439, y: 0.60907793}
-      - {x: -0.4049413, y: 0.6090486}
-      - {x: -0.404912, y: -1.0066074}
-  m_VertexDistance: 0.0005
-  m_OffsetDistance: 0.00005
-  m_UseDelaunayMesh: 0
-  m_CompositeGameObject: {fileID: 8478861834695638335}
 --- !u!114 &6030425025217413987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,7 +223,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &8510279841734732773
+--- !u!114 &-4744713457139514808
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -290,16 +232,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 8478861834695638335}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f5b0f5dc830842f88e8cc1f6d277fbf, type: 3}
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   UseUnreliableDeltas: 0
   SyncPositionX: 1
   SyncPositionY: 1
-  SyncPositionZ: 1
+  SyncPositionZ: 0
   SyncRotAngleX: 0
   SyncRotAngleY: 0
-  SyncRotAngleZ: 0
+  SyncRotAngleZ: 1
   SyncScaleX: 0
   SyncScaleY: 0
   SyncScaleZ: 0
@@ -312,7 +254,7 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &-8509889834401766606
+--- !u!114 &1350199637849042929
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
