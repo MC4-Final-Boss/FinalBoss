@@ -40,7 +40,7 @@ public class CameraController : MonoBehaviour
         // Mencoba mencari player hingga ditemukan
         while (target == null)
         {
-            GameObject player = GameObject.FindGameObjectWithTag("Tanko");
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player != null)
             {
                 target = player.transform;
