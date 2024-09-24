@@ -49,8 +49,8 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
         //     tagToAssign = "Gaspi";
         // }
 
-        var spawnPosition = GetSpawnPositionForPlayer(IsServer);
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds) {
+            var spawnPosition = GetSpawnPositionForPlayer(clientId == NetworkManager.ServerClientId);
             if (clientId == NetworkManager.ServerClientId) {
                 // Host (Player 1) gets Tanko
                 playerPrefab = tankoPrefab;
@@ -61,6 +61,7 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
                 tagToAssign = "Gaspi";
             }
             GameObject playerInstance = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
+            playerInstance.transform.position = spawnPosition;
             playerInstance.tag = tagToAssign;
             // Pastikan objek memiliki komponen NetworkObject
             NetworkObject networkObject = playerInstance.GetComponent<NetworkObject>();
@@ -71,7 +72,7 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
             }
 
             networkObject.SpawnAsPlayerObject(clientId, true);
-            SetupObserved(playerInstance);
+            // SetupObserved(playerInstance);
         }
         
         
@@ -83,15 +84,15 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
         return isHost ? new Vector3(-5, 0, 0) : new Vector3(5, 0, 0);
     }
 
-    private void SetupObserved(GameObject playerInstance)
-    {
-        if (playerInstance.CompareTag("Tanko"))
-        {
-            playerInstance.AddComponent<Player1Observed>();
-        }
-        else if (playerInstance.CompareTag("Gaspi"))
-        {
-            playerInstance.AddComponent<Player2Observed>();
-        }
-    }
+    // private void SetupObserved(GameObject playerInstance)
+    // {
+    //     if (playerInstance.CompareTag("Tanko"))
+    //     {
+    //         //playerInstance.AddComponent<Player1Observed>();
+    //     }
+    //     else if (playerInstance.CompareTag("Gaspi"))
+    //     {
+    //         //playerInstance.AddComponent<Player2Observed>();
+    //     }
+    // }
 }

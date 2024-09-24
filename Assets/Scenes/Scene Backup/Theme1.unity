@@ -779,7 +779,7 @@ GameObject:
   - component: {fileID: 210917246}
   - component: {fileID: 210917247}
   m_Layer: 0
-  m_Name: CustomNetworkManager
+  m_Name: PlayerNetworkManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
