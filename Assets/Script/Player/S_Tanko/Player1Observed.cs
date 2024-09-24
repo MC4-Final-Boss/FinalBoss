@@ -7,15 +7,22 @@ public class Player1Observed : NetworkBehaviour
 
     void Update()
     {
+        // Hanya pemain yang memiliki kontrol (IsOwner) yang boleh menggerakkan Tanko
         if (IsOwner)
         {
-            // Update player position for sync
-            playerPosition.Value = transform.position;
+            // Sinkronkan posisi hanya jika berubah, dan tambahkan threshold untuk mengurangi bandwidth
+            if (Vector3.Distance(playerPosition.Value, transform.position) > 0.01f)
+            {
+                playerPosition.Value = transform.position;
+            }
         }
         else
         {
-            // Apply synced position
-            transform.position = playerPosition.Value;
+            // Terima dan terapkan posisi yang disinkronkan dari jaringan
+            if (transform.position != playerPosition.Value)
+            {
+                transform.position = playerPosition.Value;
+            }
         }
     }
 }
