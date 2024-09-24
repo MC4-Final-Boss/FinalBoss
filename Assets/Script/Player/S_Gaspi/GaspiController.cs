@@ -100,6 +100,7 @@ public class GaspiController : NetworkBehaviour
             if (respawnScript != null)
             {
                 respawnScript.RespawnPlayer();
+                print("Player Death");
             }
         }
     }

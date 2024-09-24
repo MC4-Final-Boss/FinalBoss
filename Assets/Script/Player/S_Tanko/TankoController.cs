@@ -1,91 +1,79 @@
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 using Unity.Netcode;
 
 public class TankoController : NetworkBehaviour
 {
-    [SerializeField] private float movementSpeed = 10f;
+    [SerializeField] private float movementSpeed = 7f;
     [SerializeField] private float jumpForce = 3f;
     public float horizontalAxis;
-    private Vector2 direction;
-    private int jumpLeft = 1;
+    [SerializeField] private int jumpLeft = 1;
     [SerializeField] int pressedPlayer = 0;
-    private float lag;  // Track network lag
-
     [SerializeField] private float fallThreshold = -15f;
-
     [SerializeField] private Rigidbody2D rb;
     Animator animator;
 
-
+    private float lag;  // Track network lag
 
     void Start()
     {
-        // if (!IsOwner) return;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+    }
 
-        // Cek apakah karakter ini dimiliki oleh pemain lokal
-        // if (!photonView.IsMine)
-        // {
-        //     // Jika karakter ini bukan milik pemain lokal, nonaktifkan skrip kontrol ini
-        //     this.enabled = false;
-        // }
-
-        //animator = GetComponent<Animator>();
-
+    void FixedUpdate()
+    {
+        if (!IsOwner) return;
+        Movement();
     }
 
     void Update()
     {
-        // Jika karakter bukan milik pemain lokal, jangan jalankan input
-        
         if (!IsOwner) return;
-        Movement();
-        Jump();
+        HandleInput();
         Facing();
         Animations();
     }
 
+    void HandleInput()
+    {
+        if (Input.GetKey(KeyCode.A))
+            horizontalAxis = -1f;
+        else if (Input.GetKey(KeyCode.D))
+            horizontalAxis = 1f;
+        else
+            horizontalAxis = 0f;
+
+        if (Input.GetKeyDown(KeyCode.W) && jumpLeft > 0)
+            Jump();
+    }
 
     void Movement()
     {
-        // Modify the input for horizontal movement to use 'A' and 'D' keys
-        if (Input.GetKey(KeyCode.A))  // Move left
-        {
-            horizontalAxis = -1f;  // Moving left
-        }
-        else if (Input.GetKey(KeyCode.D))  // Move right
-        {
-            horizontalAxis = 1f;   // Moving right
-        }
-        else
-        {
-            horizontalAxis = 0f;   // Idle
-        }
-
-        direction = new Vector2(horizontalAxis, 0);
-        transform.Translate(direction * Time.deltaTime * movementSpeed);  // Move character
+        Vector2 movement = new Vector2(horizontalAxis * movementSpeed, rb.velocity.y);
+        rb.velocity = movement;
+        UpdatePositionOnServerRpc(rb.position);
     }
-
 
     void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.W) && jumpLeft > 0)
+        if (pressedPlayer == 0)
         {
-            if (pressedPlayer == 0)
-            {
-                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-                jumpLeft--;
-            }
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            jumpLeft--;
         }
     }
 
     void Animations()
     {
         animator.SetFloat("Moving", Mathf.Abs(horizontalAxis));
+    }
 
+    void Facing()
+    {
+        if (horizontalAxis != 0)
+        {
+            transform.localScale = new Vector3(Mathf.Sign(horizontalAxis) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        }
     }
 
 
@@ -133,35 +121,28 @@ public class TankoController : NetworkBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        // Cek apakah objek yang keluar dari trigger adalah "Tanko"
         if (other.gameObject.CompareTag("Gaspi"))
         {
-            // Jika Tanko keluar dari trigger, Gaspi bisa melompat lagi
             jumpLeft = 1;
             pressedPlayer = 0;
-            Debug.Log("Tanko bisa melompat lagi, Tanko sudah tidak ada di atasnya!");
         }
     }
 
 
-    void Facing()
+    [ServerRpc]
+    private void UpdatePositionOnServerRpc(Vector2 newPosition)
     {
-        Vector3 playerScale = transform.localScale;
-
-        if (horizontalAxis < 0)
-        {
-            transform.localScale = new Vector3(-Mathf.Abs(playerScale.x), playerScale.y, playerScale.z);
-        }
-        else if (horizontalAxis > 0)
-        {
-            transform.localScale = new Vector3(Mathf.Abs(playerScale.x), playerScale.y, playerScale.z);
-        }
+        UpdatePositionOnClientsClientRpc(newPosition);
     }
 
-
-
-
-
+    [ClientRpc]
+    private void UpdatePositionOnClientsClientRpc(Vector2 newPosition)
+    {
+        if (!IsOwner)
+        {
+            rb.position = newPosition;
+        }
+    }
 
 }
 
