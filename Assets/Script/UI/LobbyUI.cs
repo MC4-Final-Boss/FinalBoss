@@ -58,7 +58,7 @@ public class RoomUIManager : MonoBehaviour
         if (NetworkManager.Singleton.IsServer)
         {
             // Server loads the scene for all clients
-            NetworkManager.Singleton.SceneManager.LoadScene("Theme1", LoadSceneMode.Single);
+            NetworkManager.Singleton.SceneManager.LoadScene("BustlingCityScene", LoadSceneMode.Single);
         }
     }
 }
