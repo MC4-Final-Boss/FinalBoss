@@ -877,11 +877,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: a88fc180-2096-417a-ba41-c7fbc46daa06
+  cloudProjectId: 722d4875-3831-4179-b64f-aaf2ae4f2cb1
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: FinalBoss
-  organizationId: yurikoaishinselo
+  organizationId: mrzk06
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
