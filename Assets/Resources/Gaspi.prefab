@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1647881454216315525}
   - component: {fileID: 5852808445176553097}
   - component: {fileID: 2055681252296824458}
-  - component: {fileID: 388871352296376732}
+  - component: {fileID: 7577605830107547428}
   - component: {fileID: 7289190484952421193}
   - component: {fileID: 6233618026548037985}
   - component: {fileID: 4393532964222092750}
@@ -78,8 +78,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1883361279
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 2a8a45095c11e43f48c6f51830162755, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -164,8 +164,8 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.2395215, y: 3.2211542}
   m_EdgeRadius: 0
---- !u!66 &388871352296376732
-CompositeCollider2D:
+--- !u!61 &7577605830107547428
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -193,34 +193,22 @@ CompositeCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_GeometryType: 0
-  m_GenerationType: 0
+  m_Offset: {x: 0.076823354, y: -0.10978466}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 4.8, y: 4.8}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1.2434373, y: 3.5553474}
   m_EdgeRadius: 0
-  m_ColliderPaths:
-  - m_Collider: {fileID: 2055681252296824458}
-    m_ColliderPaths:
-    - - X: 2900934
-        Y: 3941970
-      - X: -2697869
-        Y: 3941970
-      - X: -2697869
-        Y: -4110915
-      - X: 2900934
-        Y: -4110915
-  m_CompositePaths:
-    m_Paths:
-    - - {x: 0.2900641, y: -0.4110915}
-      - {x: 0.2900641, y: 0.39419702}
-      - {x: -0.2697869, y: 0.3941677}
-      - {x: -0.2697576, y: -0.4110915}
-  m_VertexDistance: 0.0005
-  m_OffsetDistance: 0.00005
-  m_UseDelaunayMesh: 0
-  m_CompositeGameObject: {fileID: 8587059728480450868}
 --- !u!114 &7289190484952421193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -255,7 +243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 7
-  jumpForce: 3
+  jumpForce: 5
   horizontalAxis: 0
   jumpLeft: 1
   pressedPlayer: 0
