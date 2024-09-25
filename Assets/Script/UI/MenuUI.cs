@@ -56,7 +56,9 @@ public class RoomUIManager : MonoBehaviour
                 UpdateUI();
             }
             else
-            {
+            {   
+                statusText.gameObject.SetActive(true);
+                statusText.text = "Code Mismatch";
                 Debug.LogError("Failed to join relay");
             }
         });
@@ -66,7 +68,7 @@ public class RoomUIManager : MonoBehaviour
             UpdateUI();
             if (NetworkManager.Singleton.IsHost && NetworkManager.Singleton.ConnectedClientsList.Count > 1)
             {
-                Debug.Log("RoomUIManager: All clients connected. Loading game scene 'Theme1'.");
+                Debug.Log("RoomUIManager: All clients connected. Loading game scene 'Bustling City'.");
                 LoadGameScene();
             }
         };
