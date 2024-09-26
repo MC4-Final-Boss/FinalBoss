@@ -8,6 +8,8 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
     public GameObject tankoPrefab;
     public GameObject gaspiPrefab;
 
+    public bool isStarted = false;
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -75,13 +77,18 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
             // SetupObserved(playerInstance);
         }
         
-        
+        StartGameClientRpc();
         
     }
 
     private Vector3 GetSpawnPositionForPlayer(bool isHost)
     {
         return isHost ? new Vector3(-5, 0, 0) : new Vector3(5, 0, 0);
+    }
+
+    [ClientRpc]
+    private void StartGameClientRpc() {
+        isStarted = true;
     }
 
     // private void SetupObserved(GameObject playerInstance)
