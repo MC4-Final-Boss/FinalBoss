@@ -29,6 +29,11 @@ public class RoomUIManager : MonoBehaviour
         createButton.onClick.AddListener(async () => {
              //klik create button, CreateRelay jalan, kalau success network manager startHost jalan
             Debug.Log("RoomUIManager: Create button clicked");
+            createButton.gameObject.SetActive(false);
+            clientButton.gameObject.SetActive(false);
+            exitButton.gameObject.SetActive(false);
+            statusText.gameObject.SetActive(false);
+            statusText.text = "Loading";
             string relayCode = await RelayManager.Instance.CreateRelay();
             if (relayCode != null)
             {
