@@ -15,11 +15,11 @@ public class MovingPlatform : MonoBehaviour
 
     void Update()
     {
-        if (movingToTarget)
+        if (movingToTarget && GameObject.Find("PlayerNetworkManager").GetComponent<CustomNetworkManagerWithTag>().isStarted)
         {
             MoveTowards(targetPosition);
 
-            if (Vector3.Distance(transform.localPosition, targetPosition) < 0.1f)
+            if (Vector3.Distance(transform.localPosition, targetPosition) < 0.5f)
             {
                 movingToTarget = false;
             }
@@ -28,7 +28,7 @@ public class MovingPlatform : MonoBehaviour
         {
             MoveTowards(initialPosition);
 
-            if (Vector3.Distance(transform.localPosition, initialPosition) < 0.1f)
+            if (Vector3.Distance(transform.localPosition, initialPosition) < 0.5f)
             {
                 movingToTarget = true;
             }
