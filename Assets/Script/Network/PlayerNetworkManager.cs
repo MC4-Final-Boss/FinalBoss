@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -7,99 +8,112 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
 {
     public GameObject tankoPrefab;
     public GameObject gaspiPrefab;
-
     public bool isStarted = false;
+
+        void Start()
+    {
+        var networkManager = NetworkManager.Singleton;
+        networkManager.NetworkConfig.TickRate = 60; // Sesuaikan nilai ini
+        networkManager.NetworkConfig.ClientConnectionBufferTimeout = 3600; // Dalam detik
+    }
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        Debug.Log("NETWROK SPAWN get called");
-        if (IsHost) NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SpawnAndSetupPlayer;
+        Debug.Log($"OnNetworkSpawn called. IsHost: {IsHost}, IsServer: {IsServer}, IsClient: {IsClient}");
+        if (IsHost)
+        {
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SpawnAndSetupPlayer;
+            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectCallback;
+            Debug.Log("Registered callbacks in OnNetworkSpawn");
+        }
     }
 
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
-        if (IsHost) NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= SpawnAndSetupPlayer;
+        if (IsHost)
+        {
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= SpawnAndSetupPlayer;
+            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnectedCallback;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnectCallback;
+            Debug.Log("Unregistered callbacks in OnNetworkDespawn");
+        }
     }
 
-    // private void OnClientConnected(ulong clientId)
-    // {
-    //     if (NetworkManager.Singleton.IsServer)
-    //     {
-    //         SpawnAndSetupPlayer(clientId);
-    //     }
-    // }
+    private void OnClientConnectedCallback(ulong clientId)
+    {
+        Debug.Log($"Client {clientId} connected");
+        // You might want to delay spawning until the client is fully ready
+        // Or use this to trigger a specific "ready" message from the client
+    }
+
+    private void OnClientDisconnectCallback(ulong clientId)
+    {
+        Debug.Log($"Client {clientId} disconnected");
+        // Handle client disconnection (e.g., remove their objects, update game state)
+    }
 
     private void SpawnAndSetupPlayer(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clients, List<ulong> clientsTimedOut)
     {
-        Debug.Log("Invoked.....");
-        GameObject playerPrefab;
-        string tagToAssign;
-        //bool isHost = NetworkManager.Singleton.IsHost &&  == NetworkManager.Singleton.LocalClientId;
-
-        // if (IsServer)
-        // {
-        //     // Host (Player 1) gets Tanko
-        //     playerPrefab = tankoPrefab;
-        //     tagToAssign = "Tanko";
-        // }
-        // else
-        // {
-        //     // Client (Player 2) gets Gaspi
-        //     playerPrefab = gaspiPrefab;
-        //     tagToAssign = "Gaspi";
-        // }
-
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds) {
-            var spawnPosition = GetSpawnPositionForPlayer(clientId == NetworkManager.ServerClientId);
-            if (clientId == NetworkManager.ServerClientId) {
-                // Host (Player 1) gets Tanko
-                playerPrefab = tankoPrefab;
-                tagToAssign = "Tanko";
-            } else {
-                // Client (Player 2) gets Gaspi
-                playerPrefab = gaspiPrefab;
-                tagToAssign = "Gaspi";
-            }
-            GameObject playerInstance = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
-            playerInstance.transform.position = spawnPosition;
-            playerInstance.tag = tagToAssign;
-            // Pastikan objek memiliki komponen NetworkObject
-            NetworkObject networkObject = playerInstance.GetComponent<NetworkObject>();
-            if (networkObject == null)
+        Debug.Log($"SpawnAndSetupPlayer called. Clients: {string.Join(", ", clients)}, TimedOut: {string.Join(", ", clientsTimedOut)}");
+        
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            if (!NetworkManager.Singleton.ConnectedClients.ContainsKey(clientId))
             {
-                Debug.LogError("NetworkObject tidak ditemukan pada prefab pemain!");
-                return;
+                Debug.LogWarning($"Client {clientId} is not in ConnectedClients dictionary. Skipping spawn.");
+                continue;
             }
 
-            networkObject.SpawnAsPlayerObject(clientId, true);
-            // SetupObserved(playerInstance);
+            try
+            {
+                var spawnPosition = GetSpawnPositionForPlayer(clientId == NetworkManager.ServerClientId);
+                GameObject playerPrefab = clientId == NetworkManager.ServerClientId ? tankoPrefab : gaspiPrefab;
+                string tagToAssign = clientId == NetworkManager.ServerClientId ? "Tanko" : "Gaspi";
+
+                GameObject playerInstance = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
+                playerInstance.tag = tagToAssign;
+
+                NetworkObject networkObject = playerInstance.GetComponent<NetworkObject>();
+                if (networkObject == null)
+                {
+                    Debug.LogError($"NetworkObject not found on player prefab for client {clientId}!");
+                    continue;
+                }
+
+                networkObject.SpawnAsPlayerObject(clientId, true);
+                Debug.Log($"Spawned player object for client {clientId} at position {spawnPosition}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error spawning player object for client {clientId}: {e.Message}");
+            }
         }
-        
+
         StartGameClientRpc();
-        
     }
 
     private Vector3 GetSpawnPositionForPlayer(bool isHost)
     {
-        return isHost ? new Vector3(-5, 0, 0) : new Vector3(5, 0, 0);
+        return isHost ? new Vector3(-5, 0, 0) : new Vector3(-4, 0, 0);
     }
 
     [ClientRpc]
-    private void StartGameClientRpc() {
+    private void StartGameClientRpc()
+    {
+        if (!IsClient) return;
+        Debug.Log("StartGameClientRpc called on client");
         isStarted = true;
     }
 
-    // private void SetupObserved(GameObject playerInstance)
-    // {
-    //     if (playerInstance.CompareTag("Tanko"))
-    //     {
-    //         //playerInstance.AddComponent<Player1Observed>();
-    //     }
-    //     else if (playerInstance.CompareTag("Gaspi"))
-    //     {
-    //         //playerInstance.AddComponent<Player2Observed>();
-    //     }
-    // }
+    private void Update()
+    {
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsConnectedClient)
+        {
+            Debug.LogWarning("Client disconnected unexpectedly!");
+            // Handle unexpected disconnection (e.g., show reconnect UI, cleanup)
+        }
+    }
 }

@@ -22,7 +22,7 @@ public class ButtonA : MonoBehaviour
         {
             Vector3 targetPos = buttonActive ? targetPosition : initialPosition;
 
-            Debug.Log("target position: " + targetPosition);
+            // Debug.Log("target position: " + targetPosition);
             movementGround.transform.localPosition = Vector3.MoveTowards(
                 movementGround.transform.localPosition,  
                 targetPos,
