@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3824376924431759534}
   - component: {fileID: 3045698165415512405}
   - component: {fileID: 6030425025217413987}
+  - component: {fileID: 6308060153940307148}
   - component: {fileID: -2447895623635322574}
   - component: {fileID: -5026081423889429960}
   - component: {fileID: 8593127893861712597}
@@ -176,7 +177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 461849637
+  GlobalObjectIdHash: 3852324786
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -185,6 +186,25 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &6308060153940307148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8478861834695638335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7d782b336e624d65bd1829ae4ced090, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementSpeed: 7
+  jumpForce: 6
+  horizontalAxis: 0
+  jumpLeft: 1
+  pressedPlayer: 0
+  fallThreshold: -15
+  rb: {fileID: 3824376924431759534}
 --- !u!95 &-2447895623635322574
 Animator:
   serializedVersion: 5
