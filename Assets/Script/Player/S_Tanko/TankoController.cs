@@ -108,13 +108,13 @@ public class TankoController : NetworkBehaviour
         if (rb.velocity.y <= fallThreshold)
         {
 
-            PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
+            // PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
 
-            if (respawnScript != null)
-            {
-                respawnScript.RespawnPlayer();
-                print("Player Death");
-            }
+            // if (respawnScript != null)
+            // {
+            //     respawnScript.RespawnPlayer();
+            //     print("Player Death");
+            // }
 
         }
 

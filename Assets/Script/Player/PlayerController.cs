@@ -19,6 +19,7 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private Rigidbody2D rb;
     private Animator animator;
     private Vector3 movement;
+    public float horizontalAxis;
 
     private NetworkVariable<Vector2> netPosition = new NetworkVariable<Vector2>();
 
@@ -67,9 +68,32 @@ public class PlayerController : NetworkBehaviour
         {
             Facing();
             Animations();
+            // HandleInput();
             UpdatePositionServerRpc(rb.position);
         }
     }
+
+    // Handle keyboard input
+    // void HandleInput()
+    // {
+    //     if (Input.GetKey(KeyCode.J))
+    //     {
+    //         horizontalAxis = -1f;
+    //     }
+    //     else if (Input.GetKey(KeyCode.L))
+    //     {
+    //         horizontalAxis = 1f;
+    //     }
+    //     else
+    //     {
+    //         horizontalAxis = 0f;
+    //     }
+    //     if (Input.GetKeyDown(KeyCode.I))
+    //     {
+    //         Jump();
+    //     }
+    // }
+
 
     void Movement()
     {
@@ -123,11 +147,11 @@ public class PlayerController : NetworkBehaviour
 
             if (rb.velocity.y <= fallThreshold)
             {
-                PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
-                if (respawnScript != null)
-                {
-                    respawnScript.RespawnPlayer();
-                }
+                // PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
+                // if (respawnScript != null)
+                // {
+                //     respawnScript.RespawnPlayer();
+                // }
             }
         }
     }

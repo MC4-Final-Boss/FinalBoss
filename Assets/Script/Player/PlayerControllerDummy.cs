@@ -92,12 +92,12 @@ public class PlayerControllerDummy : MonoBehaviour
 
         if (rb.velocity.y <= fallThreshold)
         {
-            PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
-            if (respawnScript != null)
-            {
-                respawnScript.RespawnPlayer();
-                print("Player Death");
-            }
+            // PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
+            // if (respawnScript != null)
+            // {
+            //     respawnScript.RespawnPlayer();
+            //     print("Player Death");
+            // }
         }
     }
 

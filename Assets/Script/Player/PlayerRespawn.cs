@@ -3,6 +3,17 @@ using UnityEngine;
 public class PlayerRespawn : MonoBehaviour
 {
     private Vector3 respawnPosition;
+    private PlayerSaveCheckPoint saveCheckpoint;
+
+    private void Start()
+    {
+        saveCheckpoint = GetComponent<PlayerSaveCheckPoint>();
+
+        if (saveCheckpoint == null)
+        {
+            Debug.LogError("PlayerSaveCheckPoint component is missing!");
+        }
+    }
 
     private void LoadCheckpoint()
     {
@@ -19,17 +30,18 @@ public class PlayerRespawn : MonoBehaviour
         }
     }
 
-    public void SaveCheckpoint(Vector3 position)
-    {
-        PlayerPrefs.SetFloat("CheckpointX", position.x);
-        PlayerPrefs.SetFloat("CheckpointY", position.y);
-        PlayerPrefs.SetFloat("CheckpointZ", position.z);
-        PlayerPrefs.Save();
-    }
-
     public void RespawnPlayer()
     {
         LoadCheckpoint();
         transform.position = respawnPosition;
+        // SaveCheckpoint();
+    }
+
+    private void SaveCheckpoint()
+    {
+        if (saveCheckpoint != null)
+        {
+            // saveCheckpoint.SaveCheckpoint(transform.position);
+        }
     }
 }
