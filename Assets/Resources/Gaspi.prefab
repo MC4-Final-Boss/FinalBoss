@@ -14,11 +14,11 @@ GameObject:
   - component: {fileID: 2055681252296824458}
   - component: {fileID: 7577605830107547428}
   - component: {fileID: 7289190484952421193}
-  - component: {fileID: 6233618026548037985}
   - component: {fileID: 4393532964222092750}
   - component: {fileID: 6073613709053437492}
   - component: {fileID: 3091476996328465799}
   - component: {fileID: 2226780256893277619}
+  - component: {fileID: 5064324700832355727}
   m_Layer: 0
   m_Name: Gaspi
   m_TagString: Gaspi
@@ -222,7 +222,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4151140013
+  GlobalObjectIdHash: 3865962173
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -231,25 +231,6 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &6233618026548037985
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8587059728480450868}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b4a01adcbc2e4d4099e651a750b6e85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  movementSpeed: 7
-  jumpForce: 6
-  horizontalAxis: 0
-  jumpLeft: 1
-  pressedPlayer: 0
-  fallThreshold: -15
-  rb: {fileID: 5852808445176553097}
 --- !u!95 &4393532964222092750
 Animator:
   serializedVersion: 5
@@ -328,3 +309,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TransitionStateInfoList: []
   m_Animator: {fileID: 4393532964222092750}
+--- !u!114 &5064324700832355727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8587059728480450868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eca3b83ccb6b14d409f5730b9293c2bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementSpeed: 7
+  jumpForce: 5
+  jumpLeft: 1
+  pressedPlayer: 0
+  fallThreshold: -15
+  rb: {fileID: 0}
