@@ -27,7 +27,13 @@ public class RoomUIManager : MonoBehaviour
         joinButton.gameObject.SetActive(false);
 
         createButton.onClick.AddListener(async () => {
+             //klik create button, CreateRelay jalan, kalau success network manager startHost jalan
             Debug.Log("RoomUIManager: Create button clicked");
+            createButton.gameObject.SetActive(false);
+            clientButton.gameObject.SetActive(false);
+            exitButton.gameObject.SetActive(false);
+            statusText.gameObject.SetActive(false);
+            statusText.text = "Loading";
             string relayCode = await RelayManager.Instance.CreateRelay();
             if (relayCode != null)
             {
@@ -47,6 +53,7 @@ public class RoomUIManager : MonoBehaviour
         });
 
         joinButton.onClick.AddListener(async () => {
+            //klik join button, joinRelay jalan, kalau success network manager startClient jalan
             bool joinSuccess = await RelayManager.Instance.JoinRelay(relayCodeInput.text);
             if (joinSuccess)
             {
@@ -54,7 +61,9 @@ public class RoomUIManager : MonoBehaviour
                 UpdateUI();
             }
             else
-            {
+            {   
+                statusText.gameObject.SetActive(true);
+                statusText.text = "Code Mismatch";
                 Debug.LogError("Failed to join relay");
             }
         });
@@ -64,7 +73,7 @@ public class RoomUIManager : MonoBehaviour
             UpdateUI();
             if (NetworkManager.Singleton.IsHost && NetworkManager.Singleton.ConnectedClientsList.Count > 1)
             {
-                Debug.Log("RoomUIManager: All clients connected. Loading game scene 'Theme1'.");
+                Debug.Log("RoomUIManager: All clients connected. Loading game scene 'Bustling City'.");
                 LoadGameScene();
             }
         };
@@ -74,7 +83,7 @@ public class RoomUIManager : MonoBehaviour
     {
         
         relayCodePanel.SetActive(true);
-        relayCodeText.text = $"Relay Code: {code}";
+        relayCodeText.text = $"Code: {code}";
         statusText.gameObject.SetActive(true);
         statusText.text = "Hosting. Waiting for player to join...";
     }
