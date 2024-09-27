@@ -1,36 +1,48 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class MovingPlatform : MonoBehaviour
+public class MovingPlatform : NetworkBehaviour
 {
     public Vector3 targetPosition;
     public float speed = 1.0f;
-
     private Vector3 initialPosition;
     private bool movingToTarget = true;
+    private CustomNetworkManagerWithTag networkManager;
 
-    void Start()
+    public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
         initialPosition = transform.localPosition;
+        // Find the CustomNetworkManagerWithTag in a more robust way
+        networkManager = FindObjectOfType<CustomNetworkManagerWithTag>();
+        if (networkManager == null)
+        {
+            Debug.LogError("CustomNetworkManagerWithTag not found in the scene!");
+        }
     }
 
     void Update()
     {
-        if (movingToTarget && GameObject.Find("PlayerNetworkManager").GetComponent<CustomNetworkManagerWithTag>().isStarted)
-        {
-            MoveTowards(targetPosition);
+        if (!IsServer) return; // Only server controls the movement
 
-            if (Vector3.Distance(transform.localPosition, targetPosition) < 0.5f)
+        // Check if networkManager is not null before accessing it
+        if (networkManager != null && networkManager.isStarted)
+        {
+            if (movingToTarget)
             {
-                movingToTarget = false;
+                MoveTowards(targetPosition);
+                if (Vector3.Distance(transform.localPosition, targetPosition) < 0.1f)
+                {
+                    movingToTarget = false;
+                }
             }
-        }
-        else
-        {
-            MoveTowards(initialPosition);
-
-            if (Vector3.Distance(transform.localPosition, initialPosition) < 0.5f)
+            else
             {
-                movingToTarget = true;
+                MoveTowards(initialPosition);
+                if (Vector3.Distance(transform.localPosition, initialPosition) < 0.1f)
+                {
+                    movingToTarget = true;
+                }
             }
         }
     }
@@ -42,14 +54,37 @@ public class MovingPlatform : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-
-        other.transform.SetParent(transform);
-
+        NetworkObject networkObject = other.gameObject.GetComponent<NetworkObject>();
+        if (networkObject != null)
+        {
+            SetParentClientRpc(networkObject);
+        }
     }
 
-    private void OnCollisionExit2D(Collision2D other) {
-        other.transform.SetParent(null);
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        NetworkObject networkObject = other.gameObject.GetComponent<NetworkObject>();
+        if (networkObject != null)
+        {
+            UnsetParentClientRpc(networkObject);
+        }
     }
 
-    
+    [ClientRpc]
+    private void SetParentClientRpc(NetworkObjectReference networkObjectRef)
+    {
+        if (networkObjectRef.TryGet(out NetworkObject networkObject))
+        {
+            networkObject.transform.SetParent(transform);
+        }
+    }
+
+    [ClientRpc]
+    private void UnsetParentClientRpc(NetworkObjectReference networkObjectRef)
+    {
+        if (networkObjectRef.TryGet(out NetworkObject networkObject))
+        {
+            networkObject.transform.SetParent(null);
+        }
+    }
 }
