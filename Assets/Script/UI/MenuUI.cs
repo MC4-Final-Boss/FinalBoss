@@ -32,7 +32,7 @@ public class RoomUIManager : MonoBehaviour
             createButton.gameObject.SetActive(false);
             clientButton.gameObject.SetActive(false);
             exitButton.gameObject.SetActive(false);
-            statusText.gameObject.SetActive(false);
+            statusText.gameObject.SetActive(true);
             statusText.text = "Loading";
             string relayCode = await RelayManager.Instance.CreateRelay();
             if (relayCode != null)
@@ -63,8 +63,9 @@ public class RoomUIManager : MonoBehaviour
             else
             {   
                 statusText.gameObject.SetActive(true);
-                statusText.text = "Code Mismatch";
+                statusText.text = "Code Mismatch, try again";
                 Debug.LogError("Failed to join relay");
+                ShowClientInputPanel();
             }
         });
 
@@ -111,6 +112,9 @@ public class RoomUIManager : MonoBehaviour
         if (NetworkManager.Singleton.IsHost)
         {
             statusText.text = "Hosting. Waiting for player to join...";
+            relayCodeInput.gameObject.SetActive(false);
+            joinButton.gameObject.SetActive(false);
+
         }
         else if (NetworkManager.Singleton.IsClient)
         {
