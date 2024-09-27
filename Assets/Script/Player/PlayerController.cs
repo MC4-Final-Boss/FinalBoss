@@ -134,12 +134,16 @@ public class PlayerController : NetworkBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (IsOwner && (other.gameObject.CompareTag("Tanko")|| other.gameObject.CompareTag("Tanko")))
+        if ((other.gameObject.CompareTag("Tanko")|| other.gameObject.CompareTag("Tanko")))
         {
             jumpLeft = 1;
             pressedPlayer = 0;
         }
     }
+
+
+
+    
 
     [ServerRpc]
     private void UpdatePositionServerRpc(Vector2 newPosition)
