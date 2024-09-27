@@ -9,6 +9,8 @@ public class MovingPlatform : NetworkBehaviour
     private bool movingToTarget = true;
     private CustomNetworkManagerWithTag networkManager;
 
+     private bool isParented = false;
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -88,61 +90,69 @@ public class MovingPlatform : NetworkBehaviour
     //     }
     // }
 
+   
+
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (!IsServer) return;
-
-        NetworkObject networkObject = other.gameObject.GetComponent<NetworkObject>();
-        if (networkObject != null)
+        if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi") || other.gameObject.CompareTag("BasicBox"))
         {
-            SetParentServerSide(networkObject);
+            Debug.Log("Object entered collision");
+            if (IsServer)
+            {
+                SetParentServerRpc(other.gameObject.GetComponent<NetworkObject>().NetworkObjectId);
+            }
         }
     }
 
     private void OnCollisionExit2D(Collision2D other)
     {
-        if (!IsServer) return;
-
-        NetworkObject networkObject = other.gameObject.GetComponent<NetworkObject>();
-        if (networkObject != null)
+        if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi") || other.gameObject.CompareTag("BasicBox"))
         {
-            UnsetParentServerSide(networkObject);
+            Debug.Log("Object exited collision");
+            if (IsServer)
+            {
+                UnsetParentServerRpc(other.gameObject.GetComponent<NetworkObject>().NetworkObjectId);
+            }
         }
     }
 
-    private void SetParentServerSide(NetworkObject networkObject)
+    [ServerRpc(RequireOwnership = false)]
+    private void SetParentServerRpc(ulong networkObjectId)
     {
-        if (!IsServer) return;
-
-        networkObject.transform.SetParent(transform);
-        NotifyClientsOfParentChangeClientRpc(networkObject.NetworkObjectId, true);
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(networkObjectId, out NetworkObject networkObject))
+        {
+            networkObject.transform.SetParent(transform);
+            SetParentClientRpc(networkObjectId);
+        }
     }
 
-    private void UnsetParentServerSide(NetworkObject networkObject)
+    [ServerRpc(RequireOwnership = false)]
+    private void UnsetParentServerRpc(ulong networkObjectId)
     {
-        if (!IsServer) return;
-
-        networkObject.transform.SetParent(null);
-        NotifyClientsOfParentChangeClientRpc(networkObject.NetworkObjectId, false);
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(networkObjectId, out NetworkObject networkObject))
+        {
+            networkObject.transform.SetParent(null);
+            UnsetParentClientRpc(networkObjectId);
+        }
     }
 
     [ClientRpc]
-    private void NotifyClientsOfParentChangeClientRpc(ulong networkObjectId, bool isParented)
+    private void SetParentClientRpc(ulong networkObjectId)
     {
         if (IsServer) return; // Server already handled this
-
         if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(networkObjectId, out NetworkObject networkObject))
         {
-            if (isParented)
-            {
-                // Update local representation to match server
-                networkObject.transform.SetParent(transform, true);
-            }
-            else
-            {
-                // Update local representation to match server
-                networkObject.transform.SetParent(null, true);
-            }
+            networkObject.transform.SetParent(transform, true);
+        }
+    }
+
+    [ClientRpc]
+    private void UnsetParentClientRpc(ulong networkObjectId)
+    {
+        if (IsServer) return; // Server already handled this
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(networkObjectId, out NetworkObject networkObject))
+        {
+            networkObject.transform.SetParent(null, true);
         }
     }
 }
