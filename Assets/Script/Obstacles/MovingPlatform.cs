@@ -52,39 +52,97 @@ public class MovingPlatform : NetworkBehaviour
         transform.localPosition = Vector3.MoveTowards(transform.localPosition, target, speed * Time.deltaTime);
     }
 
+    // private void OnCollisionEnter2D(Collision2D other)
+    // {
+    //     NetworkObject networkObject = other.gameObject.GetComponent<NetworkObject>();
+    //     if (networkObject != null)
+    //     {
+    //         SetParentClientRpc(networkObject);
+    //     }
+    // }
+
+    // private void OnCollisionExit2D(Collision2D other)
+    // {
+    //     NetworkObject networkObject = other.gameObject.GetComponent<NetworkObject>();
+    //     if (networkObject != null)
+    //     {
+    //         UnsetParentClientRpc(networkObject);
+    //     }
+    // }
+
+    // [ClientRpc]
+    // private void SetParentClientRpc(NetworkObjectReference networkObjectRef)
+    // {
+    //     if (networkObjectRef.TryGet(out NetworkObject networkObject))
+    //     {
+    //         networkObject.transform.SetParent(transform);
+    //     }
+    // }
+
+    // [ClientRpc]
+    // private void UnsetParentClientRpc(NetworkObjectReference networkObjectRef)
+    // {
+    //     if (networkObjectRef.TryGet(out NetworkObject networkObject))
+    //     {
+    //         networkObject.transform.SetParent(null);
+    //     }
+    // }
+
     private void OnCollisionEnter2D(Collision2D other)
     {
+        if (!IsServer) return;
+
         NetworkObject networkObject = other.gameObject.GetComponent<NetworkObject>();
         if (networkObject != null)
         {
-            SetParentClientRpc(networkObject);
+            SetParentServerSide(networkObject);
         }
     }
 
     private void OnCollisionExit2D(Collision2D other)
     {
+        if (!IsServer) return;
+
         NetworkObject networkObject = other.gameObject.GetComponent<NetworkObject>();
         if (networkObject != null)
         {
-            UnsetParentClientRpc(networkObject);
+            UnsetParentServerSide(networkObject);
         }
     }
 
-    [ClientRpc]
-    private void SetParentClientRpc(NetworkObjectReference networkObjectRef)
+    private void SetParentServerSide(NetworkObject networkObject)
     {
-        if (networkObjectRef.TryGet(out NetworkObject networkObject))
-        {
-            networkObject.transform.SetParent(transform);
-        }
+        if (!IsServer) return;
+
+        networkObject.transform.SetParent(transform);
+        NotifyClientsOfParentChangeClientRpc(networkObject.NetworkObjectId, true);
+    }
+
+    private void UnsetParentServerSide(NetworkObject networkObject)
+    {
+        if (!IsServer) return;
+
+        networkObject.transform.SetParent(null);
+        NotifyClientsOfParentChangeClientRpc(networkObject.NetworkObjectId, false);
     }
 
     [ClientRpc]
-    private void UnsetParentClientRpc(NetworkObjectReference networkObjectRef)
+    private void NotifyClientsOfParentChangeClientRpc(ulong networkObjectId, bool isParented)
     {
-        if (networkObjectRef.TryGet(out NetworkObject networkObject))
+        if (IsServer) return; // Server already handled this
+
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(networkObjectId, out NetworkObject networkObject))
         {
-            networkObject.transform.SetParent(null);
+            if (isParented)
+            {
+                // Update local representation to match server
+                networkObject.transform.SetParent(transform, true);
+            }
+            else
+            {
+                // Update local representation to match server
+                networkObject.transform.SetParent(null, true);
+            }
         }
     }
 }
