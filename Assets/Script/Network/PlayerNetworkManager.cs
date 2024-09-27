@@ -10,12 +10,12 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
     public GameObject gaspiPrefab;
     public bool isStarted = false;
 
-        void Start()
-    {
-        var networkManager = NetworkManager.Singleton;
-        networkManager.NetworkConfig.TickRate = 60; // Sesuaikan nilai ini
-        networkManager.NetworkConfig.ClientConnectionBufferTimeout = 3600; // Dalam detik
-    }
+    //     void Start()
+    // {
+    //     var networkManager = NetworkManager.Singleton;
+    //     networkManager.NetworkConfig.TickRate = 60; // Sesuaikan nilai ini
+    //     networkManager.NetworkConfig.ClientConnectionBufferTimeout = 3600; // Dalam detik
+    // }
 
     public override void OnNetworkSpawn()
     {
