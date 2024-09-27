@@ -328,12 +328,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementSpeed: 7
   jumpForce: 5
-  horizontalAxis: 0
   jumpLeft: 1
   pressedPlayer: 0
   fallThreshold: -15
-  leftButton: {fileID: 763046525694920838, guid: a77c4c0c9153a4a15842ba2a340c511c, type: 3}
-  rightButton: {fileID: 7742425195080196686, guid: 4678f888af481415eadbef4a27fc81f3, type: 3}
-  jumpButton: {fileID: 8768248330078788572, guid: 9c4feccae7bc94ce795654f3f5d0128a, type: 3}
   rb: {fileID: 3824376924431759534}
-  movement: {x: 0, y: 0, z: 0}
