@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 4393532964222092750}
   - component: {fileID: 6073613709053437492}
   - component: {fileID: 3091476996328465799}
+  - component: {fileID: 3406812041545163506}
   m_Layer: 0
   m_Name: Gaspi
   m_TagString: Gaspi
@@ -237,7 +238,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8587059728480450868}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0b4a01adcbc2e4d4099e651a750b6e85, type: 3}
   m_Name: 
@@ -313,3 +314,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80d7c879794dfda4687da0e400131852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3406812041545163506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8587059728480450868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eca3b83ccb6b14d409f5730b9293c2bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementSpeed: 7
+  jumpForce: 5
+  jumpLeft: 1
+  pressedPlayer: 0
+  fallThreshold: -15
+  leftButton: {fileID: 763046525694920838, guid: a77c4c0c9153a4a15842ba2a340c511c, type: 3}
+  rightButton: {fileID: 7742425195080196686, guid: 4678f888af481415eadbef4a27fc81f3, type: 3}
+  jumpButton: {fileID: 8768248330078788572, guid: 9c4feccae7bc94ce795654f3f5d0128a, type: 3}
+  rb: {fileID: 5852808445176553097}

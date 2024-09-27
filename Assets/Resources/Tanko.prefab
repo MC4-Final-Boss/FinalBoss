@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: -5026081423889429960}
   - component: {fileID: 8593127893861712597}
   - component: {fileID: 5799577015289861877}
+  - component: {fileID: -9181732138064604725}
   m_Layer: 0
   m_Name: Tanko
   m_TagString: Tanko
@@ -313,3 +314,26 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.1269975, y: 7.2583866}
   m_EdgeRadius: 0
+--- !u!114 &-9181732138064604725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8478861834695638335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eca3b83ccb6b14d409f5730b9293c2bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementSpeed: 7
+  jumpForce: 5
+  horizontalAxis: 0
+  jumpLeft: 1
+  pressedPlayer: 0
+  fallThreshold: -15
+  leftButton: {fileID: 763046525694920838, guid: a77c4c0c9153a4a15842ba2a340c511c, type: 3}
+  rightButton: {fileID: 7742425195080196686, guid: 4678f888af481415eadbef4a27fc81f3, type: 3}
+  jumpButton: {fileID: 8768248330078788572, guid: 9c4feccae7bc94ce795654f3f5d0128a, type: 3}
+  rb: {fileID: 3824376924431759534}
+  movement: {x: 0, y: 0, z: 0}
