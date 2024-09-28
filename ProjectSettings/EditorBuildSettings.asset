@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/MenuScene.unity
     guid: 9edff0978f5e74a5eb5cce15fb037ae1
   - enabled: 1
+    path: Assets/Scenes/LevelScene.unity
+    guid: a90a1a869287c41249d292369da58642
+  - enabled: 1
     path: Assets/Scenes/BustlingCityScene.unity
     guid: e90f6e108cd3449cb9e23c12707105ba
   m_configObjects: {}

@@ -17,6 +17,9 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
     private double m_LastServerTimeSent;
     private double m_ClientTimeOffset;
 
+    // New variable to track connection status
+    private bool wasConnected = false;
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -29,6 +32,9 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
             m_NetworkTime.Value = NetworkManager.ServerTime.Time;
             Debug.Log("Registered callbacks in OnNetworkSpawn");
         }
+
+        // Set initial connection status
+        wasConnected = NetworkManager.Singleton.IsConnectedClient;
     }
 
     public override void OnNetworkDespawn()
@@ -53,6 +59,7 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
     private void OnClientDisconnectCallback(ulong clientId)
     {
         Debug.Log($"Client {clientId} disconnected");
+        ShowDisconnectAlert($"Client {clientId} has disconnected from the game.");
         // Handle client disconnection (e.g., remove their objects, update game state)
     }
 
@@ -111,19 +118,29 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
 
     private void Update()
     {
-        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsConnectedClient)
+        if (NetworkManager.Singleton != null)
         {
-            Debug.LogWarning("Client disconnected unexpectedly!");
-            // Handle unexpected disconnection (e.g., show reconnect UI, cleanup)
-        }
+            // Check for unexpected disconnection
+            if (wasConnected && !NetworkManager.Singleton.IsConnectedClient)
+            {
+                Debug.LogWarning("Client disconnected unexpectedly!");
+                ShowDisconnectAlert("You have been disconnected from the server.");
+                wasConnected = false;
+            }
+            else if (!wasConnected && NetworkManager.Singleton.IsConnectedClient)
+            {
+                // Reconnected
+                wasConnected = true;
+            }
 
-        if (IsServer)
-        {
-            UpdateServerTime();
-        }
-        else
-        {
-            UpdateClientTime();
+            if (IsServer)
+            {
+                UpdateServerTime();
+            }
+            else
+            {
+                UpdateClientTime();
+            }
         }
     }
 
@@ -159,5 +176,20 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
     public double GetInterpolatedServerTime()
     {
         return GetNetworkTime() - interpolationBackTime;
+    }
+
+    // New method to show disconnect alert
+    private void ShowDisconnectAlert(string message)
+    {
+        Debug.LogWarning(message);
+        // You can replace this with your preferred way of showing alerts in Unity
+        // For example, you might want to trigger a UI popup or use a third-party plugin
+        #if UNITY_EDITOR
+        UnityEditor.EditorUtility.DisplayDialog("Disconnection Alert", message, "OK");
+        #else
+        // For builds, you might want to show a UI panel or use a different method
+        // This is just a placeholder - implement your own UI logic here
+        Debug.LogError($"Disconnection Alert: {message}");
+        #endif
     }
 }

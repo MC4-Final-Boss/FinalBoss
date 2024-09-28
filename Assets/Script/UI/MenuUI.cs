@@ -129,6 +129,8 @@ public class RoomUIManager : MonoBehaviour
         {
             statusText.text = "Joined. Waiting for game to start...";
             clientInputPanel.SetActive(false);
+            relayCodeText.gameObject.SetActive(false);
+            joinButton.gameObject.SetActive(false);
         }
     }
 
@@ -136,7 +138,7 @@ public class RoomUIManager : MonoBehaviour
     {
         if (NetworkManager.Singleton.IsServer)
         {
-            NetworkManager.Singleton.SceneManager.LoadScene("BustlingCityScene", LoadSceneMode.Single);
+            NetworkManager.Singleton.SceneManager.LoadScene("LevelScene", LoadSceneMode.Single);
         }
     }
 }
