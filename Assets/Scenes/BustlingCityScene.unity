@@ -1610,7 +1610,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   smoothTime: 0
-  cameraOfset: {x: 0, y: 0, z: 0}
+  cameraOffset: {x: 2, y: 2.5, z: -0.3}
 --- !u!1 &279318315
 GameObject:
   m_ObjectHideFlags: 0
