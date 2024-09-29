@@ -17,8 +17,8 @@ GameObject:
   - component: {fileID: -5026081423889429960}
   - component: {fileID: 8593127893861712597}
   - component: {fileID: 5799577015289861877}
-  - component: {fileID: 1791035745206089648}
   - component: {fileID: -8143084775393110596}
+  - component: {fileID: -8594402592124235474}
   m_Layer: 0
   m_Name: Tanko
   m_TagString: Tanko
@@ -116,7 +116,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
@@ -295,20 +295,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.1269975, y: 7.2583866}
   m_EdgeRadius: 0
---- !u!114 &1791035745206089648
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8478861834695638335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TransitionStateInfoList: []
-  m_Animator: {fileID: -2447895623635322574}
 --- !u!114 &-8143084775393110596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -326,4 +312,23 @@ MonoBehaviour:
   jumpLeft: 1
   pressedPlayer: 0
   fallThreshold: -15
-  rb: {fileID: 0}
+  rb: {fileID: 3824376924431759534}
+--- !u!114 &-8594402592124235474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8478861834695638335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7d782b336e624d65bd1829ae4ced090, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementSpeed: 7
+  jumpForce: 5
+  horizontalAxis: 0
+  jumpLeft: 1
+  pressedPlayer: 0
+  fallThreshold: -15
+  rb: {fileID: 3824376924431759534}

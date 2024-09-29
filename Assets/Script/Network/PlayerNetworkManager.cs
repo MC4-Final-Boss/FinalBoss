@@ -10,24 +10,35 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
     public GameObject gaspiPrefab;
     public bool isStarted = false;
 
-    //     void Start()
-    // {
-    //     var networkManager = NetworkManager.Singleton;
-    //     networkManager.NetworkConfig.TickRate = 60; // Sesuaikan nilai ini
-    //     networkManager.NetworkConfig.ClientConnectionBufferTimeout = 3600; // Dalam detik
-    // }
+    [SerializeField] private float interpolationBackTime = 0.1f; // 100ms, adjust as needed
+    [SerializeField] private float timeSyncInterval = 1f; // Sync every second
+
+    private NetworkVariable<double> m_NetworkTime = new NetworkVariable<double>();
+    private double m_LastServerTimeSent;
+    private double m_ClientTimeOffset;
+
+    // Variable to track connection status
+    private bool wasConnected = false;
+
+    // Reference to the DialogDisconnect script
+    [SerializeField] private DialogDisconnect dialogDisconnect;
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
         Debug.Log($"OnNetworkSpawn called. IsHost: {IsHost}, IsServer: {IsServer}, IsClient: {IsClient}");
+        
         if (IsHost)
         {
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SpawnAndSetupPlayer;
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectCallback;
+            m_NetworkTime.Value = NetworkManager.ServerTime.Time;
             Debug.Log("Registered callbacks in OnNetworkSpawn");
         }
+
+        // Set initial connection status
+        wasConnected = NetworkManager.Singleton.IsConnectedClient;
     }
 
     public override void OnNetworkDespawn()
@@ -45,20 +56,28 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
     private void OnClientConnectedCallback(ulong clientId)
     {
         Debug.Log($"Client {clientId} connected");
-        // You might want to delay spawning until the client is fully ready
-        // Or use this to trigger a specific "ready" message from the client
     }
 
     private void OnClientDisconnectCallback(ulong clientId)
     {
         Debug.Log($"Client {clientId} disconnected");
-        // Handle client disconnection (e.g., remove their objects, update game state)
+
+        if (NetworkManager.Singleton.IsHost)
+        {
+            // Host mengirim sinyal ke semua client untuk kembali ke menuScene
+            NotifyAllClientsToCloseGameClientRpc("A player has disconnected, returning to main menu.");
+        }
+        else if (clientId == NetworkManager.LocalClientId)
+        {
+            // Untuk client yang terputus, tampilkan alert dan kembali ke menuScene
+            dialogDisconnect.ShowDisconnectAlert("You have been disconnected from the server.");
+        }
     }
 
     private void SpawnAndSetupPlayer(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clients, List<ulong> clientsTimedOut)
     {
         Debug.Log($"SpawnAndSetupPlayer called. Clients: {string.Join(", ", clients)}, TimedOut: {string.Join(", ", clientsTimedOut)}");
-        
+
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             if (!NetworkManager.Singleton.ConnectedClients.ContainsKey(clientId))
@@ -69,13 +88,20 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
 
             try
             {
+                // Tentukan posisi spawn berdasarkan apakah client adalah host atau bukan
                 var spawnPosition = GetSpawnPositionForPlayer(clientId == NetworkManager.ServerClientId);
+                
+                // Tentukan prefab yang akan digunakan untuk pemain
                 GameObject playerPrefab = clientId == NetworkManager.ServerClientId ? tankoPrefab : gaspiPrefab;
+                
+                // Tetapkan tag berdasarkan apakah pemain adalah host (Tanko) atau client (Gaspi)
                 string tagToAssign = clientId == NetworkManager.ServerClientId ? "Tanko" : "Gaspi";
 
+                // Instantiate prefab di posisi spawn
                 GameObject playerInstance = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
                 playerInstance.tag = tagToAssign;
 
+                // Pastikan objek memiliki komponen NetworkObject untuk dikendalikan oleh NetworkManager
                 NetworkObject networkObject = playerInstance.GetComponent<NetworkObject>();
                 if (networkObject == null)
                 {
@@ -83,6 +109,7 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
                     continue;
                 }
 
+                // Spawn player object di server dan klien
                 networkObject.SpawnAsPlayerObject(clientId, true);
                 Debug.Log($"Spawned player object for client {clientId} at position {spawnPosition}");
             }
@@ -92,11 +119,13 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
             }
         }
 
+        // Mulai permainan setelah pemain di-spawn
         StartGameClientRpc();
     }
 
     private Vector3 GetSpawnPositionForPlayer(bool isHost)
     {
+        // Kembalikan posisi spawn berdasarkan apakah pemain adalah host
         return isHost ? new Vector3(-5, 0, 0) : new Vector3(-4, 0, 0);
     }
 
@@ -110,10 +139,67 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
 
     private void Update()
     {
-        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsConnectedClient)
+        if (NetworkManager.Singleton != null)
         {
-            Debug.LogWarning("Client disconnected unexpectedly!");
-            // Handle unexpected disconnection (e.g., show reconnect UI, cleanup)
+            // Periksa apakah client terputus tiba-tiba
+            if (wasConnected && !NetworkManager.Singleton.IsConnectedClient)
+            {
+                Debug.LogWarning("Client disconnected unexpectedly!");
+                dialogDisconnect.ShowDisconnectAlert("You have been disconnected from the server.");
+                wasConnected = false;
+            }
+            else if (!wasConnected && NetworkManager.Singleton.IsConnectedClient)
+            {
+                wasConnected = true;
+            }
+
+            if (IsServer)
+            {
+                UpdateServerTime();
+            }
+            else
+            {
+                UpdateClientTime();
+            }
         }
+    }
+
+    private void UpdateServerTime()
+    {
+        if (NetworkManager.ServerTime.Time - m_LastServerTimeSent > timeSyncInterval)
+        {
+            m_NetworkTime.Value = NetworkManager.ServerTime.Time;
+            m_LastServerTimeSent = NetworkManager.ServerTime.Time;
+        }
+    }
+
+    private void UpdateClientTime()
+    {
+        m_ClientTimeOffset = m_NetworkTime.Value - NetworkManager.LocalTime.Time + interpolationBackTime;
+    }
+
+    public double GetNetworkTime()
+    {
+        return IsServer ? NetworkManager.ServerTime.Time : NetworkManager.LocalTime.Time + m_ClientTimeOffset;
+    }
+
+    public double GetInterpolatedServerTime()
+    {
+        return GetNetworkTime() - interpolationBackTime;
+    }
+
+        // Method untuk menutup game dan kembali ke main menu saat disconnect
+    private void CloseGameOnDisconnect()
+    {
+        Debug.Log("Closing game and returning to main menu due to disconnection.");
+        NetworkManager.Singleton.Shutdown();
+        SceneManager.LoadScene("menuScene");
+    }
+
+    // ClientRpc untuk memberitahu semua client untuk menutup game
+    [ClientRpc]
+    private void NotifyAllClientsToCloseGameClientRpc(string message)
+    {
+        dialogDisconnect.ShowDisconnectAlert(message);
     }
 }
