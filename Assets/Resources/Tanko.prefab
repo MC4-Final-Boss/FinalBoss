@@ -19,6 +19,8 @@ GameObject:
   - component: {fileID: 5799577015289861877}
   - component: {fileID: 1791035745206089648}
   - component: {fileID: -8143084775393110596}
+  - component: {fileID: 7809164219056103456}
+  - component: {fileID: 6503051932639535310}
   m_Layer: 0
   m_Name: Tanko
   m_TagString: Tanko
@@ -322,8 +324,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 7
-  jumpForce: 5
-  jumpLeft: 1
+  jumpForce: 6
+  jumpLeft: 10
   pressedPlayer: 0
   fallThreshold: -15
-  rb: {fileID: 0}
+  rb: {fileID: 3824376924431759534}
+  horizontalAxis: 0
+--- !u!114 &7809164219056103456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8478861834695638335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 661902b4a694a4433946bdb66e5d4996, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterName: Tanko
+--- !u!114 &6503051932639535310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8478861834695638335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55051ba08a7034c63b5112d4bfa3ee1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

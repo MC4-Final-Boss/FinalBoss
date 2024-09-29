@@ -19,6 +19,8 @@ GameObject:
   - component: {fileID: 3091476996328465799}
   - component: {fileID: 2226780256893277619}
   - component: {fileID: 5064324700832355727}
+  - component: {fileID: 7308079568846237266}
+  - component: {fileID: -4000091889801254726}
   m_Layer: 0
   m_Name: Gaspi
   m_TagString: Gaspi
@@ -322,8 +324,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 7
-  jumpForce: 5
-  jumpLeft: 1
+  jumpForce: 6
+  jumpLeft: 10
   pressedPlayer: 0
   fallThreshold: -15
-  rb: {fileID: 0}
+  rb: {fileID: 5852808445176553097}
+  horizontalAxis: 0
+--- !u!114 &7308079568846237266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8587059728480450868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 661902b4a694a4433946bdb66e5d4996, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterName: Gaspi
+--- !u!114 &-4000091889801254726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8587059728480450868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55051ba08a7034c63b5112d4bfa3ee1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

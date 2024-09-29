@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
-    private bool hasTriggered;
+    // private bool hasTriggered;
     private PlayerSaveCheckPoint saveCheckpoint;
 
 
     private void Start()
     {
-        hasTriggered = false;
+        // hasTriggered = false;
         saveCheckpoint = GetComponent<PlayerSaveCheckPoint>();
 
         if (saveCheckpoint == null)
@@ -24,7 +24,7 @@ public class Checkpoint : MonoBehaviour
 
             SaveCheckpoint();
             Debug.Log("Checkpoint saved at: " + new Vector3(transform.position.x, transform.position.y, 0));
-            hasTriggered = true;
+            // hasTriggered = true;
         }
     }
 
@@ -32,7 +32,7 @@ public class Checkpoint : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Tanko"))
         {
-            hasTriggered = false;
+            // hasTriggered = false;
         }
     }
 
@@ -40,7 +40,8 @@ public class Checkpoint : MonoBehaviour
     {
         if (saveCheckpoint != null)
         {
-            saveCheckpoint.SaveCheckpoint(transform.position);
+            // saveCheckpoint.SaveCheckpoint(transform.position);
+            saveCheckpoint.ClearCheckpoint();
         }
     }
 }

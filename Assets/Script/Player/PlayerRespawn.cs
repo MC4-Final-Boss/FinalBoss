@@ -1,47 +1,41 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class PlayerRespawn : MonoBehaviour
+public class PlayerRespawn : NetworkBehaviour
 {
-    private Vector3 respawnPosition;
+    private static Vector3 initialTankoPosition = new Vector3(-4, 0, 0);
+    private static Vector3 initialGaspiPosition = new Vector3(4, 0, 0);
     private PlayerSaveCheckPoint saveCheckpoint;
 
     private void Start()
     {
         saveCheckpoint = GetComponent<PlayerSaveCheckPoint>();
-
         if (saveCheckpoint == null)
         {
-            Debug.LogError("PlayerSaveCheckPoint component is missing!");
+            Debug.LogError("PlayerSaveCheckPoint component is missing! " + gameObject.name);
         }
     }
 
-    private void LoadCheckpoint()
+    // This method is now responsible for determining the respawn position
+    private Vector3 GetRespawnPosition()
     {
-        if (PlayerPrefs.HasKey("CheckpointX"))
-        {
-            float x = PlayerPrefs.GetFloat("CheckpointX");
-            float y = PlayerPrefs.GetFloat("CheckpointY");
-            float z = PlayerPrefs.GetFloat("CheckpointZ");
-            respawnPosition = new Vector3(x, y, z);
-        }
-        else
-        {
-            respawnPosition = transform.position;
-        }
+        // Return the initial position based on whether the player is Tanko or Gaspi
+        return IsHost ? initialTankoPosition : initialGaspiPosition;
     }
 
     public void RespawnPlayer()
     {
-        LoadCheckpoint();
-        transform.position = respawnPosition;
-        // SaveCheckpoint();
+        Vector3 respawnPosition = GetRespawnPosition(); // Get the respawn position
+        RespawnPlayerClientRpc(respawnPosition); // Call the networked respawn
     }
 
-    private void SaveCheckpoint()
+    [ClientRpc]
+    private void RespawnPlayerClientRpc(Vector3 position)
     {
-        if (saveCheckpoint != null)
-        {
-            // saveCheckpoint.SaveCheckpoint(transform.position);
-        }
+        // Only execute this on the owner of the object
+        if (!IsOwner) return;
+
+        transform.position = position; // Respawn the player at the given position
+        Debug.Log($"Respawned {gameObject.name} at position: {position}");
     }
 }

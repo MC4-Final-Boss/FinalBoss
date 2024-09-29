@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3009303944470935942}
   - component: {fileID: 1379095943050669523}
   - component: {fileID: 2651250715350449260}
+  - component: {fileID: 7562341229921720237}
   m_Layer: 0
   m_Name: PlayerNetworkManager
   m_TagString: Untagged
@@ -45,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1743507869
+  GlobalObjectIdHash: 1885170565
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -68,3 +69,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tankoPrefab: {fileID: 8478861834695638335, guid: 14046b99c4bac4d8ea2a2243614088fc, type: 3}
   gaspiPrefab: {fileID: 8587059728480450868, guid: f6fb94bc66bfd40dbacdfa91f2f90c3c, type: 3}
+  isStarted: 0
+--- !u!114 &7562341229921720237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7396128411219922039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55051ba08a7034c63b5112d4bfa3ee1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

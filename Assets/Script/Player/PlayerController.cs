@@ -68,37 +68,41 @@ public class PlayerController : NetworkBehaviour
         {
             Facing();
             Animations();
-            // HandleInput();
-            UpdatePositionServerRpc(rb.position);
+            HandleInput();
         }
     }
 
     // Handle keyboard input
-    // void HandleInput()
-    // {
-    //     if (Input.GetKey(KeyCode.J))
-    //     {
-    //         horizontalAxis = -1f;
-    //     }
-    //     else if (Input.GetKey(KeyCode.L))
-    //     {
-    //         horizontalAxis = 1f;
-    //     }
-    //     else
-    //     {
-    //         horizontalAxis = 0f;
-    //     }
-    //     if (Input.GetKeyDown(KeyCode.I))
-    //     {
-    //         Jump();
-    //     }
-    // }
+    void HandleInput()
+    {
+        if (Input.GetKey(KeyCode.J))
+        {
+            movement.x = -1;
+            Debug.Log("Moving left");
+        }
+        else if (Input.GetKey(KeyCode.L))
+        {
+            movement.x = 1;
+
+        }
+        else
+        {
+            movement.x = 0;
+
+        }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            Jump();
+        }
+    }
 
 
     void Movement()
     {
+        Debug.Log("Movement : " + movement.x);
         Vector2 currentMovement = new Vector2(movement.x * movementSpeed, rb.velocity.y);
         rb.velocity = currentMovement;
+        UpdatePositionServerRpc(rb.position);
     }
 
     public void Jump()
@@ -128,11 +132,11 @@ public class PlayerController : NetworkBehaviour
     {
         if (IsOwner)
         {
-            if (!other.gameObject.CompareTag("Tanko")||!other.gameObject.CompareTag("Gaspi"))
+            if (!other.gameObject.CompareTag("Tanko") || !other.gameObject.CompareTag("Gaspi"))
             {
                 jumpLeft = 1;
             }
-            else if (other.gameObject.CompareTag("Tanko")|| !other.gameObject.CompareTag("Gaspi"))
+            else if (other.gameObject.CompareTag("Tanko") || !other.gameObject.CompareTag("Gaspi"))
             {
                 if (transform.position.y < other.transform.position.y)
                 {
@@ -158,7 +162,7 @@ public class PlayerController : NetworkBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if ((other.gameObject.CompareTag("Tanko")|| other.gameObject.CompareTag("Tanko")))
+        if ((other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Tanko")))
         {
             jumpLeft = 1;
             pressedPlayer = 0;
@@ -167,7 +171,7 @@ public class PlayerController : NetworkBehaviour
 
 
 
-    
+
 
     [ServerRpc]
     private void UpdatePositionServerRpc(Vector2 newPosition)

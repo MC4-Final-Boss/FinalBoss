@@ -8,14 +8,13 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
 {
     public GameObject tankoPrefab;
     public GameObject gaspiPrefab;
+    private PlayerSaveCheckPoint playerSaveCheckPoint;
     public bool isStarted = false;
 
-    //     void Start()
-    // {
-    //     var networkManager = NetworkManager.Singleton;
-    //     networkManager.NetworkConfig.TickRate = 60; // Sesuaikan nilai ini
-    //     networkManager.NetworkConfig.ClientConnectionBufferTimeout = 3600; // Dalam detik
-    // }
+    private void Start()
+    {
+        playerSaveCheckPoint = GetComponent<PlayerSaveCheckPoint>();
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -58,7 +57,7 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
     private void SpawnAndSetupPlayer(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clients, List<ulong> clientsTimedOut)
     {
         Debug.Log($"SpawnAndSetupPlayer called. Clients: {string.Join(", ", clients)}, TimedOut: {string.Join(", ", clientsTimedOut)}");
-        
+
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             if (!NetworkManager.Singleton.ConnectedClients.ContainsKey(clientId))
@@ -97,6 +96,7 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
 
     private Vector3 GetSpawnPositionForPlayer(bool isHost)
     {
+        playerSaveCheckPoint.ClearCheckpoint();
         return isHost ? new Vector3(-5, 0, 0) : new Vector3(-4, 0, 0);
     }
 
