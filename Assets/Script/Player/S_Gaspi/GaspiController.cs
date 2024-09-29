@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.UI;
 
 public class GaspiController : NetworkBehaviour
 {
@@ -17,6 +18,7 @@ public class GaspiController : NetworkBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+
     }
 
     void FixedUpdate()
@@ -31,6 +33,9 @@ public class GaspiController : NetworkBehaviour
         HandleInput();
         Facing();
         Animations();
+
+        Debug.Log("Horizontal Axis : " + horizontalAxis);
+
     }
 
     void HandleInput()
@@ -45,9 +50,23 @@ public class GaspiController : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.I) && jumpLeft > 0)
             Jump();
     }
+    public void MoveLeft()
+    {
+        horizontalAxis = -1f;
+    }
+
+    // Method to handle move right button
+    public void MoveRight()
+    {
+        horizontalAxis = 1f;
+    }
+
+
+
 
     void Movement()
     {
+        Debug.Log("Move");
         Vector2 movement = new Vector2(horizontalAxis * movementSpeed, rb.velocity.y);
         rb.velocity = movement;
         UpdatePositionOnServerRpc(rb.position);
@@ -55,6 +74,7 @@ public class GaspiController : NetworkBehaviour
 
     void Jump()
     {
+        Debug.Log("Jump");
         if (pressedPlayer == 0)
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);

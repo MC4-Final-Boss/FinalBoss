@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -7,99 +8,198 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
 {
     public GameObject tankoPrefab;
     public GameObject gaspiPrefab;
-
     public bool isStarted = false;
+
+    [SerializeField] private float interpolationBackTime = 0.1f; // 100ms, adjust as needed
+    [SerializeField] private float timeSyncInterval = 1f; // Sync every second
+
+    private NetworkVariable<double> m_NetworkTime = new NetworkVariable<double>();
+    private double m_LastServerTimeSent;
+    private double m_ClientTimeOffset;
+
+    // Variable to track connection status
+    private bool wasConnected = false;
+
+    // Reference to the DialogDisconnect script
+    [SerializeField] private DialogDisconnect dialogDisconnect;
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        Debug.Log("NETWROK SPAWN get called");
-        if (IsHost) NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SpawnAndSetupPlayer;
+        Debug.Log($"OnNetworkSpawn called. IsHost: {IsHost}, IsServer: {IsServer}, IsClient: {IsClient}");
+        
+        if (IsHost)
+        {
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SpawnAndSetupPlayer;
+            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectCallback;
+            m_NetworkTime.Value = NetworkManager.ServerTime.Time;
+            Debug.Log("Registered callbacks in OnNetworkSpawn");
+        }
+
+        // Set initial connection status
+        wasConnected = NetworkManager.Singleton.IsConnectedClient;
     }
 
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
-        if (IsHost) NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= SpawnAndSetupPlayer;
+        if (IsHost)
+        {
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= SpawnAndSetupPlayer;
+            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnectedCallback;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnectCallback;
+            Debug.Log("Unregistered callbacks in OnNetworkDespawn");
+        }
     }
 
-    // private void OnClientConnected(ulong clientId)
-    // {
-    //     if (NetworkManager.Singleton.IsServer)
-    //     {
-    //         SpawnAndSetupPlayer(clientId);
-    //     }
-    // }
+    private void OnClientConnectedCallback(ulong clientId)
+    {
+        Debug.Log($"Client {clientId} connected");
+    }
+
+    private void OnClientDisconnectCallback(ulong clientId)
+    {
+        Debug.Log($"Client {clientId} disconnected");
+
+        if (NetworkManager.Singleton.IsHost)
+        {
+            // Host mengirim sinyal ke semua client untuk kembali ke menuScene
+            NotifyAllClientsToCloseGameClientRpc("A player has disconnected, returning to main menu.");
+        }
+        else if (clientId == NetworkManager.LocalClientId)
+        {
+            // Untuk client yang terputus, tampilkan alert dan kembali ke menuScene
+            dialogDisconnect.ShowDisconnectAlert("You have been disconnected from the server.");
+        }
+    }
 
     private void SpawnAndSetupPlayer(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clients, List<ulong> clientsTimedOut)
     {
-        Debug.Log("Invoked.....");
-        GameObject playerPrefab;
-        string tagToAssign;
-        //bool isHost = NetworkManager.Singleton.IsHost &&  == NetworkManager.Singleton.LocalClientId;
+        Debug.Log($"SpawnAndSetupPlayer called. Clients: {string.Join(", ", clients)}, TimedOut: {string.Join(", ", clientsTimedOut)}");
 
-        // if (IsServer)
-        // {
-        //     // Host (Player 1) gets Tanko
-        //     playerPrefab = tankoPrefab;
-        //     tagToAssign = "Tanko";
-        // }
-        // else
-        // {
-        //     // Client (Player 2) gets Gaspi
-        //     playerPrefab = gaspiPrefab;
-        //     tagToAssign = "Gaspi";
-        // }
-
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds) {
-            var spawnPosition = GetSpawnPositionForPlayer(clientId == NetworkManager.ServerClientId);
-            if (clientId == NetworkManager.ServerClientId) {
-                // Host (Player 1) gets Tanko
-                playerPrefab = tankoPrefab;
-                tagToAssign = "Tanko";
-            } else {
-                // Client (Player 2) gets Gaspi
-                playerPrefab = gaspiPrefab;
-                tagToAssign = "Gaspi";
-            }
-            GameObject playerInstance = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
-            playerInstance.transform.position = spawnPosition;
-            playerInstance.tag = tagToAssign;
-            // Pastikan objek memiliki komponen NetworkObject
-            NetworkObject networkObject = playerInstance.GetComponent<NetworkObject>();
-            if (networkObject == null)
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            if (!NetworkManager.Singleton.ConnectedClients.ContainsKey(clientId))
             {
-                Debug.LogError("NetworkObject tidak ditemukan pada prefab pemain!");
-                return;
+                Debug.LogWarning($"Client {clientId} is not in ConnectedClients dictionary. Skipping spawn.");
+                continue;
             }
 
-            networkObject.SpawnAsPlayerObject(clientId, true);
-            // SetupObserved(playerInstance);
+            try
+            {
+                // Tentukan posisi spawn berdasarkan apakah client adalah host atau bukan
+                var spawnPosition = GetSpawnPositionForPlayer(clientId == NetworkManager.ServerClientId);
+                
+                // Tentukan prefab yang akan digunakan untuk pemain
+                GameObject playerPrefab = clientId == NetworkManager.ServerClientId ? tankoPrefab : gaspiPrefab;
+                
+                // Tetapkan tag berdasarkan apakah pemain adalah host (Tanko) atau client (Gaspi)
+                string tagToAssign = clientId == NetworkManager.ServerClientId ? "Tanko" : "Gaspi";
+
+                // Instantiate prefab di posisi spawn
+                GameObject playerInstance = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
+                playerInstance.tag = tagToAssign;
+
+                // Pastikan objek memiliki komponen NetworkObject untuk dikendalikan oleh NetworkManager
+                NetworkObject networkObject = playerInstance.GetComponent<NetworkObject>();
+                if (networkObject == null)
+                {
+                    Debug.LogError($"NetworkObject not found on player prefab for client {clientId}!");
+                    continue;
+                }
+
+                // Spawn player object di server dan klien
+                networkObject.SpawnAsPlayerObject(clientId, true);
+                Debug.Log($"Spawned player object for client {clientId} at position {spawnPosition}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error spawning player object for client {clientId}: {e.Message}");
+            }
         }
-        
+
+        // Mulai permainan setelah pemain di-spawn
         StartGameClientRpc();
-        
     }
 
     private Vector3 GetSpawnPositionForPlayer(bool isHost)
     {
-        return isHost ? new Vector3(-5, 0, 0) : new Vector3(5, 0, 0);
+        // Kembalikan posisi spawn berdasarkan apakah pemain adalah host
+        return isHost ? new Vector3(-5, 0, 0) : new Vector3(-4, 0, 0);
     }
 
     [ClientRpc]
-    private void StartGameClientRpc() {
+    private void StartGameClientRpc()
+    {
+        if (!IsClient) return;
+        Debug.Log("StartGameClientRpc called on client");
         isStarted = true;
     }
 
-    // private void SetupObserved(GameObject playerInstance)
-    // {
-    //     if (playerInstance.CompareTag("Tanko"))
-    //     {
-    //         //playerInstance.AddComponent<Player1Observed>();
-    //     }
-    //     else if (playerInstance.CompareTag("Gaspi"))
-    //     {
-    //         //playerInstance.AddComponent<Player2Observed>();
-    //     }
-    // }
+    private void Update()
+    {
+        if (NetworkManager.Singleton != null)
+        {
+            // Periksa apakah client terputus tiba-tiba
+            if (wasConnected && !NetworkManager.Singleton.IsConnectedClient)
+            {
+                Debug.LogWarning("Client disconnected unexpectedly!");
+                dialogDisconnect.ShowDisconnectAlert("You have been disconnected from the server.");
+                wasConnected = false;
+            }
+            else if (!wasConnected && NetworkManager.Singleton.IsConnectedClient)
+            {
+                wasConnected = true;
+            }
+
+            if (IsServer)
+            {
+                UpdateServerTime();
+            }
+            else
+            {
+                UpdateClientTime();
+            }
+        }
+    }
+
+    private void UpdateServerTime()
+    {
+        if (NetworkManager.ServerTime.Time - m_LastServerTimeSent > timeSyncInterval)
+        {
+            m_NetworkTime.Value = NetworkManager.ServerTime.Time;
+            m_LastServerTimeSent = NetworkManager.ServerTime.Time;
+        }
+    }
+
+    private void UpdateClientTime()
+    {
+        m_ClientTimeOffset = m_NetworkTime.Value - NetworkManager.LocalTime.Time + interpolationBackTime;
+    }
+
+    public double GetNetworkTime()
+    {
+        return IsServer ? NetworkManager.ServerTime.Time : NetworkManager.LocalTime.Time + m_ClientTimeOffset;
+    }
+
+    public double GetInterpolatedServerTime()
+    {
+        return GetNetworkTime() - interpolationBackTime;
+    }
+
+        // Method untuk menutup game dan kembali ke main menu saat disconnect
+    private void CloseGameOnDisconnect()
+    {
+        Debug.Log("Closing game and returning to main menu due to disconnection.");
+        NetworkManager.Singleton.Shutdown();
+        SceneManager.LoadScene("menuScene");
+    }
+
+    // ClientRpc untuk memberitahu semua client untuk menutup game
+    [ClientRpc]
+    private void NotifyAllClientsToCloseGameClientRpc(string message)
+    {
+        dialogDisconnect.ShowDisconnectAlert(message);
+    }
 }

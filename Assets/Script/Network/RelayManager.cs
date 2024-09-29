@@ -97,4 +97,22 @@ public class RelayManager : MonoBehaviour
             return false;
         }
     }
+
+        public async Task<bool> JoinRelayWithRetry(string joinCode, int retries = 3)
+    {
+        while (retries > 0)
+        {
+            try
+            {
+                return await JoinRelay(joinCode);
+            }
+            catch (RelayServiceException e)
+            {
+                Debug.LogError($"JoinRelay failed: {e.Message}, Retries left: {retries}");
+                retries--;
+                await Task.Delay(2000); // Tunggu 2 detik sebelum mencoba lagi
+            }
+        }
+        return false;
+    }
 }
