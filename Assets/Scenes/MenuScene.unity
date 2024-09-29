@@ -788,9 +788,9 @@ MonoBehaviour:
   createButton: {fileID: 1097245456}
   clientButton: {fileID: 2035565285}
   statusText: {fileID: 396149448}
-  relayCodeText: {fileID: 218809198}
+  roomCodeText: {fileID: 218809198}
   clientInputPanel: {fileID: 202944479}
-  relayCodeInput: {fileID: 874814648}
+  roomCodeInput: {fileID: 874814648}
   joinButton: {fileID: 1724109824}
   backButton: {fileID: 1735098120}
 --- !u!1 &274404924
@@ -1180,7 +1180,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8575526273689001695, guid: 94a2bae5f7f3846dd8920f0ebdf2ac62, type: 3}
       propertyPath: m_ProtocolType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8575526273689001695, guid: 94a2bae5f7f3846dd8920f0ebdf2ac62, type: 3}
       propertyPath: ConnectionData.ServerListenAddress
