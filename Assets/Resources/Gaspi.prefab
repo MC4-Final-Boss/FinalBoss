@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 3091476996328465799}
   - component: {fileID: 5064324700832355727}
   - component: {fileID: 7322617656871570427}
+  - component: {fileID: 8338586396787333834}
   m_Layer: 0
   m_Name: Gaspi
   m_TagString: Gaspi
@@ -152,7 +153,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 1
-  m_Offset: {x: 0.08482218, y: -2.0594585}
+  m_Offset: {x: 0.08482218, y: -2.058969}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -163,7 +164,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 5.510949, y: 8.346342}
+  m_Size: {x: 5.510949, y: 8.3473215}
   m_EdgeRadius: 0
 --- !u!61 &7577605830107547428
 BoxCollider2D:
@@ -222,7 +223,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4151140013
+  GlobalObjectIdHash: 3865962173
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -308,9 +309,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 7
-  jumpForce: 5
+  jumpForce: 6
   jumpLeft: 1
   pressedPlayer: 0
+  explodePlayer: 0
+  drown: 0
   fallThreshold: -15
   rb: {fileID: 5852808445176553097}
 --- !u!114 &7322617656871570427
@@ -320,7 +323,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8587059728480450868}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0b4a01adcbc2e4d4099e651a750b6e85, type: 3}
   m_Name: 
@@ -332,3 +335,15 @@ MonoBehaviour:
   pressedPlayer: 0
   fallThreshold: -15
   rb: {fileID: 5852808445176553097}
+--- !u!114 &8338586396787333834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8587059728480450868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 661902b4a694a4433946bdb66e5d4996, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

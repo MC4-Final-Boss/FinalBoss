@@ -82,7 +82,6 @@ public class GaspiControllerDummy : MonoBehaviour
     {
         PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
 
-        // Kondisi ketika jatuh terlalu jauh
         if (rb.velocity.y <= fallThreshold)
         {
             if (respawnScript != null)
@@ -91,17 +90,14 @@ public class GaspiControllerDummy : MonoBehaviour
             }
         }
 
-        // Cek apakah objek yang memasuki trigger bukan "Tanko"
         if (!other.gameObject.CompareTag("Tanko"))
         {
-            // Cek apakah Tanko berada di atas Gaspi
             if (other.gameObject.CompareTag("Water"))
             {
                 StartCoroutine(HandleDrownAndRespawn(respawnScript));
             }
             else if (other.transform.position.y > transform.position.y)
             {
-                // Jika Tanko ada di atas Gaspi, cegah lompatan
                 Debug.Log("Tanko tidak bisa melompat, ada Tanko di atasnya!");
                 jumpLeft = 0;
                 StartCoroutine(HandleExplosionAndRespawn(respawnScript));
@@ -113,13 +109,10 @@ public class GaspiControllerDummy : MonoBehaviour
             }
         }
 
-        // Cek apakah objek yang memasuki trigger adalah "Tanko"
         else if (other.gameObject.CompareTag("Tanko"))
         {
-            // Cek apakah Tanko berada di atas Gaspi
             if (other.transform.position.y > transform.position.y)
             {
-                // Jika Tanko ada di atas Gaspi, cegah lompatan
                 Debug.Log("Gaspi tidak bisa melompat, ada Tanko di atasnya!");
                 jumpLeft = 0;
                 pressedPlayer = 1;
