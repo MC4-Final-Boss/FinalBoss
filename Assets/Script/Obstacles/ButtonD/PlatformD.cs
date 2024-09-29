@@ -6,8 +6,8 @@ public class PlatformD : MonoBehaviour
 {
     public GameObject buttonD1Object;
     public GameObject buttonD2Object;
-
     public GameObject movementPlatform;
+
     private ButtonD1 buttonD1Status;
     private ButtonD2 buttonD2Status;
     public bool platformMove = false;
