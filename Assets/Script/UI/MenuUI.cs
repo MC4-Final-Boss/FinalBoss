@@ -51,7 +51,7 @@ public class RoomUIManager : MonoBehaviour
         });
 
         // Join button functionality
-        joinButton.onClick.AddListener(async () => {
+                joinButton.onClick.AddListener(async () => {
             bool joinSuccess = await RelayManager.Instance.JoinRelay(relayCodeInput.text);
             if (joinSuccess)
             {
@@ -59,13 +59,16 @@ public class RoomUIManager : MonoBehaviour
                 UpdateUI();
             }
             else
-            {   
+            {
+                // Menampilkan teks kesalahan dalam warna merah
                 statusText.gameObject.SetActive(true);
-                statusText.text = "Code Mismatch, try again";
+                statusText.text = "Code mismatch, try again!";
+                statusText.color = Color.red; // Mengubah warna teks menjadi merah
                 Debug.LogError("Failed to join relay");
-                ShowClientInputPanel();
+                // ShowClientInputPanel();
             }
         });
+
 
         // Back button functionality
         backButton.onClick.AddListener(() => {
@@ -118,6 +121,7 @@ public class RoomUIManager : MonoBehaviour
         createButton.gameObject.SetActive(!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost);
         clientButton.gameObject.SetActive(!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost);
         relayCodeText.gameObject.SetActive(true);
+        statusText.color = Color.white; 
         statusText.gameObject.SetActive(true);
 
         if (NetworkManager.Singleton.IsHost)
@@ -138,7 +142,7 @@ public class RoomUIManager : MonoBehaviour
     {
         if (NetworkManager.Singleton.IsServer)
         {
-            NetworkManager.Singleton.SceneManager.LoadScene("BustlingCityScene", LoadSceneMode.Single);
+            NetworkManager.Singleton.SceneManager.LoadScene("LevelScene", LoadSceneMode.Single);
         }
     }
 }
