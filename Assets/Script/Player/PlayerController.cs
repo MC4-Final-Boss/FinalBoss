@@ -3,6 +3,8 @@ using Unity.Netcode;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
+using System.Collections;
+
 
 public class PlayerController : NetworkBehaviour
 {
@@ -10,6 +12,8 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float jumpForce = 3f;
     [SerializeField] private int jumpLeft = 1;
     [SerializeField] private int pressedPlayer = 0;
+    [SerializeField] private bool explodePlayer = false;
+    [SerializeField] private bool drown = false;
     [SerializeField] private float fallThreshold = -15f;
 
     private Button leftButton;
@@ -19,9 +23,13 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private Rigidbody2D rb;
     private Animator animator;
     private Vector3 movement;
-    public float horizontalAxis;
 
     private NetworkVariable<Vector2> netPosition = new NetworkVariable<Vector2>();
+    private NetworkVariable<float> netFacingDirection = new NetworkVariable<float>();
+    private NetworkVariable<float> netAnimationMoving = new NetworkVariable<float>();
+    private NetworkVariable<bool> netExplodePlayer = new NetworkVariable<bool>();
+    private NetworkVariable<bool> netDrown = new NetworkVariable<bool>();
+
 
     void Start()
     {
@@ -34,6 +42,7 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             SetupButtons();
+            netFacingDirection.Value = transform.localScale.x;
         }
     }
 
@@ -59,6 +68,7 @@ public class PlayerController : NetworkBehaviour
         else
         {
             rb.MovePosition(netPosition.Value);
+            transform.localScale = new Vector3(netFacingDirection.Value, transform.localScale.y, transform.localScale.z);
         }
     }
 
@@ -68,41 +78,25 @@ public class PlayerController : NetworkBehaviour
         {
             Facing();
             Animations();
-            HandleInput();
-        }
-    }
+            UpdatePositionServerRpc(rb.position);
 
-    // Handle keyboard input
-    void HandleInput()
-    {
-        if (Input.GetKey(KeyCode.J))
-        {
-            movement.x = -1;
-            Debug.Log("Moving left");
-        }
-        else if (Input.GetKey(KeyCode.L))
-        {
-            movement.x = 1;
-
+            // Sync the animation parameter with the server
+            UpdateAnimationMovingServerRpc(Mathf.Abs(movement.x));
+            UpdateAnimationBoolsServerRpc(explodePlayer, drown);
         }
         else
         {
-            movement.x = 0;
-
-        }
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            Jump();
+            // Apply synced animation from the server
+            animator.SetFloat("Moving", netAnimationMoving.Value);
+            animator.SetBool("ExplodePlayer", netExplodePlayer.Value);
+            animator.SetBool("Drown", netDrown.Value);
         }
     }
 
-
     void Movement()
     {
-        Debug.Log("Movement : " + movement.x);
         Vector2 currentMovement = new Vector2(movement.x * movementSpeed, rb.velocity.y);
         rb.velocity = currentMovement;
-        UpdatePositionServerRpc(rb.position);
     }
 
     public void Jump()
@@ -118,13 +112,20 @@ public class PlayerController : NetworkBehaviour
     void Animations()
     {
         animator.SetFloat("Moving", Mathf.Abs(movement.x));
+        animator.SetBool("ExplodePlayer", explodePlayer);
+        animator.SetBool("Drown", drown);
     }
 
     void Facing()
     {
         if (movement.x != 0)
         {
-            transform.localScale = new Vector3(Mathf.Sign(movement.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            // Determine the new facing direction based on movement direction
+            float newFacingDirection = Mathf.Sign(movement.x) * Mathf.Abs(transform.localScale.x);
+            transform.localScale = new Vector3(newFacingDirection, transform.localScale.y, transform.localScale.z);
+
+            // Update facing direction on the server
+            UpdateFacingServerRpc(newFacingDirection);
         }
     }
 
@@ -132,46 +133,125 @@ public class PlayerController : NetworkBehaviour
     {
         if (IsOwner)
         {
-            if (!other.gameObject.CompareTag("Tanko") || !other.gameObject.CompareTag("Gaspi"))
+            PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
+
+            // Memeriksa kecepatan jatuh
+            if (rb.velocity.y <= fallThreshold)
             {
-                jumpLeft = 1;
+                if (respawnScript != null)
+                {
+                    // Jalankan Coroutine untuk ledakan dan respawn
+                    StartCoroutine(HandleExplosionAndRespawn(respawnScript));
+                }
+                return;
             }
-            else if (other.gameObject.CompareTag("Tanko") || !other.gameObject.CompareTag("Gaspi"))
+
+            if (other.gameObject.CompareTag("Water"))
             {
-                if (transform.position.y < other.transform.position.y)
+                // Debug: Pastikan OnTriggerEnter mendeteksi air
+                Debug.Log("Player touched water, starting HandleDrownAndRespawn...");
+                StartCoroutine(HandleDrownAndRespawn(respawnScript));
+            }
+
+            if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
+            {
+                if (other.transform.position.y > transform.position.y)
                 {
                     jumpLeft = 0;
-                    pressedPlayer = 1;
+                    drown = true;
+                    Debug.Log("Ada player diatasnya");
                 }
                 else
                 {
                     jumpLeft = 1;
                 }
             }
-
-            if (rb.velocity.y <= fallThreshold)
+            else // Jika objek lain bukan Gaspi atau Tanko
             {
-                // PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
-                // if (respawnScript != null)
-                // {
-                //     respawnScript.RespawnPlayer();
-                // }
+                // Jika berada di atas objek ini
+                if (other.transform.position.y > transform.position.y && other.gameObject.CompareTag("BasicBox"))
+                {
+                    if (respawnScript != null)
+                    {
+                        // Jalankan Coroutine untuk ledakan dan respawn
+                        StartCoroutine(HandleExplosionAndRespawn(respawnScript));
+                        Debug.Log("Ada sesuatu diatasnya");
+                    }
+                    return;
+                }
+                else
+                {
+                    jumpLeft = 1; // Objek lain berada di bawah
+                }
             }
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    // Coroutine untuk menangani ledakan dan respawn ketika player jatuh terlalu jauh
+    IEnumerator HandleExplosionAndRespawn(PlayerRespawn respawnScript)
     {
-        if ((other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Tanko")))
-        {
-            jumpLeft = 1;
-            pressedPlayer = 0;
-        }
+        explodePlayer = true; // Aktifkan animasi ledakan
+
+        // Tunggu durasi animasi ledakan
+        AnimatorStateInfo animStateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        float animLength = animStateInfo.length;
+        float customDuration = animLength * 2f; // Ganti durasi jika perlu
+        yield return new WaitForSeconds(customDuration); // Tunggu sesuai durasi kustom
+
+        // Reset explodePlayer setelah animasi selesai
+        explodePlayer = false;
+
+        // Respawn player setelah animasi selesai
+        respawnScript.RespawnPlayer();
+        Debug.Log("Player Death and Respawned");
+    }
+
+
+    IEnumerator HandleDrownAndRespawn(PlayerRespawn respawnScript)
+    {
+        drown = true; // Aktifkan animasi tenggelam
+
+        yield return new WaitForSeconds(2f); // Tunggu 2 detik
+
+        // Respawn player setelah durasi
+        respawnScript.RespawnPlayer();
+        Debug.Log("Player Death and Respawned");
+
+        // Reset drown
+        drown = false;
+
     }
 
 
 
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if ((other.gameObject.CompareTag("Tanko")|| other.gameObject.CompareTag("Gaspi")))
+        {
+            jumpLeft = 1;
+            drown = false;
+        }
+    }
 
+
+    [ServerRpc]
+    private void UpdateAnimationMovingServerRpc(float newMovingValue)
+    {
+        netAnimationMoving.Value = newMovingValue;
+    }
+
+    [ServerRpc]
+    private void UpdateAnimationBoolsServerRpc(bool newExplodePlayer, bool newDrown)
+    {
+        netExplodePlayer.Value = newExplodePlayer;
+        netDrown.Value = newDrown;
+    }
+
+    [ServerRpc]
+    private void UpdateFacingServerRpc(float newFacingDirection)
+    {
+        netFacingDirection.Value = newFacingDirection;
+    }
 
     [ServerRpc]
     private void UpdatePositionServerRpc(Vector2 newPosition)

@@ -17,10 +17,9 @@ GameObject:
   - component: {fileID: -5026081423889429960}
   - component: {fileID: 8593127893861712597}
   - component: {fileID: 5799577015289861877}
-  - component: {fileID: 1791035745206089648}
   - component: {fileID: -8143084775393110596}
-  - component: {fileID: 7809164219056103456}
-  - component: {fileID: 6503051932639535310}
+  - component: {fileID: -8594402592124235474}
+  - component: {fileID: 3381341289709391137}
   m_Layer: 0
   m_Name: Tanko
   m_TagString: Tanko
@@ -38,7 +37,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.2326493, y: -0.05880058, z: 0}
-  m_LocalScale: {x: 0.35, y: 0.35, z: 1}
+  m_LocalScale: {x: 0.15714213, y: 0.1653405, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -84,12 +83,12 @@ SpriteRenderer:
   m_SortingLayerID: -1883361279
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: dd6f1ab73afe9480188990383305537d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3722f3d3f50f148ee88ca5c22d036b23, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 11, y: 18}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -118,7 +117,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
@@ -154,18 +153,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.07305324, y: -0.79505897}
+  m_Offset: {x: -0.025736332, y: -1.8115191}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 9.6, y: 9.6}
-    newSize: {x: 1, y: 1}
+    oldSize: {x: 11, y: 18}
+    newSize: {x: 11, y: 18}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 3.0764258, y: 6.4627414}
+  m_Size: {x: 6.3364534, y: 13.5779505}
   m_EdgeRadius: 0
 --- !u!114 &6030425025217413987
 MonoBehaviour:
@@ -284,33 +283,19 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.048949957, y: -1.0393305}
+  m_Offset: {x: 0.048949957, y: -1.8270867}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 9.6, y: 9.6}
-    newSize: {x: 1, y: 1}
+    oldSize: {x: 11, y: 18}
+    newSize: {x: 11, y: 18}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.1269975, y: 7.2583866}
+  m_Size: {x: 2.1269975, y: 14.424419}
   m_EdgeRadius: 0
---- !u!114 &1791035745206089648
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8478861834695638335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TransitionStateInfoList: []
-  m_Animator: {fileID: -2447895623635322574}
 --- !u!114 &-8143084775393110596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -325,12 +310,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementSpeed: 7
   jumpForce: 6
-  jumpLeft: 10
+  jumpLeft: 1
+  pressedPlayer: 0
+  explodePlayer: 0
+  drown: 0
+  fallThreshold: -15
+  rb: {fileID: 3824376924431759534}
+--- !u!114 &-8594402592124235474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8478861834695638335}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7d782b336e624d65bd1829ae4ced090, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementSpeed: 7
+  jumpForce: 5
+  horizontalAxis: 0
+  jumpLeft: 1
   pressedPlayer: 0
   fallThreshold: -15
   rb: {fileID: 3824376924431759534}
-  horizontalAxis: 0
---- !u!114 &7809164219056103456
+--- !u!114 &3381341289709391137
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -340,18 +345,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 661902b4a694a4433946bdb66e5d4996, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterName: Tanko
---- !u!114 &6503051932639535310
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8478861834695638335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55051ba08a7034c63b5112d4bfa3ee1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

@@ -50,6 +50,19 @@ public class GaspiController : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.I) && jumpLeft > 0)
             Jump();
     }
+    public void MoveLeft()
+    {
+        horizontalAxis = -1f;
+    }
+
+    // Method to handle move right button
+    public void MoveRight()
+    {
+        horizontalAxis = 1f;
+    }
+
+
+
 
     void Movement()
     {
