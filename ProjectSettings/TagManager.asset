@@ -8,6 +8,7 @@ TagManager:
   - Gaspi
   - BasicBox
   - Ground
+  - Water
   layers:
   - Default
   - TransparentFX
