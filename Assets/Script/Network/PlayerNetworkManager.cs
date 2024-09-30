@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CustomNetworkManagerWithTag : NetworkBehaviour
+public class PlayerNetworkManager : NetworkBehaviour
 {
     public GameObject tankoPrefab;
     public GameObject gaspiPrefab;

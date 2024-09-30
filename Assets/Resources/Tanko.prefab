@@ -18,8 +18,8 @@ GameObject:
   - component: {fileID: 8593127893861712597}
   - component: {fileID: 5799577015289861877}
   - component: {fileID: -8143084775393110596}
-  - component: {fileID: -8594402592124235474}
   - component: {fileID: 3381341289709391137}
+  - component: {fileID: 18843608462332081}
   m_Layer: 0
   m_Name: Tanko
   m_TagString: Tanko
@@ -310,30 +310,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementSpeed: 7
   jumpForce: 6
-  jumpLeft: 1
+  jumpLeft: 10
   pressedPlayer: 0
   explodePlayer: 0
   drown: 0
   fallThreshold: -15
-  rb: {fileID: 3824376924431759534}
---- !u!114 &-8594402592124235474
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8478861834695638335}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7d782b336e624d65bd1829ae4ced090, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  movementSpeed: 7
-  jumpForce: 5
-  horizontalAxis: 0
-  jumpLeft: 1
-  pressedPlayer: 0
-  fallThreshold: -15
+  toggleOn: 0
   rb: {fileID: 3824376924431759534}
 --- !u!114 &3381341289709391137
 MonoBehaviour:
@@ -345,5 +327,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 661902b4a694a4433946bdb66e5d4996, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &18843608462332081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8478861834695638335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e466913513f92452980bf441343cac56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

@@ -7,14 +7,14 @@ public class MovingPlatform : NetworkBehaviour
     public float speed = 1.0f;
     private Vector3 initialPosition;
     private bool movingToTarget = true;
-    private CustomNetworkManagerWithTag networkManager;
+    private PlayerNetworkManager networkManager;
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
         initialPosition = transform.localPosition;
         // Find the CustomNetworkManagerWithTag in a more robust way
-        networkManager = FindObjectOfType<CustomNetworkManagerWithTag>();
+        networkManager = FindObjectOfType<PlayerNetworkManager>();
         if (networkManager == null)
         {
             Debug.LogError("CustomNetworkManagerWithTag not found in the scene!");

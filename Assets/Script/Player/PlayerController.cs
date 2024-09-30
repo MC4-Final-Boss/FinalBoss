@@ -11,11 +11,15 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private int jumpLeft = 1;
     [SerializeField] private int pressedPlayer = 0;
     [SerializeField] private float fallThreshold = -15f;
+
+    // Action Button
+    public bool toggleOn = false;
     [SerializeField] private float jumpVelocityThreshold = 0.1f;
 
     private Button leftButton;
     private Button rightButton;
     private Button jumpButton;
+    private Button actionButton;
 
     [SerializeField] private Rigidbody2D rb;
     private Animator animator;
@@ -31,6 +35,8 @@ public class PlayerController : NetworkBehaviour
         leftButton = GameObject.Find("Left Button").GetComponent<Button>();
         rightButton = GameObject.Find("Right Button").GetComponent<Button>();
         jumpButton = GameObject.Find("Jump Button").GetComponent<Button>();
+        actionButton = GameObject.Find("Action Button").GetComponent<Button>();
+
 
         if (IsOwner)
         {
@@ -47,7 +53,15 @@ public class PlayerController : NetworkBehaviour
         {
             jumpButton.onClick.AddListener(Jump);
         }
+
+        if (jumpButton != null)
+        {
+            jumpButton.onClick.AddListener(Action);
+
+        }
     }
+
+
 
     void FixedUpdate()
     {
@@ -67,6 +81,7 @@ public class PlayerController : NetworkBehaviour
         {
             Facing();
             Animations();
+            HandleInput();
             UpdatePositionServerRpc(rb.position);
         }
         else
@@ -74,6 +89,19 @@ public class PlayerController : NetworkBehaviour
             // Update local facing based on network variable
             transform.localScale = new Vector3(netFacingRight.Value ? Mathf.Abs(transform.localScale.x) : -Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
+    }
+
+    void HandleInput()
+    {
+        if (Input.GetKey(KeyCode.J))
+            movement.x = -1f;
+        else if (Input.GetKey(KeyCode.L))
+            movement.x = 1f;
+        else
+            movement.x = 0f;
+
+        if (Input.GetKeyDown(KeyCode.I) && jumpLeft > 0)
+            Jump();
     }
 
     void Movement()
@@ -114,6 +142,21 @@ public class PlayerController : NetworkBehaviour
     {
         netFacingRight.Value = isFacingRight;
     }
+    public void Action()
+    {
+        if (IsOwner)
+        {
+            Debug.Log("Action button is active : " + toggleOn);
+            if (!toggleOn)
+            {
+                toggleOn = true;
+            }
+            else if (toggleOn)
+            {
+                toggleOn = false;
+            }
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -149,7 +192,7 @@ public class PlayerController : NetworkBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
+        if ((other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi")))
         {
             jumpLeft = 1;
             pressedPlayer = 0;

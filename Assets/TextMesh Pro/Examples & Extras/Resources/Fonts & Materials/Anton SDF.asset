@@ -1069,6 +1069,18 @@ MonoBehaviour:
     m_Y: 0
     m_Width: 8
     m_Height: 1023
+  - m_X: 132
+    m_Y: 208
+    m_Width: 40
+    m_Height: 11
+  - m_X: 155
+    m_Y: 208
+    m_Width: 17
+    m_Height: 815
+  - m_X: 168
+    m_Y: 175
+    m_Width: 4
+    m_Height: 848
   m_fontInfo:
     Name: Anton
     PointSize: 73
