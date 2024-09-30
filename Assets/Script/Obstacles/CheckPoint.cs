@@ -2,32 +2,46 @@ using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
-    private bool hasTriggered;
+    // private bool hasTriggered;
+    private PlayerSaveCheckPoint saveCheckpoint;
 
-    private void Start() {
-        hasTriggered = false;
+
+    private void Start()
+    {
+        // hasTriggered = false;
+        saveCheckpoint = GetComponent<PlayerSaveCheckPoint>();
+
+        if (saveCheckpoint == null)
+        {
+            Debug.LogError("PlayerSaveCheckPoint component is missing!");
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
         {
-            PlayerPrefs.SetFloat("CheckpointX", transform.position.x);
-            PlayerPrefs.SetFloat("CheckpointY", transform.position.y);
-            PlayerPrefs.SetFloat("CheckpointZ", 0);  
 
-            PlayerPrefs.Save();  
+            SaveCheckpoint();
             Debug.Log("Checkpoint saved at: " + new Vector3(transform.position.x, transform.position.y, 0));
-            
-            hasTriggered = true; 
+            // hasTriggered = true;
         }
     }
 
     private void OnTriggerExit2D(Collider2D other)
-    {       
+    {
         if (other.gameObject.CompareTag("Tanko"))
         {
-            hasTriggered = false;  
+            // hasTriggered = false;
+        }
+    }
+
+    private void SaveCheckpoint()
+    {
+        if (saveCheckpoint != null)
+        {
+            // saveCheckpoint.SaveCheckpoint(transform.position);
+            saveCheckpoint.ClearCheckpoint();
         }
     }
 }
