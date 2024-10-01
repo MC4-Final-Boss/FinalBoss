@@ -7938,8 +7938,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab4536e0421c24d2497e47524db8387f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkingSFXSource: {fileID: 1421634448}
-  otherSFXSource: {fileID: 0}
+  sfxSource: {fileID: 0}
   levelClear: {fileID: 0}
   platformMoving: {fileID: 0}
   exploding: {fileID: 0}

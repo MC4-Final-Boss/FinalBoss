@@ -23,19 +23,25 @@ public class PlayerRespawn : NetworkBehaviour
         return IsHost ? initialTankoPosition : initialGaspiPosition;
     }
 
+
     public void RespawnPlayer()
     {
+
+
         Vector3 respawnPosition = GetRespawnPosition(); // Get the respawn position
-        RespawnPlayerClientRpc(respawnPosition); // Call the networked respawn
+        RespawnPlayerClientRpc(respawnPosition); // Call the networked respawn for all clients
+
     }
+
 
     [ClientRpc]
     private void RespawnPlayerClientRpc(Vector3 position)
     {
-        // Only execute this on the owner of the object
-        if (!IsOwner) return;
+        // if (!IsOwner) return;
+        Debug.Log("Want to respawn player");
 
         transform.position = position; // Respawn the player at the given position
         Debug.Log($"Respawned {gameObject.name} at position: {position}");
     }
+
 }

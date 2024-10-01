@@ -3,13 +3,13 @@ using UnityEngine;
 public class Checkpoint : MonoBehaviour
 {
     // private bool hasTriggered;
-    public PlayerSaveCheckPoint saveCheckpoint;
+    private PlayerSaveCheckPoint saveCheckpoint;
 
 
     private void Start()
     {
         // hasTriggered = false;
-        // saveCheckpoint = GetComponent<PlayerSaveCheckPoint>();
+        saveCheckpoint = GetComponent<PlayerSaveCheckPoint>();
 
         if (saveCheckpoint == null)
         {
@@ -40,8 +40,8 @@ public class Checkpoint : MonoBehaviour
     {
         if (saveCheckpoint != null)
         {
-            // saveCheckpoint.SaveCheckpoint(transform.position);
-            saveCheckpoint.ClearCheckpoint();
+            saveCheckpoint.SaveCheckpoint(transform.position);
+            // saveCheckpoint.ClearCheckpoint();
         }
     }
 }

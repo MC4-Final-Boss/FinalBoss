@@ -22,12 +22,18 @@ public class PlayerNetworkManager : NetworkBehaviour
 
     // Reference to the DialogDisconnect script
     [SerializeField] private DialogDisconnect dialogDisconnect;
+    private PlayerSaveCheckPoint saveCheckpoint;
+    private void Start()
+    {
+        saveCheckpoint = GetComponent<PlayerSaveCheckPoint>();
+
+    }
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
         Debug.Log($"OnNetworkSpawn called. IsHost: {IsHost}, IsServer: {IsServer}, IsClient: {IsClient}");
-        
+
         if (IsHost)
         {
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SpawnAndSetupPlayer;
@@ -90,10 +96,10 @@ public class PlayerNetworkManager : NetworkBehaviour
             {
                 // Tentukan posisi spawn berdasarkan apakah client adalah host atau bukan
                 var spawnPosition = GetSpawnPositionForPlayer(clientId == NetworkManager.ServerClientId);
-                
+
                 // Tentukan prefab yang akan digunakan untuk pemain
                 GameObject playerPrefab = clientId == NetworkManager.ServerClientId ? tankoPrefab : gaspiPrefab;
-                
+
                 // Tetapkan tag berdasarkan apakah pemain adalah host (Tanko) atau client (Gaspi)
                 string tagToAssign = clientId == NetworkManager.ServerClientId ? "Tanko" : "Gaspi";
 
@@ -127,6 +133,7 @@ public class PlayerNetworkManager : NetworkBehaviour
     {
         // Kembalikan posisi spawn berdasarkan apakah pemain adalah host
         return isHost ? new Vector3(-5, 0, 0) : new Vector3(-4, 0, 0);
+        saveCheckpoint.ClearCheckpoint();
     }
 
     [ClientRpc]
@@ -188,7 +195,7 @@ public class PlayerNetworkManager : NetworkBehaviour
         return GetNetworkTime() - interpolationBackTime;
     }
 
-        // Method untuk menutup game dan kembali ke main menu saat disconnect
+    // Method untuk menutup game dan kembali ke main menu saat disconnect
     private void CloseGameOnDisconnect()
     {
         Debug.Log("Closing game and returning to main menu due to disconnection.");

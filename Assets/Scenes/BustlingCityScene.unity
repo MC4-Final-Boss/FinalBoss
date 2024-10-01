@@ -4626,6 +4626,10 @@ PrefabInstance:
       value: Basic Box
       objectReference: {fileID: 0}
     - target: {fileID: 4750114769279757425, guid: 95218bc00f44f40feac33295caa35337, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4750114769279757425, guid: 95218bc00f44f40feac33295caa35337, type: 3}
       propertyPath: m_TagString
       value: BasicBox
       objectReference: {fileID: 0}
@@ -4637,6 +4641,10 @@ PrefabInstance:
       propertyPath: m_Size.y
       value: 2.2045083
       objectReference: {fileID: 0}
+    - target: {fileID: 6388506743711095594, guid: 95218bc00f44f40feac33295caa35337, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: df9965f1518a841e698c75e50f3b718b, type: 2}
     - target: {fileID: 6388506743711095594, guid: 95218bc00f44f40feac33295caa35337, type: 3}
       propertyPath: m_Offset.x
       value: -0.015795946
@@ -4660,6 +4668,18 @@ PrefabInstance:
     - target: {fileID: 6388506743711095594, guid: 95218bc00f44f40feac33295caa35337, type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.y
       value: 2.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7565323466709909002, guid: 95218bc00f44f40feac33295caa35337, type: 3}
+      propertyPath: m_Mass
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7565323466709909002, guid: 95218bc00f44f40feac33295caa35337, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: df9965f1518a841e698c75e50f3b718b, type: 2}
+    - target: {fileID: 7565323466709909002, guid: 95218bc00f44f40feac33295caa35337, type: 3}
+      propertyPath: m_UseAutoMass
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6478,14 +6498,14 @@ RectTransform:
   m_GameObject: {fileID: 1032746978}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.620074, y: 1.620074, z: 1.620074}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1779118985}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 711, y: -309.00003}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -211, y: 167.99997}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1032746980
@@ -6865,14 +6885,14 @@ RectTransform:
   m_GameObject: {fileID: 1100057462}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.4894693, y: 1.4894693, z: 1.4894693}
+  m_LocalScale: {x: 2.5174723, y: 2.5174723, z: 2.5174723}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1779118985}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -811.57, y: -312}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 161, y: 165}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1100057464
@@ -9084,14 +9104,14 @@ RectTransform:
   m_GameObject: {fileID: 1572786430}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.4894693, y: 1.4894693, z: 1.4894693}
+  m_LocalScale: {x: 2.5174723, y: 2.5174723, z: 2.5174723}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1779118985}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -720.1, y: -312.00003}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 355, y: 164.99997}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1572786432
@@ -10592,6 +10612,7 @@ GameObject:
   - component: {fileID: 1956841734}
   - component: {fileID: 1956841737}
   - component: {fileID: 1956841736}
+  - component: {fileID: 1956841738}
   m_Layer: 0
   m_Name: water_1
   m_TagString: Water
@@ -10711,6 +10732,18 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1956841738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1956841733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09024d3ab57b24259b81e632e299d8c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1964380739
 GameObject:
   m_ObjectHideFlags: 0

@@ -20,7 +20,7 @@ GameObject:
   - component: {fileID: -8143084775393110596}
   - component: {fileID: 3381341289709391137}
   - component: {fileID: 18843608462332081}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Tanko
   m_TagString: Tanko
   m_Icon: {fileID: 0}
@@ -105,7 +105,7 @@ Rigidbody2D:
   m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
+  m_UseAutoMass: 1
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
@@ -310,7 +310,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementSpeed: 7
   jumpForce: 6
+<<<<<<< Updated upstream
   jumpLeft: 10
+=======
+  jumpLeft: 1
+  isGround: 1
+>>>>>>> Stashed changes
   pressedPlayer: 0
   explodePlayer: 0
   drown: 0
