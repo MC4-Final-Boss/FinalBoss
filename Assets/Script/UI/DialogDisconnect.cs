@@ -37,7 +37,7 @@ public class DialogDisconnect : MonoBehaviour
         disconnectAlertPanel.SetActive(false);
 
         // Load the menu scene
-        SceneManager.LoadScene("menuScene");
+        SceneManager.LoadScene("RizuMenuScene");
     }
 
     // This function can be called when a disconnect happens in your game (for example, in a network manager or connection handler)
