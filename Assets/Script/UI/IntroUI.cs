@@ -17,7 +17,7 @@ public class IntroUI : MonoBehaviour
         // Ensure button listener is set in the Start or Awake method
         playButton.onClick.AddListener(() => 
         {
-            SceneManager.LoadScene("MenuScene"); // Loads the "Game" scene
+            SceneManager.LoadScene("RizuMenuScene"); // Loads the "Game" scene
             Debug.Log("IntroUI: Play button clicked");
         });
     }
