@@ -37,7 +37,7 @@ public class NextScene : MonoBehaviour
         sceneLoaded = true; // Prevents further scene loading
 
         // Use the NetworkManager's SceneManager to load the scene for all clients
-        NetworkManager.Singleton.SceneManager.LoadScene("BustlingCityScene", LoadSceneMode.Single);
+        NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);
     }
 
     // Detect when an object with tag "Gaspi" or "Tanko" enters the button collider

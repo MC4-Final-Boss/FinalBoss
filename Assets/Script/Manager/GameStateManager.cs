@@ -72,6 +72,7 @@ public class GameStateManager : MonoBehaviour
 
             case GameState.Play:
                 Debug.Log("Entering Play State");
+                Time.timeScale = 1f; 
                 break;
         }
     }
