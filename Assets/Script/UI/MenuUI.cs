@@ -79,11 +79,12 @@ public class RoomUIManager : MonoBehaviour
                 createButton.gameObject.SetActive(true);
                 clientButton.gameObject.SetActive(true);
                 statusText.gameObject.SetActive(false); // Hide status text when returning
+                joinButton.gameObject.SetActive(false);
             }
             else
             {
                 // Go back to 'IntroScene'
-                SceneManager.LoadScene("IntroScene");
+                SceneManager.LoadScene("RizuIntroScene");
             }
         });
 

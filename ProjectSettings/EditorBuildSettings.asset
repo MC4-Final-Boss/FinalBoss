@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/IntroScene.unity
     guid: 1bb529de263144c8c9c7381b6a04dc11
   - enabled: 1
-    path: Assets/Scenes/IntroSceneRizu.unity
+    path: Assets/Scenes/RizuIntroScene.unity
     guid: 337ebe2d77bd14eeaafe2891994d241e
   - enabled: 1
     path: Assets/Scenes/MenuScene.unity
@@ -23,4 +23,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/YurikoBustlingCityScene.unity
     guid: fc8c3d7c36dfb4d31b2ab057a3739a84
+  - enabled: 1
+    path: Assets/Scenes/RizuMenuScene.unity
+    guid: 336fd9aa4ed434af5983fd96b3b0c104
   m_configObjects: {}
