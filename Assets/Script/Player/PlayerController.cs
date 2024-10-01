@@ -70,7 +70,7 @@ public class PlayerController : NetworkBehaviour
         {
             Facing();
             Animations();
-            HandleInput();
+            // HandleInput();
             UpdatePositionServerRpc(rb.position);
         }
         else

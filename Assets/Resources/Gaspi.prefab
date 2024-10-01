@@ -310,12 +310,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementSpeed: 7
   jumpForce: 6
-  jumpLeft: 10
+  jumpLeft: 1
   pressedPlayer: 0
-  explodePlayer: 0
-  drown: 0
   fallThreshold: -15
-  toggleOn: 0
+  jumpVelocityThreshold: 0.1
   rb: {fileID: 5852808445176553097}
 --- !u!114 &8338586396787333834
 MonoBehaviour:
