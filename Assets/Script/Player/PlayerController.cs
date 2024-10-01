@@ -17,13 +17,15 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private bool explodePlayer = false;
     [SerializeField] private bool drown = false;
     [SerializeField] private float fallThreshold = -15f;
-    private SFXManager sfxManager;
 
+    // Action Button
+    public bool toggleOn = false;
     [SerializeField] private float jumpVelocityThreshold = 0.1f;
 
     private Button leftButton;
     private Button rightButton;
     private Button jumpButton;
+    private Button actionButton;
 
     [SerializeField] private Rigidbody2D rb;
     private Animator animator;
@@ -39,10 +41,11 @@ public class PlayerController : NetworkBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        sfxManager = FindObjectOfType<SFXManager>();
         leftButton = GameObject.Find("Left Button").GetComponent<Button>();
         rightButton = GameObject.Find("Right Button").GetComponent<Button>();
         jumpButton = GameObject.Find("Jump Button").GetComponent<Button>();
+        actionButton = GameObject.Find("Action Button").GetComponent<Button>();
+
 
         if (IsOwner)
         {
@@ -60,7 +63,15 @@ public class PlayerController : NetworkBehaviour
         {
             jumpButton.onClick.AddListener(Jump);
         }
+
+        if (jumpButton != null)
+        {
+            jumpButton.onClick.AddListener(Action);
+
+        }
     }
+
+
 
     void FixedUpdate()
     {
@@ -112,21 +123,6 @@ public class PlayerController : NetworkBehaviour
     {
         Vector2 currentMovement = new Vector2(movement.x * movementSpeed, rb.velocity.y);
         rb.velocity = currentMovement;
-
-        if (Mathf.Abs(movement.x) > 0.01f)
-        {
-            if (sfxManager != null)
-            {
-                sfxManager.PlayWalkingSFX(); // Start playing walking sound
-            }
-        }
-        else
-        {
-            if (sfxManager != null)
-            {
-                sfxManager.StopWalkingSFX(); // Stop walking sound when not moving
-            }
-        }
     }
 
     public void Jump()
@@ -134,6 +130,7 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner && pressedPlayer == 0 && isGround)
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+<<<<<<< HEAD
             isGround = false;
 
             // Play jumping sound
@@ -141,6 +138,10 @@ public class PlayerController : NetworkBehaviour
             {
                 sfxManager.PlayJumpingSFX();
             }
+=======
+            jumpLeft--;
+            
+>>>>>>> parent of 38e7d7b (soundManager & Platform D (#46))
         }
     }
 
@@ -170,6 +171,21 @@ public class PlayerController : NetworkBehaviour
     private void UpdateFacingServerRpc(float newFacingDirection)
     {
         netFacingDirection.Value = newFacingDirection;
+    }
+    public void Action()
+    {
+        if (IsOwner)
+        {
+            Debug.Log("Action button is active : " + toggleOn);
+            if (!toggleOn)
+            {
+                toggleOn = true;
+            }
+            else if (toggleOn)
+            {
+                toggleOn = false;
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlatformD : MonoBehaviour
@@ -10,69 +11,60 @@ public class PlatformD : MonoBehaviour
     private ButtonD1 buttonD1Status;
     private ButtonD2 buttonD2Status;
     public bool platformMove = false;
-    public float platformSpeed = 2f;
+    public float platformSpeed = 2;
     public bool buttonActive = false;
     public Vector3 targetPosition;
     private Vector3 initialPosition;
-
-    private bool isWaiting = false; // To track if the platform is already waiting
 
     private void Start()
     {
         buttonD1Status = buttonD1Object.GetComponent<ButtonD1>();
         buttonD2Status = buttonD2Object.GetComponent<ButtonD2>();
-        initialPosition = movementPlatform.transform.localPosition; // Get the initial position of the platform
+        initialPosition = transform.localPosition;
+
+    }
+
+    void MoveTowards(Vector3 target)
+    {
+        transform.position = Vector3.MoveTowards(transform.localPosition, target, platformSpeed * Time.deltaTime);
     }
 
     private void Update()
     {
-        // Check if both buttons are pressed
+
         if (buttonD1Status.buttonD1 && buttonD2Status.buttonD2)
         {
-            StopAllCoroutines(); // Stop any active coroutine when the platform should move to the target
-            isWaiting = false; // Reset the waiting flag
+            Debug.Log("Start Move1 : " + buttonD1Status.buttonD1);
+            Debug.Log("Start Move2 : " + buttonD2Status.buttonD2);
             buttonActive = true;
             platformMove = true;
         }
-        else if (buttonActive) // When buttons are released
+        else
         {
-            // Start coroutine to wait for 3 seconds before moving back
-            if (!isWaiting)
-            {
-                StartCoroutine(WaitBeforeReturn());
-            }
+            buttonActive = false;
         }
 
-        // Determine target position based on button state
         Vector3 targetPos = buttonActive ? targetPosition : initialPosition;
 
-        // Move the platform towards the target position
         movementPlatform.transform.localPosition = Vector3.MoveTowards(
             movementPlatform.transform.localPosition,
             targetPos,
             platformSpeed * Time.deltaTime
         );
 
-        // Stop movement when the platform reaches the target position
         if (Vector3.Distance(movementPlatform.transform.localPosition, targetPos) < 0.01f)
         {
             platformMove = false;
         }
     }
 
-    // Coroutine to wait for 3 seconds before returning to the initial position
-    private IEnumerator WaitBeforeReturn()
-    {
-        isWaiting = true; // Set the waiting flag to true
-        yield return new WaitForSeconds(3); // Wait for 3 seconds
-
-        buttonActive = false; // Set the buttonActive to false to move the platform back
-        isWaiting = false; // Reset the waiting flag
-    }
-
     private void OnCollisionEnter2D(Collision2D other)
     {
-        other.transform.SetParent(movementPlatform.transform); // Attach the object to the platform
+        other.transform.SetParent(transform);
     }
 
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        other.transform.SetParent(null);
+    }
 }
