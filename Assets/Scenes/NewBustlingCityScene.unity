@@ -4295,6 +4295,10 @@ PrefabInstance:
       propertyPath: m_SpriteTilingProperty.oldSize.y
       value: 0.75
       objectReference: {fileID: 0}
+    - target: {fileID: 7565323466709909002, guid: 95218bc00f44f40feac33295caa35337, type: 3}
+      propertyPath: m_Mass
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5859,6 +5863,10 @@ PrefabInstance:
       propertyPath: m_SpriteTilingProperty.oldSize.y
       value: 0.75
       objectReference: {fileID: 0}
+    - target: {fileID: 7565323466709909002, guid: 95218bc00f44f40feac33295caa35337, type: 3}
+      propertyPath: m_Mass
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6109,21 +6117,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 989610854661705859, guid: 8cd22f2172a9740919bd1ab79ae82cc1, type: 3}
-      propertyPath: m_PixelPerfect
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2445233349194628114, guid: 8cd22f2172a9740919bd1ab79ae82cc1, type: 3}
       propertyPath: m_Name
       value: DisconnectAlert
-      objectReference: {fileID: 0}
-    - target: {fileID: 4074407699151632248, guid: 8cd22f2172a9740919bd1ab79ae82cc1, type: 3}
-      propertyPath: m_RaycastTarget
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4684982711752432382, guid: 8cd22f2172a9740919bd1ab79ae82cc1, type: 3}
-      propertyPath: m_PreserveAspect
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5042325057085478103, guid: 8cd22f2172a9740919bd1ab79ae82cc1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6164,10 +6160,6 @@ PrefabInstance:
     - target: {fileID: 5042325057085478103, guid: 8cd22f2172a9740919bd1ab79ae82cc1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7743056226843977122, guid: 8cd22f2172a9740919bd1ab79ae82cc1, type: 3}
-      propertyPath: m_UiScaleMode
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6731,8 +6723,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a7015ee1cac54e50b5bddc88dd53fcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smoothTime: 0.25
-  cameraOffset: {x: 3, y: 2, z: -0.3}
+  smoothTime: 0
+  cameraOffset: {x: 0, y: 0, z: -10}
 --- !u!114 &1008726963
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12265,6 +12257,10 @@ PrefabInstance:
       propertyPath: m_SpriteTilingProperty.oldSize.y
       value: 0.75
       objectReference: {fileID: 0}
+    - target: {fileID: 7565323466709909002, guid: 95218bc00f44f40feac33295caa35337, type: 3}
+      propertyPath: m_Mass
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -13824,6 +13820,10 @@ PrefabInstance:
     - target: {fileID: 6388506743711095594, guid: 95218bc00f44f40feac33295caa35337, type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.y
       value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 7565323466709909002, guid: 95218bc00f44f40feac33295caa35337, type: 3}
+      propertyPath: m_Mass
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
