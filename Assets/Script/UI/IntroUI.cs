@@ -5,22 +5,42 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 
-
 public class IntroUI : MonoBehaviour
 {
-
     [SerializeField] private Button playButton; 
+    [SerializeField] private GameObject buttonSoundObject; // Drag the GameObject with the AudioSource to this field
 
+    private AudioSource buttonSound; // To store the AudioSource of the button sound
 
-     private void Start() 
+    private void Start() 
     {
         // Ensure button listener is set in the Start or Awake method
-        playButton.onClick.AddListener(() => 
+        if (buttonSoundObject != null)
         {
-            SceneManager.LoadScene("RizuMenuScene"); // Loads the "Game" scene
+            buttonSound = buttonSoundObject.GetComponent<AudioSource>(); // Get the AudioSource from the GameObject
+        }
+        else
+        {
+            Debug.LogWarning("IntroUI: buttonSoundObject is not assigned.");
+        }
+
+        playButton.onClick.AddListener(() => 
+        {   
+            PlayButtonSound(); // Play the button sound
+            SceneManager.LoadScene("RizuMenuScene"); // Loads the "RizuMenuScene" scene
             Debug.Log("IntroUI: Play button clicked");
         });
     }
 
-    
+    private void PlayButtonSound()
+    {
+        if (buttonSound != null)
+        {
+            buttonSound.Play(); // Play the sound attached to the AudioSource component
+        }
+        else
+        {
+            Debug.LogWarning("IntroUI: No AudioSource found on buttonSoundObject.");
+        }
+    }
 }
