@@ -46,6 +46,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Buildings
+    uniqueID: 3462934683
+    locked: 0
+  - name: Tree&Lamp
+    uniqueID: 2931768803
+    locked: 0
+  - name: OtherTree&Lamp
+    uniqueID: 1734910847
+    locked: 0
   - name: Basic Platform
     uniqueID: 2504659593
     locked: 0
