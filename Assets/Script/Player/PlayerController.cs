@@ -4,13 +4,13 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 using System.Collections;
-
+using System.Linq;
 
 public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private float movementSpeed = 7f;
     [SerializeField] private float jumpForce = 3f;
-    [SerializeField] private int jumpLeft = 1;
+    [SerializeField] private bool OnGround = true;
     [SerializeField] private int pressedPlayer = 0;
     [SerializeField] private bool explodePlayer = false;
     [SerializeField] private bool drown = false;
@@ -35,6 +35,7 @@ public class PlayerController : NetworkBehaviour
 
     void Start()
     {
+
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         sfxManager = FindObjectOfType<SFXManager>();
@@ -94,31 +95,33 @@ public class PlayerController : NetworkBehaviour
 
     void Movement()
     {
-        Vector2 currentMovement = new Vector2(movement.x * movementSpeed, rb.velocity.y);
+        float currentYVelocity = rb.velocity.y;
+        Vector2 currentMovement = new Vector2(movement.x * movementSpeed, currentYVelocity);
+
         rb.velocity = currentMovement;
 
         if (Mathf.Abs(movement.x) > 0.01f)
         {
             if (sfxManager != null)
             {
-                sfxManager.PlayWalkingSFX(); // Start playing walking sound
+                sfxManager.PlayWalkingSFX();
             }
         }
         else
         {
             if (sfxManager != null)
             {
-                sfxManager.StopWalkingSFX(); // Stop walking sound when not moving
+                sfxManager.StopWalkingSFX();
             }
         }
     }
 
+
     public void Jump()
     {
-        if (IsOwner && pressedPlayer == 0 && jumpLeft > 0)
+        if (IsOwner && pressedPlayer == 0 && OnGround)
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            jumpLeft--;
 
             // Play jumping sound
             if (sfxManager != null)
@@ -175,13 +178,13 @@ public class PlayerController : NetworkBehaviour
             {
                 if (other.transform.position.y > transform.position.y)
                 {
-                    jumpLeft = 0;
+                    OnGround = false;
                     drown = true;
                     Debug.Log("Ada player diatasnya");
                 }
                 else
                 {
-                    jumpLeft = 1;
+                    OnGround = true;
                 }
             }
             else // Jika objek lain bukan Gaspi atau Tanko
@@ -199,7 +202,15 @@ public class PlayerController : NetworkBehaviour
                 }
                 else
                 {
-                    jumpLeft = 1; // Objek lain berada di bawah
+                    if (other.gameObject.CompareTag("Ground"))
+                    {
+                        rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, 0));
+                        OnGround = true;
+                    }
+                    else
+                    {
+                        OnGround = true; // Objek lain berada di bawah
+                    }
                 }
             }
         }
@@ -242,14 +253,25 @@ public class PlayerController : NetworkBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if ((other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi")))
+        if (new[] { "Ground", "BasicBox" }.Contains(other.gameObject.tag))
         {
-            jumpLeft = 1;
-            pressedPlayer = 0;
-            drown = false;
-
+            OnGround = false;
+        }
+        else if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
+        {
+            if (other.transform.position.y > transform.position.y)
+            {
+                OnGround = true;
+                drown = false;
+                Debug.Log("Ada player diatasnya");
+            }
+            else
+            {
+                OnGround = false;
+            }
         }
     }
+
 
     [ServerRpc]
     private void UpdateAnimationMovingServerRpc(float newMovingValue)
