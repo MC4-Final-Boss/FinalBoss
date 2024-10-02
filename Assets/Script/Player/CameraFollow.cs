@@ -6,15 +6,14 @@ using Unity.Netcode;
 public class CameraController : MonoBehaviour
 {
     Transform target;
-    [SerializeField] private float smoothTime;
-    private Vector3 _currentVelocity = Vector3.zero;
+    Vector3 velocity = Vector3.zero;
 
     [Range(0, 1)]
-    private Vector3 _offset;
+    public float smoothTime;
+    public Vector3 cameraOffset;
 
     private void Awake() {
         StartCoroutine(FindPlayer());
-        _offset = transform.position - target.position;
     }
 
     IEnumerator FindPlayer()
@@ -49,7 +48,7 @@ public class CameraController : MonoBehaviour
     private void LateUpdate() {
         if (target == null) return;
 
-        Vector3 targetPosition = target.position + _offset;
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _currentVelocity, smoothTime);
+        Vector3 targetPosition = target.position + cameraOffset;
+        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
     }
 }
