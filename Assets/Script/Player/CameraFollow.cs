@@ -5,7 +5,7 @@ using Unity.Netcode;
 
 public class CameraController : MonoBehaviour
 {
-    [SerializeField] private Transform target;
+    Transform target;
     [SerializeField] private float smoothTime;
     private Vector3 _currentVelocity = Vector3.zero;
 
