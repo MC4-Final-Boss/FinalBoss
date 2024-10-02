@@ -10,6 +10,8 @@ public class SFXManager : MonoBehaviour
     public AudioClip walking;
     public AudioClip jumping;
 
+    public AudioClip buttonPress; 
+
     // Play a one-shot sound effect
     public void PlaySFX(AudioClip audio)
     {
@@ -63,5 +65,10 @@ public class SFXManager : MonoBehaviour
     public void PlayExplodingSFX()
     {
         PlaySFX(exploding);
+    }
+
+    public void PlayButtonPressSFX()
+    {
+        PlaySFX(buttonPress);
     }
 }
