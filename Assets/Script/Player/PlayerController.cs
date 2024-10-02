@@ -84,6 +84,7 @@ public class PlayerController : NetworkBehaviour
     {
         if (Input.GetKey(KeyCode.J))
             movement.x = -1f;
+
         else if (Input.GetKey(KeyCode.L))
             movement.x = 1f;
         else
@@ -91,12 +92,15 @@ public class PlayerController : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.I) && jumpLeft > 0)
             Jump();
+
+        Debug.Log(movement.x + " Player check");
     }
 
     void Movement()
     {
         Vector2 currentMovement = new Vector2(movement.x * movementSpeed, rb.velocity.y);
         rb.velocity = currentMovement;
+        Debug.Log(movement.x + " Player Movement");
 
         if (Mathf.Abs(movement.x) > 0.01f)
         {
