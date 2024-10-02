@@ -3,6 +3,8 @@ using Unity.Netcode;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
+using System.Collections;
+
 
 public class PlayerController : NetworkBehaviour
 {
@@ -10,6 +12,8 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float jumpForce = 3f;
     [SerializeField] private int jumpLeft = 1;
     [SerializeField] private int pressedPlayer = 0;
+    [SerializeField] private bool explodePlayer = false;
+    [SerializeField] private bool drown = false;
     [SerializeField] private float fallThreshold = -15f;
     private SFXManager sfxManager;
 
@@ -25,6 +29,9 @@ public class PlayerController : NetworkBehaviour
 
     private NetworkVariable<Vector2> netPosition = new NetworkVariable<Vector2>();
     private NetworkVariable<bool> netFacingRight = new NetworkVariable<bool>(true);
+    private NetworkVariable<float> netAnimationMoving = new NetworkVariable<float>();
+    private NetworkVariable<bool> netExplodePlayer = new NetworkVariable<bool>();
+    private NetworkVariable<bool> netDrown = new NetworkVariable<bool>();
 
     void Start()
     {
@@ -70,28 +77,20 @@ public class PlayerController : NetworkBehaviour
         {
             Facing();
             Animations();
-            // HandleInput();
             UpdatePositionServerRpc(rb.position);
+            UpdateAnimationMovingServerRpc(Mathf.Abs(movement.x));
+            UpdateAnimationBoolsServerRpc(explodePlayer, drown);
         }
         else
         {
             // Update local facing based on network variable
             transform.localScale = new Vector3(netFacingRight.Value ? Mathf.Abs(transform.localScale.x) : -Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            animator.SetFloat("Moving", netAnimationMoving.Value);
+            animator.SetBool("ExplodePlayer", netExplodePlayer.Value);
+            animator.SetBool("Drown", netDrown.Value);
         }
     }
 
-    void HandleInput()
-    {
-        if (Input.GetKey(KeyCode.J))
-            movement.x = -1f;
-        else if (Input.GetKey(KeyCode.L))
-            movement.x = 1f;
-        else
-            movement.x = 0f;
-
-        if (Input.GetKeyDown(KeyCode.I) && jumpLeft > 0)
-            Jump();
-    }
 
     void Movement()
     {
@@ -134,6 +133,8 @@ public class PlayerController : NetworkBehaviour
         bool isJumping = Mathf.Abs(rb.velocity.y) > jumpVelocityThreshold;
         animator.SetFloat("Moving", isJumping ? 0 : Mathf.Abs(movement.x));
         animator.SetBool("IsJumping", isJumping);
+        animator.SetBool("ExplodePlayer", explodePlayer);
+        animator.SetBool("Drown", drown);
     }
 
     void Facing()
@@ -146,42 +147,97 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    [ServerRpc]
-    private void UpdateFacingServerRpc(bool isFacingRight)
-    {
-        netFacingRight.Value = isFacingRight;
-    }
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (IsOwner)
         {
-            if (!other.gameObject.CompareTag("Tanko") && !other.gameObject.CompareTag("Gaspi"))
+            PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
+
+            // Memeriksa kecepatan jatuh
+            if (rb.velocity.y <= fallThreshold)
             {
-                jumpLeft = 1;
+                if (respawnScript != null)
+                {
+                    // Jalankan Coroutine untuk ledakan dan respawn
+                    StartCoroutine(HandleExplosionAndRespawn(respawnScript));
+                }
+                return;
             }
-            else if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
+
+            if (other.gameObject.CompareTag("Water"))
             {
-                if (transform.position.y < other.transform.position.y)
+                // Debug: Pastikan OnTriggerEnter mendeteksi air
+                Debug.Log("Player touched water, starting HandleDrownAndRespawn...");
+                StartCoroutine(HandleDrownAndRespawn(respawnScript));
+            }
+
+            if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
+            {
+                if (other.transform.position.y > transform.position.y)
                 {
                     jumpLeft = 0;
-                    pressedPlayer = 1;
+                    drown = true;
+                    Debug.Log("Ada player diatasnya");
                 }
                 else
                 {
                     jumpLeft = 1;
                 }
             }
-
-            if (rb.velocity.y <= fallThreshold)
+            else // Jika objek lain bukan Gaspi atau Tanko
             {
-                PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
-                if (respawnScript != null)
+                // Jika berada di atas objek ini
+                if (other.transform.position.y > transform.position.y && other.gameObject.CompareTag("BasicBox"))
                 {
-                    respawnScript.RespawnPlayer();
+                    if (respawnScript != null)
+                    {
+                        // Jalankan Coroutine untuk ledakan dan respawn
+                        StartCoroutine(HandleExplosionAndRespawn(respawnScript));
+                        Debug.Log("Ada sesuatu diatasnya");
+                    }
+                    return;
+                }
+                else
+                {
+                    jumpLeft = 1; // Objek lain berada di bawah
                 }
             }
         }
+    }
+
+    // Coroutine untuk menangani ledakan dan respawn ketika player jatuh terlalu jauh
+    IEnumerator HandleExplosionAndRespawn(PlayerRespawn respawnScript)
+    {
+        explodePlayer = true; // Aktifkan animasi ledakan
+
+        // Tunggu durasi animasi ledakan
+        AnimatorStateInfo animStateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        float animLength = animStateInfo.length;
+        float customDuration = animLength * 2f; // Ganti durasi jika perlu
+        yield return new WaitForSeconds(customDuration); // Tunggu sesuai durasi kustom
+
+        // Reset explodePlayer setelah animasi selesai
+        explodePlayer = false;
+
+        // Respawn player setelah animasi selesai
+        respawnScript.RespawnPlayer();
+        Debug.Log("Player Death and Respawned");
+    }
+
+
+    IEnumerator HandleDrownAndRespawn(PlayerRespawn respawnScript)
+    {
+        drown = true; // Aktifkan animasi tenggelam
+
+        yield return new WaitForSeconds(2f); // Tunggu 2 detik
+
+        // Respawn player setelah durasi
+        respawnScript.RespawnPlayer();
+        Debug.Log("Player Death and Respawned");
+
+        // Reset drown
+        drown = false;
+
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -190,7 +246,28 @@ public class PlayerController : NetworkBehaviour
         {
             jumpLeft = 1;
             pressedPlayer = 0;
+            drown = false;
+
         }
+    }
+
+    [ServerRpc]
+    private void UpdateAnimationMovingServerRpc(float newMovingValue)
+    {
+        netAnimationMoving.Value = newMovingValue;
+    }
+
+    [ServerRpc]
+    private void UpdateAnimationBoolsServerRpc(bool newExplodePlayer, bool newDrown)
+    {
+        netExplodePlayer.Value = newExplodePlayer;
+        netDrown.Value = newDrown;
+    }
+
+    [ServerRpc]
+    private void UpdateFacingServerRpc(bool isFacingRight)
+    {
+        netFacingRight.Value = isFacingRight;
     }
 
     [ServerRpc]
