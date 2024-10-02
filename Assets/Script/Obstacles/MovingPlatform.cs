@@ -55,36 +55,37 @@ public class MovingPlatform : NetworkBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         NetworkObject networkObject = other.gameObject.GetComponent<NetworkObject>();
-        if (networkObject != null)
+        if (networkObject != null && networkObject.GetComponent<PlayerController>() != null)
         {
-            SetParentClientRpc(networkObject);
+            networkObject.GetComponent<PlayerController>().SetParentClientRpc(gameObject.name);
+            //SetParentClientRpc(networkObject);
         }
     }
 
     private void OnCollisionExit2D(Collision2D other)
     {
         NetworkObject networkObject = other.gameObject.GetComponent<NetworkObject>();
-        if (networkObject != null)
+        if (networkObject != null && networkObject.GetComponent<PlayerController>() != null)
         {
-            UnsetParentClientRpc(networkObject);
+            networkObject.GetComponent<PlayerController>().UnsetParentClientRpc();
         }
     }
 
-    [ClientRpc]
-    private void SetParentClientRpc(NetworkObjectReference networkObjectRef)
-    {
-        if (networkObjectRef.TryGet(out NetworkObject networkObject))
-        {
-            networkObject.transform.SetParent(transform);
-        }
-    }
+    // [ClientRpc]
+    // private void SetParentClientRpc(NetworkObjectReference networkObjectRef)
+    // {
+    //     if (networkObjectRef.TryGet(out NetworkObject networkObject))
+    //     {
+    //         networkObject.GetComponent<PlayerController>()
+    //     }
+    // }
 
-    [ClientRpc]
-    private void UnsetParentClientRpc(NetworkObjectReference networkObjectRef)
-    {
-        if (networkObjectRef.TryGet(out NetworkObject networkObject))
-        {
-            networkObject.transform.SetParent(null);
-        }
-    }
+    // [ClientRpc]
+    // private void UnsetParentClientRpc(NetworkObjectReference networkObjectRef)
+    // {
+    //     if (networkObjectRef.TryGet(out NetworkObject networkObject))
+    //     {
+    //         networkObject.transform.SetParent(null);
+    //     }
+    // }
 }

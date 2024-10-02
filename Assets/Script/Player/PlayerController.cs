@@ -291,4 +291,18 @@ public class PlayerController : NetworkBehaviour
         trigger.triggers.Add(pointerDown);
         trigger.triggers.Add(pointerUp);
     }
+
+    [ClientRpc]
+    public void SetParentClientRpc(string platformName)
+    {
+        Debug.Log("PARENT IS CALLED");
+        GameObject platform = GameObject.Find(platformName);
+        transform.SetParent(platform.transform);
+    }
+
+    [ClientRpc]
+    public void UnsetParentClientRpc()
+    {
+        transform.SetParent(null);
+    }
 }

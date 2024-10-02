@@ -2069,7 +2069,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetPosition: {x: 169.6, y: 0.01, z: 0}
-  speed: 1
+  speed: 3
 --- !u!212 &247621688
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6161,6 +6161,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7743056226843977122, guid: 8cd22f2172a9740919bd1ab79ae82cc1, type: 3}
+      propertyPath: m_UiScaleMode
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6340,7 +6344,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetPosition: {x: 156.93, y: 0.01, z: 0}
-  speed: 1
+  speed: 3
 --- !u!212 &982791304
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10178,7 +10182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetPosition: {x: 154.14, y: 0.01, z: 0}
-  speed: 1
+  speed: 3
 --- !u!212 &1471085280
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -12902,7 +12906,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetPosition: {x: 28.12, y: 0.01, z: 0}
-  speed: 1
+  speed: 3
 --- !u!61 &1942710932
 BoxCollider2D:
   m_ObjectHideFlags: 0
