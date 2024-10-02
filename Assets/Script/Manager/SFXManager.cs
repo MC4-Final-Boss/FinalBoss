@@ -48,7 +48,9 @@ public class SFXManager : MonoBehaviour
     // Play jumping sound
     public void PlayJumpingSFX()
     {
+        StopWalkingSFX();
         PlaySFX(jumping);
+    
     }
 
     // Additional methods for other sound effects
@@ -69,6 +71,7 @@ public class SFXManager : MonoBehaviour
 
     public void PlayButtonPressSFX()
     {
+        StopWalkingSFX();
         PlaySFX(buttonPress);
     }
 }
