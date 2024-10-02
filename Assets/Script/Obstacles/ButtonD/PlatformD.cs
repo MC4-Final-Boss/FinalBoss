@@ -15,6 +15,8 @@ public class PlatformD : MonoBehaviour
     public Vector3 targetPosition;
     private Vector3 initialPosition;
 
+     private SFXManager sfxManager; 
+
     private bool isWaiting = false; // To track if the platform is already waiting
 
     private void Start()
@@ -22,6 +24,7 @@ public class PlatformD : MonoBehaviour
         buttonD1Status = buttonD1Object.GetComponent<ButtonD1>();
         buttonD2Status = buttonD2Object.GetComponent<ButtonD2>();
         initialPosition = movementPlatform.transform.localPosition; // Get the initial position of the platform
+        sfxManager = FindObjectOfType<SFXManager>();
     }
 
     private void Update()
@@ -73,6 +76,11 @@ public class PlatformD : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         other.transform.SetParent(movementPlatform.transform); // Attach the object to the platform
+        // Play button press sound
+        if (sfxManager != null)
+        {
+            sfxManager.PlayPlatformMovingSFX();
+        }
     }
 
 }
