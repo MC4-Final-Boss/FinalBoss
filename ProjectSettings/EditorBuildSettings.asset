@@ -15,18 +15,18 @@ EditorBuildSettings:
     path: Assets/Scenes/NewBustlingCityScene.unity
     guid: 4ec60209d19a74e76ab4556e0d5389e8
   - enabled: 0
-    path: Assets/Scenes/LevelScene.unity
+    path: Assets/Scenes/Scene Backup/LevelScene.unity
     guid: a90a1a869287c41249d292369da58642
   - enabled: 0
-    path: Assets/Scenes/BustlingCityScene.unity
+    path: Assets/Scenes/Scene Backup/BustlingCityScene.unity
     guid: e90f6e108cd3449cb9e23c12707105ba
   - enabled: 0
-    path: Assets/Scenes/YurikoBustlingCityScene.unity
+    path: Assets/Scenes/Scene Backup/YurikoBustlingCityScene.unity
     guid: fc8c3d7c36dfb4d31b2ab057a3739a84
   - enabled: 0
-    path: Assets/Scenes/IntroScene.unity
+    path: Assets/Scenes/Scene Backup/IntroScene - Copy.unity
     guid: 1bb529de263144c8c9c7381b6a04dc11
   - enabled: 0
-    path: Assets/Scenes/MenuScene.unity
+    path: Assets/Scenes/Scene Backup/MenuScene.unity
     guid: 9edff0978f5e74a5eb5cce15fb037ae1
   m_configObjects: {}
