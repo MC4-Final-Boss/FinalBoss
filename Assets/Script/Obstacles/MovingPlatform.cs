@@ -52,25 +52,36 @@ public class MovingPlatform : NetworkBehaviour
         transform.localPosition = Vector3.MoveTowards(transform.localPosition, target, speed * Time.deltaTime);
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        NetworkObject networkObject = other.gameObject.GetComponent<NetworkObject>();
-        if (networkObject != null && networkObject.GetComponent<PlayerController>() != null)
-        {
-            
-            networkObject.GetComponent<PlayerController>().SetParentClientRpc(gameObject.name);
-            //SetParentClientRpc(networkObject);
-        }
-    }
+    // private void OnCollisionEnter2D(Collision2D other)
+    // {
+    //     NetworkObject networkObject = other.gameObject.GetComponent<NetworkObject>();
+    //     if (networkObject != null && networkObject.GetComponent<PlayerController>() != null)
+    //     {
+    //         SetParentServerRpc(gameObject.name, other.gameObject.name);
+    //         //networkObject.GetComponent<PlayerController>().SetParentClientRpc(gameObject.name);
+    //         //SetParentClientRpc(networkObject);
+    //     }
+    // }
 
-    private void OnCollisionExit2D(Collision2D other)
-    {
-        NetworkObject networkObject = other.gameObject.GetComponent<NetworkObject>();
-        if (networkObject != null && networkObject.GetComponent<PlayerController>() != null)
-        {
-            networkObject.GetComponent<PlayerController>().UnsetParentClientRpc();
-        }
-    }
+    // private void OnCollisionExit2D(Collision2D other)
+    // {
+    //     NetworkObject networkObject = other.gameObject.GetComponent<NetworkObject>();
+    //     if (networkObject != null && networkObject.GetComponent<PlayerController>() != null)
+    //     {
+    //         UnsetParentServerRpc(other.gameObject.name);
+    //         //networkObject.GetComponent<PlayerController>().UnsetParentClientRpc();
+    //     }
+    // }
+
+    // [ServerRpc(RequireOwnership = false)]
+    // private void SetParentServerRpc(string platformName, string playerName) {
+    //     GameObject.Find(playerName).GetComponent<PlayerController>().SetParentClientRpc(platformName);
+    // }
+
+    // [ServerRpc(RequireOwnership = false)]
+    // private void UnsetParentServerRpc(string playerName) {
+    //     GameObject.Find(playerName).GetComponent<PlayerController>().UnsetParentClientRpc();
+    // }
 
     // [ClientRpc]
     // private void SetParentClientRpc(NetworkObjectReference networkObjectRef)

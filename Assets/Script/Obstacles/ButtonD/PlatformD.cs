@@ -43,6 +43,11 @@ public class PlatformD : MonoBehaviour
             if (!isWaiting)
             {
                 StartCoroutine(WaitBeforeReturn());
+                // Play button press sound
+                if (sfxManager != null)
+                {
+                    sfxManager.PlayPlatformMovingSFX();
+                }
             }
         }
 
@@ -67,7 +72,7 @@ public class PlatformD : MonoBehaviour
     private IEnumerator WaitBeforeReturn()
     {
         isWaiting = true; // Set the waiting flag to true
-        yield return new WaitForSeconds(3); // Wait for 3 seconds
+        yield return new WaitForSeconds(12); // Wait for 3 seconds
 
         buttonActive = false; // Set the buttonActive to false to move the platform back
         isWaiting = false; // Reset the waiting flag
@@ -76,11 +81,7 @@ public class PlatformD : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         other.transform.SetParent(movementPlatform.transform); // Attach the object to the platform
-        // Play button press sound
-        if (sfxManager != null)
-        {
-            sfxManager.PlayPlatformMovingSFX();
-        }
+        
     }
 
 }
