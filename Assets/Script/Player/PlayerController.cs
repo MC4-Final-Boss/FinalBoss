@@ -114,6 +114,7 @@ public class PlayerController : NetworkBehaviour
                 sfxManager.StopWalkingSFX();
             }
         }
+        
     }
 
 
@@ -220,6 +221,12 @@ public class PlayerController : NetworkBehaviour
     IEnumerator HandleExplosionAndRespawn(PlayerRespawn respawnScript)
     {
         explodePlayer = true; // Aktifkan animasi ledakan
+
+        // Play explosion sound effect
+        if (sfxManager != null)
+        {
+            sfxManager.PlayExplodingSFX();
+        }
 
         // Tunggu durasi animasi ledakan
         AnimatorStateInfo animStateInfo = animator.GetCurrentAnimatorStateInfo(0);

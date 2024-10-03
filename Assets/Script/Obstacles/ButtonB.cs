@@ -12,9 +12,12 @@ public class ButtonB
     private bool platformMove = false;
     private bool buttonActive = false;
 
+     private SFXManager sfxManager; 
+
     private void Start()
     {
         initialPosition = movementGround.transform.localPosition;  
+        sfxManager = FindObjectOfType<SFXManager>();
     }
 
     private void Update()
@@ -45,6 +48,11 @@ public class ButtonB
             platformMove = true;
             buttonActive = true;
         }
+         // Play button press sound
+            if (sfxManager != null)
+            {
+                sfxManager.PlayButtonPressSFX();
+            }
     }
 
     private void OnTriggerExit2D(Collider2D other)

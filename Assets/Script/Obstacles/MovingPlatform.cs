@@ -57,6 +57,7 @@ public class MovingPlatform : NetworkBehaviour
         NetworkObject networkObject = other.gameObject.GetComponent<NetworkObject>();
         if (networkObject != null && networkObject.GetComponent<PlayerController>() != null)
         {
+            
             networkObject.GetComponent<PlayerController>().SetParentClientRpc(gameObject.name);
             //SetParentClientRpc(networkObject);
         }
