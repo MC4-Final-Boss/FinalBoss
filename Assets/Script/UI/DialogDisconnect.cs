@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using Unity.Netcode;
 
 public class DialogDisconnect : MonoBehaviour
 {
@@ -38,6 +39,7 @@ public class DialogDisconnect : MonoBehaviour
 
         // Load the menu scene
         SceneManager.LoadScene("RizuMenuScene");
+        NetworkManager.Singleton.Shutdown();
     }
 
     // This function can be called when a disconnect happens in your game (for example, in a network manager or connection handler)

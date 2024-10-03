@@ -214,7 +214,7 @@ public class PlayerNetworkManager : NetworkBehaviour
     private void CloseGameOnDisconnect()
     {
         Debug.Log("Closing game and returning to main menu due to disconnection.");
-        NetworkManager.Singleton.Shutdown();
+        // NetworkManager.Singleton.Shutdown();
         SceneManager.LoadScene("RizuMenuScene");
     }
 

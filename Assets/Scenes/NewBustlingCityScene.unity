@@ -2152,7 +2152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetPosition: {x: 169.6, y: 0.01, z: 0}
-  speed: 3
+  speed: 2
 --- !u!212 &247621688
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7018,7 +7018,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetPosition: {x: 156.93, y: 0.01, z: 0}
-  speed: 3
+  speed: 2
 --- !u!212 &982791304
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11405,7 +11405,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetPosition: {x: 154.14, y: 0.01, z: 0}
-  speed: 3
+  speed: 2
 --- !u!212 &1471085280
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -14294,7 +14294,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetPosition: {x: 28.12, y: 0.01, z: 0}
-  speed: 3
+  speed: 2
 --- !u!61 &1942710932
 BoxCollider2D:
   m_ObjectHideFlags: 0
