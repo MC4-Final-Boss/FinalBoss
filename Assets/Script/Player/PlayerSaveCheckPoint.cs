@@ -7,13 +7,11 @@ public class PlayerSaveCheckPoint : MonoBehaviour
 
     public void SaveCheckpoint(Vector3 position)
     {
-
-
         PlayerPrefs.SetFloat("CheckpointX", position.x);
         PlayerPrefs.SetFloat("CheckpointY", position.y);
         PlayerPrefs.SetFloat("CheckpointZ", position.z);
         PlayerPrefs.Save(); 
-        // Debug.Log("Checkpoint saved at: " + position);
+        Debug.Log("Checkpoint saved at: " + position);
     }
 
     public Vector3 GetCheckpointPosition()
@@ -32,6 +30,7 @@ public class PlayerSaveCheckPoint : MonoBehaviour
         PlayerPrefs.DeleteKey("CheckpointX");
         PlayerPrefs.DeleteKey("CheckpointY");
         PlayerPrefs.DeleteKey("CheckpointZ");
+        PlayerPrefs.DeleteAll();
         PlayerPrefs.Save(); // Save changes to PlayerPrefs
         Debug.Log("Checkpoint cleared.");
     }

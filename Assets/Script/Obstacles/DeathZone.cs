@@ -4,10 +4,13 @@ using Unity.Netcode;
 public class DeathZone : NetworkBehaviour
 {
     private GameStateManager gameStateManager;
+    // private PlayerRespawn playerRespawn;
 
     private void Start()
     {
         gameStateManager = FindObjectOfType<GameStateManager>();
+        // playerRespawn = FindObjectOfType<PlayerRespawn>();
+
         if (gameStateManager == null)
         {
             Debug.LogError("GameStateManager not found in the scene!");

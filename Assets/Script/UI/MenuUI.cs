@@ -15,6 +15,8 @@ public class RoomUIManager : MonoBehaviour
     [SerializeField] private TMP_InputField relayCodeInput; // client input kode relay
     [SerializeField] private Button joinButton; // join dengan kode relay
     [SerializeField] private Button backButton; // back button
+    private PlayerSaveCheckPoint saveCheckpoint;
+
 
     private void Start()
     {
@@ -24,9 +26,12 @@ public class RoomUIManager : MonoBehaviour
         statusText.gameObject.SetActive(false);
         joinButton.gameObject.SetActive(false);
         relayCodeText.gameObject.SetActive(false);
+        saveCheckpoint = GetComponent<PlayerSaveCheckPoint>();
+
 
         // Create button functionality
-        createButton.onClick.AddListener(async () => {
+        createButton.onClick.AddListener(async () =>
+        {
             Debug.Log("RoomUIManager: Create button clicked");
             hostCodePanel.SetActive(false);
             createButton.gameObject.SetActive(false);
@@ -49,13 +54,15 @@ public class RoomUIManager : MonoBehaviour
         });
 
         // Client button functionality
-        clientButton.onClick.AddListener(() => {
+        clientButton.onClick.AddListener(() =>
+        {
             Debug.Log("RoomUIManager: Client button clicked");
             ShowClientInputPanel();
         });
 
         // Join button functionality
-                joinButton.onClick.AddListener(async () => {
+        joinButton.onClick.AddListener(async () =>
+        {
             bool joinSuccess = await RelayManager.Instance.JoinRelay(relayCodeInput.text);
             if (joinSuccess)
             {
@@ -75,7 +82,8 @@ public class RoomUIManager : MonoBehaviour
 
 
         // Back button functionality
-        backButton.onClick.AddListener(() => {
+        backButton.onClick.AddListener(() =>
+        {
             if (clientInputPanel.activeSelf || hostCodePanel.activeSelf)
             {
                 // Close client input panel and show create & client buttons
@@ -96,7 +104,8 @@ public class RoomUIManager : MonoBehaviour
         });
 
         // Client connected callback
-        NetworkManager.Singleton.OnClientConnectedCallback += (id) => {
+        NetworkManager.Singleton.OnClientConnectedCallback += (id) =>
+        {
             Debug.Log($"RoomUIManager: Client connected callback. ID: {id}");
             UpdateUI();
             if (NetworkManager.Singleton.IsHost && NetworkManager.Singleton.ConnectedClientsList.Count > 1)
@@ -129,7 +138,7 @@ public class RoomUIManager : MonoBehaviour
         createButton.gameObject.SetActive(!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost);
         clientButton.gameObject.SetActive(!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost);
         relayCodeText.gameObject.SetActive(true);
-        statusText.color = Color.white; 
+        statusText.color = Color.white;
         statusText.gameObject.SetActive(true);
 
         if (NetworkManager.Singleton.IsHost)
@@ -148,6 +157,7 @@ public class RoomUIManager : MonoBehaviour
 
     private void LoadGameScene()
     {
+        saveCheckpoint.ClearCheckpoint();
         if (NetworkManager.Singleton.IsServer)
         {
             NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);

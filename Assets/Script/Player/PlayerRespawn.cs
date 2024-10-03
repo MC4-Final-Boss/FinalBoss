@@ -23,7 +23,7 @@ public class PlayerRespawn : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void RespawnPlayerServerRpc() 
+    public void RespawnPlayerServerRpc()
     {
         RespawnPlayerClientRpc();
     }
@@ -31,10 +31,12 @@ public class PlayerRespawn : NetworkBehaviour
     [ClientRpc]
     public void RespawnPlayerClientRpc()
     {
+        float checkpointX = PlayerPrefs.GetFloat("CheckpointX");
+        Debug.Log("Nilai CheckpointX: " + checkpointX);
         if (PlayerPrefs.HasKey("CheckpointX"))
         {
             Vector3 checkpointPosition = saveCheckpoint.GetCheckpointPosition();
-            
+
             if (IsHost)
             {
                 respawnPosition = checkpointPosition;

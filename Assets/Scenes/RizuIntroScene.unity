@@ -329,6 +329,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: bgmManager
       objectReference: {fileID: 0}
+    - target: {fileID: 4183840863413219633, guid: 3cc27d70ad3434c9ba9c46ea078d94a7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7879249830349162458, guid: 3cc27d70ad3434c9ba9c46ea078d94a7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 13.329381

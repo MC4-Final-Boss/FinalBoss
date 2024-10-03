@@ -5,7 +5,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
-using System.Linq;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -19,8 +18,9 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float fallThreshold = -15f;
     private SFXManager sfxManager;
 
-    [SerializeField] private float jumpVelocityThreshold = 0.1f;
 
+    [SerializeField] private float jumpVelocityThreshold = 0.1f;
+    private PlayerRespawn playerRespawn;
     private Button leftButton;
     private Button rightButton;
     private Button jumpButton;
@@ -37,7 +37,6 @@ public class PlayerController : NetworkBehaviour
 
     void Start()
     {
-
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         sfxManager = FindObjectOfType<SFXManager>();
@@ -45,6 +44,9 @@ public class PlayerController : NetworkBehaviour
         rightButton = GameObject.Find("Right Button").GetComponent<Button>();
         jumpButton = GameObject.Find("Jump Button").GetComponent<Button>();
         restartButton = GameObject.Find("Restart Button").GetComponent<Button>();
+        playerRespawn = GetComponent<PlayerRespawn>();
+        playerRespawn.RespawnPlayerServerRpc();
+        Debug.Log("Call respawn for the first time");
 
         if (IsOwner)
         {
@@ -83,6 +85,7 @@ public class PlayerController : NetworkBehaviour
         {
             Facing();
             Animations();
+            HandleInput();
             UpdatePositionServerRpc(rb.position);
             UpdateAnimationMovingServerRpc(Mathf.Abs(movement.x));
             UpdateAnimationBoolsServerRpc(explodePlayer, drown);
@@ -115,6 +118,18 @@ public class PlayerController : NetworkBehaviour
             SceneManager.LoadScene("YurikoBustlingCityScene");
         }
     }
+    void HandleInput()
+    {
+        if (Input.GetKey(KeyCode.J))
+            movement.x = -1f;
+        else if (Input.GetKey(KeyCode.L))
+            movement.x = 1f;
+        else
+            movement.x = 0f;
+
+        if (Input.GetKeyDown(KeyCode.I))
+            Jump();
+    }
 
 
     void Movement()
@@ -128,14 +143,14 @@ public class PlayerController : NetworkBehaviour
         {
             if (sfxManager != null)
             {
-                sfxManager.PlayWalkingSFX();
+                // sfxManager.PlayWalkingSFX();
             }
         }
         else
         {
             if (sfxManager != null)
             {
-                sfxManager.StopWalkingSFX();
+                // sfxManager.StopWalkingSFX();
             }
         }
 
@@ -172,7 +187,7 @@ public class PlayerController : NetworkBehaviour
                 // If not moving horizontally, just jump straight up
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             }
-            
+
         }
     }
 
@@ -180,7 +195,7 @@ public class PlayerController : NetworkBehaviour
     {
         bool isJumping = Mathf.Abs(rb.velocity.y) > jumpVelocityThreshold;
         animator.SetFloat("Moving", isJumping ? 0 : Mathf.Abs(movement.x));
-        animator.SetBool("IsJumping", isJumping);
+        // animator.SetBool("IsJumping", isJumping);
         animator.SetBool("ExplodePlayer", explodePlayer);
         animator.SetBool("Drown", drown);
     }
