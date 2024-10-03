@@ -91,6 +91,9 @@ public class PlayerController : NetworkBehaviour
             animator.SetBool("ExplodePlayer", netExplodePlayer.Value);
             animator.SetBool("Drown", netDrown.Value);
         }
+
+        Debug.Log(isCollidingWithObjectBelow);
+        Debug.Log(OnGround);
     }
 
 
@@ -153,6 +156,8 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+
+
     void Animations()
     {
         bool isJumping = Mathf.Abs(rb.velocity.y) > jumpVelocityThreshold;
@@ -178,13 +183,6 @@ public class PlayerController : NetworkBehaviour
         {
             PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
 
-            //Platform
-            // if (other.gameObject.CompareTag("Platform")) {
-            //     Debug.Log("Kena platform");
-            //     transform.SetParent(other.gameObject.transform);
-            // }
-
-            // Memeriksa kecepatan jatuh
             if (rb.velocity.y <= fallThreshold)
             {
                 if (respawnScript != null)
