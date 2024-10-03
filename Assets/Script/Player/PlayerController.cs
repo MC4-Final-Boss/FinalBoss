@@ -121,7 +121,7 @@ public class PlayerController : NetworkBehaviour
 
     public void Jump()
     {
-        if (IsOwner && pressedPlayer == 0 && jumpLeft > 0)
+        if (IsOwner && pressedPlayer == 0 && OnGround)
         {
                 // Create a jump direction that combines upward and horizontal movement
             Vector2 jumpDirection = Vector2.up;
@@ -149,9 +149,6 @@ public class PlayerController : NetworkBehaviour
                 // If not moving horizontally, just jump straight up
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             }
-
-            jumpLeft--;
-
             
         }
     }
