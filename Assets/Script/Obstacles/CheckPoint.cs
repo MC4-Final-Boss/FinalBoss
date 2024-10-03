@@ -9,7 +9,7 @@ public class Checkpoint : MonoBehaviour
     private void Start()
     {
         // hasTriggered = false;
-        // saveCheckpoint = GetComponent<PlayerSaveCheckPoint>();
+        saveCheckpoint = GetComponent<PlayerSaveCheckPoint>();
 
         if (saveCheckpoint == null)
         {
@@ -28,20 +28,20 @@ public class Checkpoint : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.gameObject.CompareTag("Tanko"))
-        {
+    // private void OnTriggerExit2D(Collider2D other)
+    // {
+    //     if (other.gameObject.CompareTag("Tanko"))
+    //     {
             // hasTriggered = false;
-        }
-    }
+    //     }
+    // }
 
     private void SaveCheckpoint()
     {
         if (saveCheckpoint != null)
         {
-            // saveCheckpoint.SaveCheckpoint(transform.position);
-            saveCheckpoint.ClearCheckpoint();
+            saveCheckpoint.SaveCheckpoint(transform.position);
+            // saveCheckpoint.ClearCheckpoint();
         }
     }
 }

@@ -119,7 +119,7 @@ public class GaspiController : NetworkBehaviour
             PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
             if (respawnScript != null)
             {
-                respawnScript.RespawnPlayer();
+                // respawnScript.RespawnPlayer();
                 print("Player Death");
             }
         }

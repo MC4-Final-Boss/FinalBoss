@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 using System.Collections;
+using UnityEngine.SceneManagement;
+
 
 
 public class PlayerController : NetworkBehaviour
@@ -22,10 +24,13 @@ public class PlayerController : NetworkBehaviour
     private Button leftButton;
     private Button rightButton;
     private Button jumpButton;
+    private Button restartButton;
+
 
     [SerializeField] private Rigidbody2D rb;
     private Animator animator;
     private Vector3 movement;
+    private float horizontalAxis;
 
     private NetworkVariable<Vector2> netPosition = new NetworkVariable<Vector2>();
     private NetworkVariable<bool> netFacingRight = new NetworkVariable<bool>(true);
@@ -41,6 +46,7 @@ public class PlayerController : NetworkBehaviour
         leftButton = GameObject.Find("Left Button").GetComponent<Button>();
         rightButton = GameObject.Find("Right Button").GetComponent<Button>();
         jumpButton = GameObject.Find("Jump Button").GetComponent<Button>();
+        restartButton = GameObject.Find("Restart Button").GetComponent<Button>();
 
         if (IsOwner)
         {
@@ -57,6 +63,8 @@ public class PlayerController : NetworkBehaviour
         {
             jumpButton.onClick.AddListener(Jump);
         }
+        restartButton.onClick.AddListener(RequestRestartServerRpc);
+
     }
 
     void FixedUpdate()
@@ -77,6 +85,7 @@ public class PlayerController : NetworkBehaviour
         {
             Facing();
             Animations();
+            // HandleInput();
             UpdatePositionServerRpc(rb.position);
             UpdateAnimationMovingServerRpc(Mathf.Abs(movement.x));
             UpdateAnimationBoolsServerRpc(explodePlayer, drown);
@@ -91,6 +100,24 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestRestartServerRpc()
+    {
+        RestartClientRpc();
+    }
+
+    [ClientRpc]
+    private void RestartClientRpc()
+    {
+        if (IsServer)
+        {
+            NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);
+        }
+        else
+        {
+            SceneManager.LoadScene("YurikoBustlingCityScene");
+        }
+    }
 
     void Movement()
     {
@@ -146,7 +173,6 @@ public class PlayerController : NetworkBehaviour
             UpdateFacingServerRpc(isFacingRight);
         }
     }
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (IsOwner)
@@ -220,7 +246,7 @@ public class PlayerController : NetworkBehaviour
         explodePlayer = false;
 
         // Respawn player setelah animasi selesai
-        respawnScript.RespawnPlayer();
+        // respawnScript.RespawnPlayer();
         Debug.Log("Player Death and Respawned");
     }
 
@@ -232,7 +258,7 @@ public class PlayerController : NetworkBehaviour
         yield return new WaitForSeconds(2f); // Tunggu 2 detik
 
         // Respawn player setelah durasi
-        respawnScript.RespawnPlayer();
+        // respawnScript.RespawnPlayer();
         Debug.Log("Player Death and Respawned");
 
         // Reset drown

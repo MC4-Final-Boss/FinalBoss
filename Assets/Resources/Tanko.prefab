@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 5799577015289861877}
   - component: {fileID: -8143084775393110596}
   - component: {fileID: 3381341289709391137}
+  - component: {fileID: -2203766130903192930}
   m_Layer: 0
   m_Name: Tanko
   m_TagString: Tanko
@@ -80,7 +81,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1883361279
-  m_SortingLayer: 3
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 3722f3d3f50f148ee88ca5c22d036b23, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -311,6 +312,8 @@ MonoBehaviour:
   jumpForce: 6
   jumpLeft: 1
   pressedPlayer: 0
+  explodePlayer: 0
+  drown: 0
   fallThreshold: -15
   jumpVelocityThreshold: 0.1
   rb: {fileID: 3824376924431759534}
@@ -321,8 +324,20 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8478861834695638335}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 661902b4a694a4433946bdb66e5d4996, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-2203766130903192930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8478861834695638335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e466913513f92452980bf441343cac56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

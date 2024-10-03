@@ -112,7 +112,7 @@ public class TankoController : NetworkBehaviour
 
             if (respawnScript != null)
             {
-                respawnScript.RespawnPlayer();
+                // respawnScript.RespawnPlayer();
                 print("Player Death");
             }
 
