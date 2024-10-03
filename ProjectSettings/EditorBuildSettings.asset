@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/RizuMenuScene.unity
     guid: 336fd9aa4ed434af5983fd96b3b0c104
   - enabled: 1
+    path: Assets/Scenes/YurikoFixScene.unity
+    guid: 7168728845ffb45558e998e17ac80880
+  - enabled: 1
     path: Assets/Scenes/NewBustlingCityScene.unity
     guid: 4ec60209d19a74e76ab4556e0d5389e8
   - enabled: 0

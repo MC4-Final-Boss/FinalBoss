@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
 using System.Linq;
@@ -23,7 +24,7 @@ public class PlayerController : NetworkBehaviour
     private Button leftButton;
     private Button rightButton;
     private Button jumpButton;
-
+    private Button restartButton;
     [SerializeField] private Rigidbody2D rb;
     private Animator animator;
     private Vector3 movement;
@@ -43,6 +44,7 @@ public class PlayerController : NetworkBehaviour
         leftButton = GameObject.Find("Left Button").GetComponent<Button>();
         rightButton = GameObject.Find("Right Button").GetComponent<Button>();
         jumpButton = GameObject.Find("Jump Button").GetComponent<Button>();
+        restartButton = GameObject.Find("Restart Button").GetComponent<Button>();
 
         if (IsOwner)
         {
@@ -59,6 +61,8 @@ public class PlayerController : NetworkBehaviour
         {
             jumpButton.onClick.AddListener(Jump);
         }
+        restartButton.onClick.AddListener(RequestRestartServerRpc);
+
     }
 
     void FixedUpdate()
@@ -93,6 +97,25 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestRestartServerRpc()
+    {
+        RestartClientRpc();
+    }
+
+    [ClientRpc]
+    private void RestartClientRpc()
+    {
+        if (IsServer)
+        {
+            NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);
+        }
+        else
+        {
+            SceneManager.LoadScene("YurikoBustlingCityScene");
+        }
+    }
+
 
     void Movement()
     {
@@ -115,7 +138,7 @@ public class PlayerController : NetworkBehaviour
                 sfxManager.StopWalkingSFX();
             }
         }
-        
+
     }
 
 
@@ -123,7 +146,7 @@ public class PlayerController : NetworkBehaviour
     {
         if (IsOwner && pressedPlayer == 0 && OnGround)
         {
-                // Create a jump direction that combines upward and horizontal movement
+            // Create a jump direction that combines upward and horizontal movement
             Vector2 jumpDirection = Vector2.up;
 
             // Play jumping sound
@@ -131,7 +154,7 @@ public class PlayerController : NetworkBehaviour
             {
                 sfxManager.PlayJumpingSFX();
             }
-            
+
             // Add horizontal movement to the jump if the player is moving
             if (movement.x != 0)
             {
@@ -139,9 +162,9 @@ public class PlayerController : NetworkBehaviour
                 // You can adjust these values to change the feel of the directional jump
                 float horizontalJumpForce = jumpForce * 0.5f; // Adjust this multiplier as needed
                 jumpDirection = new Vector2(movement.x, 1f).normalized;
-                
+
                 // Apply the jump force
-                rb.AddForce(new Vector2(jumpDirection.x * horizontalJumpForce, jumpDirection.y * jumpForce), 
+                rb.AddForce(new Vector2(jumpDirection.x * horizontalJumpForce, jumpDirection.y * jumpForce),
                     ForceMode2D.Impulse);
             }
             else
@@ -294,7 +317,7 @@ public class PlayerController : NetworkBehaviour
         explodePlayer = false;
 
         // Respawn player setelah animasi selesai
-        respawnScript.RespawnPlayer();
+        respawnScript.RespawnPlayerServerRpc();
         Debug.Log("Player Death and Respawned");
     }
 
@@ -305,7 +328,7 @@ public class PlayerController : NetworkBehaviour
         yield return new WaitForSeconds(2f); // Tunggu 2 detik
 
         // Respawn player setelah durasi
-        respawnScript.RespawnPlayer();
+        respawnScript.RespawnPlayerServerRpc();
         Debug.Log("Player Death and Respawned");
 
         // Reset drown
@@ -369,21 +392,20 @@ public class PlayerController : NetworkBehaviour
         transform.SetParent(null);
     }
 
-    private void OnCollisionEnter2D(Collision2D other) {
-        if (!other.gameObject.CompareTag("Platform")) {
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (!other.gameObject.CompareTag("Platform"))
+        {
             UnsetParentServerRpc(gameObject.name);
         }
     }
 
-    private void OnCollisionStay2D(Collision2D other) {
-        if (other.gameObject.CompareTag("Platform")) {
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Platform"))
+        {
             SetParentServerRpc(gameObject.name, other.gameObject.name);
         }
     }
 
-    // private void OnCollisionExit2D(Collision2D other) {
-    //     if (other.gameObject.CompareTag("Platform")) {
-    //         UnsetParentServerRpc(gameObject.name);
-    //     }
-    // }
 }
