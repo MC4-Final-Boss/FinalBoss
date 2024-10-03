@@ -5,13 +5,14 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
-
+using System.Linq;
 
 public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private float movementSpeed = 7f;
     [SerializeField] private float jumpForce = 3f;
-    [SerializeField] private int jumpLeft = 1;
+    [SerializeField] private bool OnGround = true;
+    [SerializeField] private bool isCollidingWithObjectBelow = true;
     [SerializeField] private int pressedPlayer = 0;
     [SerializeField] private bool explodePlayer = false;
     [SerializeField] private bool drown = false;
@@ -36,6 +37,7 @@ public class PlayerController : NetworkBehaviour
 
     void Start()
     {
+
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         sfxManager = FindObjectOfType<SFXManager>();
@@ -117,29 +119,32 @@ public class PlayerController : NetworkBehaviour
 
     void Movement()
     {
-        Vector2 currentMovement = new Vector2(movement.x * movementSpeed, rb.velocity.y);
+        float currentYVelocity = rb.velocity.y;
+        Vector2 currentMovement = new Vector2(movement.x * movementSpeed, currentYVelocity);
+
         rb.velocity = currentMovement;
 
         if (Mathf.Abs(movement.x) > 0.01f)
         {
             if (sfxManager != null)
             {
-                sfxManager.PlayWalkingSFX(); // Start playing walking sound
+                sfxManager.PlayWalkingSFX();
             }
         }
         else
         {
             if (sfxManager != null)
             {
-                sfxManager.StopWalkingSFX(); // Stop walking sound when not moving
+                sfxManager.StopWalkingSFX();
             }
         }
 
     }
 
+
     public void Jump()
     {
-        if (IsOwner && pressedPlayer == 0 && jumpLeft > 0)
+        if (IsOwner && pressedPlayer == 0 && OnGround)
         {
             // Create a jump direction that combines upward and horizontal movement
             Vector2 jumpDirection = Vector2.up;
@@ -167,10 +172,7 @@ public class PlayerController : NetworkBehaviour
                 // If not moving horizontally, just jump straight up
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             }
-
-            jumpLeft--;
-
-
+            
         }
     }
 
@@ -227,13 +229,13 @@ public class PlayerController : NetworkBehaviour
             {
                 if (other.transform.position.y > transform.position.y)
                 {
-                    jumpLeft = 0;
-                    drown = true;
+                    OnGround = false;
                     Debug.Log("Ada player diatasnya");
                 }
                 else
                 {
-                    jumpLeft = 1;
+                    isCollidingWithObjectBelow = true;
+                    OnGround = true;
                 }
             }
             else // Jika objek lain bukan Gaspi atau Tanko
@@ -251,13 +253,50 @@ public class PlayerController : NetworkBehaviour
                 }
                 else
                 {
-                    jumpLeft = 1; // Objek lain berada di bawah
+                    if (other.gameObject.CompareTag("Ground"))
+                    {
+                        rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, 0));
+                        isCollidingWithObjectBelow = true;
+                        OnGround = true;
+                    }
+                    else
+                    {
+                        isCollidingWithObjectBelow = true;
+                        OnGround = true; // Objek lain berada di bawah
+                    }
                 }
             }
         }
     }
 
-    // Coroutine untuk menangani ledakan dan respawn ketika player jatuh terlalu jauh
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
+        {
+            if (other.transform.position.y > transform.position.y)
+            {
+                if (isCollidingWithObjectBelow)
+                {
+                    OnGround = true;
+                }
+                else
+                {
+                    OnGround = false;
+                }
+            }
+            else
+            {
+                isCollidingWithObjectBelow = false;
+                OnGround = false;
+            }
+        }
+        else
+        {
+            isCollidingWithObjectBelow = false;
+            OnGround = false;
+        }
+    }
+
     IEnumerator HandleExplosionAndRespawn(PlayerRespawn respawnScript)
     {
         // Play explosion sound effect
@@ -282,7 +321,6 @@ public class PlayerController : NetworkBehaviour
         Debug.Log("Player Death and Respawned");
     }
 
-
     IEnumerator HandleDrownAndRespawn(PlayerRespawn respawnScript)
     {
         drown = true; // Aktifkan animasi tenggelam
@@ -298,16 +336,6 @@ public class PlayerController : NetworkBehaviour
 
     }
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if ((other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi")))
-        {
-            jumpLeft = 1;
-            pressedPlayer = 0;
-            drown = false;
-
-        }
-    }
 
     [ServerRpc]
     private void UpdateAnimationMovingServerRpc(float newMovingValue)
