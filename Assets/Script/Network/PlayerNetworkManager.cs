@@ -168,6 +168,7 @@ public class PlayerNetworkManager : NetworkBehaviour
             {
                 Debug.LogWarning("Client disconnected unexpectedly!");
                 dialogDisconnect.ShowDisconnectAlert("You have been disconnected from the server.");
+                CloseGameOnDisconnect();
                 wasConnected = false;
             }
             else if (!wasConnected && NetworkManager.Singleton.IsConnectedClient)

@@ -200,6 +200,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9de42daa551e84696b237d7406cdb2ad, type: 3}
+--- !u!4 &75153875 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3009303944470935942, guid: 9de42daa551e84696b237d7406cdb2ad, type: 3}
+  m_PrefabInstance: {fileID: 75153874}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &81325458
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1613,8 +1618,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a7015ee1cac54e50b5bddc88dd53fcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smoothTime: 0
-  cameraOffset: {x: 2, y: 2.5, z: -0.3}
+  target: {fileID: 75153875}
+  smoothTime: 0.25
 --- !u!1 &279318315
 GameObject:
   m_ObjectHideFlags: 0
@@ -10356,7 +10361,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetPosition: {x: 28.12, y: 0.01, z: 0}
-  speed: 1
+  speed: 3
 --- !u!61 &1942710932
 BoxCollider2D:
   m_ObjectHideFlags: 0

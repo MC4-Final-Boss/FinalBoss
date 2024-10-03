@@ -138,13 +138,34 @@ public class PlayerController : NetworkBehaviour
                 sfxManager.StopWalkingSFX(); // Stop walking sound when not moving
             }
         }
+        
     }
 
     public void Jump()
     {
         if (IsOwner && pressedPlayer == 0 && jumpLeft > 0)
         {
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                // Create a jump direction that combines upward and horizontal movement
+            Vector2 jumpDirection = Vector2.up;
+            
+            // Add horizontal movement to the jump if the player is moving
+            if (movement.x != 0)
+            {
+                // Combine vertical and horizontal movement
+                // You can adjust these values to change the feel of the directional jump
+                float horizontalJumpForce = jumpForce * 0.5f; // Adjust this multiplier as needed
+                jumpDirection = new Vector2(movement.x, 1f).normalized;
+                
+                // Apply the jump force
+                rb.AddForce(new Vector2(jumpDirection.x * horizontalJumpForce, jumpDirection.y * jumpForce), 
+                    ForceMode2D.Impulse);
+            }
+            else
+            {
+                // If not moving horizontally, just jump straight up
+                rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            }
+
             jumpLeft--;
 
             // Play jumping sound
@@ -236,6 +257,12 @@ public class PlayerController : NetworkBehaviour
     {
         explodePlayer = true; // Aktifkan animasi ledakan
 
+        // Play explosion sound effect
+        if (sfxManager != null)
+        {
+            sfxManager.PlayExplodingSFX();
+        }
+
         // Tunggu durasi animasi ledakan
         AnimatorStateInfo animStateInfo = animator.GetCurrentAnimatorStateInfo(0);
         float animLength = animStateInfo.length;
@@ -316,5 +343,19 @@ public class PlayerController : NetworkBehaviour
 
         trigger.triggers.Add(pointerDown);
         trigger.triggers.Add(pointerUp);
+    }
+
+    [ClientRpc]
+    public void SetParentClientRpc(string platformName)
+    {
+        Debug.Log("PARENT IS CALLED");
+        GameObject platform = GameObject.Find(platformName);
+        transform.SetParent(platform.transform);
+    }
+
+    [ClientRpc]
+    public void UnsetParentClientRpc()
+    {
+        transform.SetParent(null);
     }
 }
