@@ -217,6 +217,54 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        // Cek apakah objek yang keluar adalah "Tanko" atau "Gaspi"
+        if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
+        {
+            // Cek apakah posisi y dari "Tanko" atau "Gaspi" lebih besar dari posisi y objek saat ini
+            if (other.transform.position.y > transform.position.y)
+            {
+                // Cek apakah objek saat ini sedang berkolisi dengan objek lain
+                Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.1f);
+                bool isCollidingWithOther = false;
+
+                foreach (Collider2D collider in colliders)
+                {
+                    // Abaikan objek ini sendiri
+                    if (collider.gameObject != gameObject && collider.transform.position.y < transform.position.y)
+                    {
+                        isCollidingWithOther = true;
+                        break;
+                    }
+                }
+
+                // Jika ada objek lain di bawah objek saat ini, set OnGround ke true
+                if (isCollidingWithOther)
+                {
+                    OnGround = true;
+                }
+                // Jika tidak ada objek di bawah, set OnGround ke false dan drown ke false
+                else
+                {
+                    OnGround = false;
+                    drown = false;
+                }
+            }
+            else
+            {
+                // Jika posisi y "Tanko" atau "Gaspi" lebih kecil dari posisi y objek saat ini
+                OnGround = false;
+            }
+        }
+        else
+        {
+            // Jika bukan "Tanko" atau "Gaspi", set OnGround ke false
+            OnGround = false;
+        }
+    }
+
+
     // Coroutine untuk menangani ledakan dan respawn ketika player jatuh terlalu jauh
     IEnumerator HandleExplosionAndRespawn(PlayerRespawn respawnScript)
     {
@@ -256,27 +304,6 @@ public class PlayerController : NetworkBehaviour
         // Reset drown
         drown = false;
 
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (new[] { "Ground", "BasicBox" }.Contains(other.gameObject.tag))
-        {
-            OnGround = false;
-        }
-        else if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
-        {
-            if (other.transform.position.y > transform.position.y)
-            {
-                OnGround = true;
-                drown = false;
-                Debug.Log("Ada player diatasnya");
-            }
-            else
-            {
-                OnGround = false;
-            }
-        }
     }
 
 
