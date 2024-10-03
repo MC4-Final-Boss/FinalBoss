@@ -11,6 +11,7 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float movementSpeed = 7f;
     [SerializeField] private float jumpForce = 3f;
     [SerializeField] private bool OnGround = true;
+    [SerializeField] private bool isCollidingWithObjectBelow = true;
     [SerializeField] private int pressedPlayer = 0;
     [SerializeField] private bool explodePlayer = false;
     [SerializeField] private bool drown = false;
@@ -180,11 +181,11 @@ public class PlayerController : NetworkBehaviour
                 if (other.transform.position.y > transform.position.y)
                 {
                     OnGround = false;
-                    drown = true;
                     Debug.Log("Ada player diatasnya");
                 }
                 else
                 {
+                    isCollidingWithObjectBelow = true;
                     OnGround = true;
                 }
             }
@@ -206,10 +207,12 @@ public class PlayerController : NetworkBehaviour
                     if (other.gameObject.CompareTag("Ground"))
                     {
                         rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, 0));
+                        isCollidingWithObjectBelow = true;
                         OnGround = true;
                     }
                     else
                     {
+                        isCollidingWithObjectBelow = true;
                         OnGround = true; // Objek lain berada di bawah
                     }
                 }
@@ -219,53 +222,32 @@ public class PlayerController : NetworkBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        // Cek apakah objek yang keluar adalah "Tanko" atau "Gaspi"
         if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
         {
-            // Cek apakah posisi y dari "Tanko" atau "Gaspi" lebih besar dari posisi y objek saat ini
             if (other.transform.position.y > transform.position.y)
             {
-                // Cek apakah objek saat ini sedang berkolisi dengan objek lain
-                Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.1f);
-                bool isCollidingWithOther = false;
-
-                foreach (Collider2D collider in colliders)
-                {
-                    // Abaikan objek ini sendiri
-                    if (collider.gameObject != gameObject && collider.transform.position.y < transform.position.y)
-                    {
-                        isCollidingWithOther = true;
-                        break;
-                    }
-                }
-
-                // Jika ada objek lain di bawah objek saat ini, set OnGround ke true
-                if (isCollidingWithOther)
+                if (isCollidingWithObjectBelow)
                 {
                     OnGround = true;
                 }
-                // Jika tidak ada objek di bawah, set OnGround ke false dan drown ke false
                 else
                 {
                     OnGround = false;
-                    drown = false;
                 }
             }
             else
             {
-                // Jika posisi y "Tanko" atau "Gaspi" lebih kecil dari posisi y objek saat ini
+                isCollidingWithObjectBelow = false;
                 OnGround = false;
             }
         }
         else
         {
-            // Jika bukan "Tanko" atau "Gaspi", set OnGround ke false
+            isCollidingWithObjectBelow = false;
             OnGround = false;
         }
     }
 
-
-    // Coroutine untuk menangani ledakan dan respawn ketika player jatuh terlalu jauh
     IEnumerator HandleExplosionAndRespawn(PlayerRespawn respawnScript)
     {
         explodePlayer = true; // Aktifkan animasi ledakan
@@ -289,7 +271,6 @@ public class PlayerController : NetworkBehaviour
         respawnScript.RespawnPlayer();
         Debug.Log("Player Death and Respawned");
     }
-
 
     IEnumerator HandleDrownAndRespawn(PlayerRespawn respawnScript)
     {
