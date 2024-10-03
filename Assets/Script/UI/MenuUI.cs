@@ -156,7 +156,7 @@ public class RoomUIManager : MonoBehaviour
         if (NetworkManager.Singleton.IsServer)
         {
             // saveCheckpoint.ClearCheckpoint();
-            NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);
+            NetworkManager.Singleton.SceneManager.LoadScene("NewBustlingCityScene", LoadSceneMode.Single);
         }
     }
 }
