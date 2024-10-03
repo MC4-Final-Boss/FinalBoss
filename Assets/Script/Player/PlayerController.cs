@@ -121,15 +121,38 @@ public class PlayerController : NetworkBehaviour
 
     public void Jump()
     {
-        if (IsOwner && pressedPlayer == 0 && OnGround)
+        if (IsOwner && pressedPlayer == 0 && jumpLeft > 0)
         {
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                // Create a jump direction that combines upward and horizontal movement
+            Vector2 jumpDirection = Vector2.up;
 
             // Play jumping sound
             if (sfxManager != null)
             {
                 sfxManager.PlayJumpingSFX();
             }
+            
+            // Add horizontal movement to the jump if the player is moving
+            if (movement.x != 0)
+            {
+                // Combine vertical and horizontal movement
+                // You can adjust these values to change the feel of the directional jump
+                float horizontalJumpForce = jumpForce * 0.5f; // Adjust this multiplier as needed
+                jumpDirection = new Vector2(movement.x, 1f).normalized;
+                
+                // Apply the jump force
+                rb.AddForce(new Vector2(jumpDirection.x * horizontalJumpForce, jumpDirection.y * jumpForce), 
+                    ForceMode2D.Impulse);
+            }
+            else
+            {
+                // If not moving horizontally, just jump straight up
+                rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            }
+
+            jumpLeft--;
+
+            
         }
     }
 
@@ -157,6 +180,12 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
+
+            //Platform
+            // if (other.gameObject.CompareTag("Platform")) {
+            //     Debug.Log("Kena platform");
+            //     transform.SetParent(other.gameObject.transform);
+            // }
 
             // Memeriksa kecepatan jatuh
             if (rb.velocity.y <= fallThreshold)
@@ -250,13 +279,13 @@ public class PlayerController : NetworkBehaviour
 
     IEnumerator HandleExplosionAndRespawn(PlayerRespawn respawnScript)
     {
-        explodePlayer = true; // Aktifkan animasi ledakan
-
         // Play explosion sound effect
         if (sfxManager != null)
         {
             sfxManager.PlayExplodingSFX();
         }
+
+        explodePlayer = true; // Aktifkan animasi ledakan
 
         // Tunggu durasi animasi ledakan
         AnimatorStateInfo animStateInfo = animator.GetCurrentAnimatorStateInfo(0);
@@ -329,17 +358,35 @@ public class PlayerController : NetworkBehaviour
         trigger.triggers.Add(pointerUp);
     }
 
-    [ClientRpc]
-    public void SetParentClientRpc(string platformName)
+    [ServerRpc(RequireOwnership = false)]
+    public void SetParentServerRpc(string playerName, string platformName)
     {
         Debug.Log("PARENT IS CALLED");
         GameObject platform = GameObject.Find(platformName);
         transform.SetParent(platform.transform);
     }
 
-    [ClientRpc]
-    public void UnsetParentClientRpc()
+    [ServerRpc(RequireOwnership = false)]
+    public void UnsetParentServerRpc(string playerName)
     {
         transform.SetParent(null);
     }
+
+    private void OnCollisionEnter2D(Collision2D other) {
+        if (!other.gameObject.CompareTag("Platform")) {
+            UnsetParentServerRpc(gameObject.name);
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D other) {
+        if (other.gameObject.CompareTag("Platform")) {
+            SetParentServerRpc(gameObject.name, other.gameObject.name);
+        }
+    }
+
+    // private void OnCollisionExit2D(Collision2D other) {
+    //     if (other.gameObject.CompareTag("Platform")) {
+    //         UnsetParentServerRpc(gameObject.name);
+    //     }
+    // }
 }

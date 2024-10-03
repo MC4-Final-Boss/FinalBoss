@@ -9,6 +9,7 @@ TagManager:
   - BasicBox
   - Ground
   - Water
+  - Platform
   layers:
   - Default
   - TransparentFX
