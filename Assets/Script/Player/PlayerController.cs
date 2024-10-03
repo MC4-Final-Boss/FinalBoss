@@ -15,6 +15,9 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private bool explodePlayer = false;
     [SerializeField] private bool drown = false;
     [SerializeField] private float fallThreshold = -15f;
+    private SFXManager sfxManager;
+
+    [SerializeField] private float jumpVelocityThreshold = 0.1f;
 
     private Button leftButton;
     private Button rightButton;
@@ -25,16 +28,16 @@ public class PlayerController : NetworkBehaviour
     private Vector3 movement;
 
     private NetworkVariable<Vector2> netPosition = new NetworkVariable<Vector2>();
-    private NetworkVariable<float> netFacingDirection = new NetworkVariable<float>();
+    private NetworkVariable<bool> netFacingRight = new NetworkVariable<bool>(true);
     private NetworkVariable<float> netAnimationMoving = new NetworkVariable<float>();
     private NetworkVariable<bool> netExplodePlayer = new NetworkVariable<bool>();
     private NetworkVariable<bool> netDrown = new NetworkVariable<bool>();
-
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        sfxManager = FindObjectOfType<SFXManager>();
         leftButton = GameObject.Find("Left Button").GetComponent<Button>();
         rightButton = GameObject.Find("Right Button").GetComponent<Button>();
         jumpButton = GameObject.Find("Jump Button").GetComponent<Button>();
@@ -42,7 +45,6 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             SetupButtons();
-            netFacingDirection.Value = transform.localScale.x;
         }
     }
 
@@ -54,9 +56,7 @@ public class PlayerController : NetworkBehaviour
         if (jumpButton != null)
         {
             jumpButton.onClick.AddListener(Jump);
-
         }
-
     }
 
     void FixedUpdate()
@@ -68,7 +68,6 @@ public class PlayerController : NetworkBehaviour
         else
         {
             rb.MovePosition(netPosition.Value);
-            transform.localScale = new Vector3(netFacingDirection.Value, transform.localScale.y, transform.localScale.z);
         }
     }
 
@@ -79,39 +78,82 @@ public class PlayerController : NetworkBehaviour
             Facing();
             Animations();
             UpdatePositionServerRpc(rb.position);
-
-            // Sync the animation parameter with the server
             UpdateAnimationMovingServerRpc(Mathf.Abs(movement.x));
             UpdateAnimationBoolsServerRpc(explodePlayer, drown);
         }
         else
         {
-            // Apply synced animation from the server
+            // Update local facing based on network variable
+            transform.localScale = new Vector3(netFacingRight.Value ? Mathf.Abs(transform.localScale.x) : -Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
             animator.SetFloat("Moving", netAnimationMoving.Value);
             animator.SetBool("ExplodePlayer", netExplodePlayer.Value);
             animator.SetBool("Drown", netDrown.Value);
         }
     }
 
+
     void Movement()
     {
         Vector2 currentMovement = new Vector2(movement.x * movementSpeed, rb.velocity.y);
         rb.velocity = currentMovement;
+
+        if (Mathf.Abs(movement.x) > 0.01f)
+        {
+            if (sfxManager != null)
+            {
+                sfxManager.PlayWalkingSFX(); // Start playing walking sound
+            }
+        }
+        else
+        {
+            if (sfxManager != null)
+            {
+                sfxManager.StopWalkingSFX(); // Stop walking sound when not moving
+            }
+        }
+        
     }
 
     public void Jump()
     {
         if (IsOwner && pressedPlayer == 0 && jumpLeft > 0)
         {
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                // Create a jump direction that combines upward and horizontal movement
+            Vector2 jumpDirection = Vector2.up;
+            
+            // Add horizontal movement to the jump if the player is moving
+            if (movement.x != 0)
+            {
+                // Combine vertical and horizontal movement
+                // You can adjust these values to change the feel of the directional jump
+                float horizontalJumpForce = jumpForce * 0.5f; // Adjust this multiplier as needed
+                jumpDirection = new Vector2(movement.x, 1f).normalized;
+                
+                // Apply the jump force
+                rb.AddForce(new Vector2(jumpDirection.x * horizontalJumpForce, jumpDirection.y * jumpForce), 
+                    ForceMode2D.Impulse);
+            }
+            else
+            {
+                // If not moving horizontally, just jump straight up
+                rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            }
+
             jumpLeft--;
+
+            // Play jumping sound
+            if (sfxManager != null)
+            {
+                sfxManager.PlayJumpingSFX();
+            }
         }
     }
 
-
     void Animations()
     {
-        animator.SetFloat("Moving", Mathf.Abs(movement.x));
+        bool isJumping = Mathf.Abs(rb.velocity.y) > jumpVelocityThreshold;
+        animator.SetFloat("Moving", isJumping ? 0 : Mathf.Abs(movement.x));
+        animator.SetBool("IsJumping", isJumping);
         animator.SetBool("ExplodePlayer", explodePlayer);
         animator.SetBool("Drown", drown);
     }
@@ -120,12 +162,9 @@ public class PlayerController : NetworkBehaviour
     {
         if (movement.x != 0)
         {
-            // Determine the new facing direction based on movement direction
-            float newFacingDirection = Mathf.Sign(movement.x) * Mathf.Abs(transform.localScale.x);
-            transform.localScale = new Vector3(newFacingDirection, transform.localScale.y, transform.localScale.z);
-
-            // Update facing direction on the server
-            UpdateFacingServerRpc(newFacingDirection);
+            bool isFacingRight = movement.x > 0;
+            transform.localScale = new Vector3(isFacingRight ? Mathf.Abs(transform.localScale.x) : -Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            UpdateFacingServerRpc(isFacingRight);
         }
     }
 
@@ -192,6 +231,12 @@ public class PlayerController : NetworkBehaviour
     {
         explodePlayer = true; // Aktifkan animasi ledakan
 
+        // Play explosion sound effect
+        if (sfxManager != null)
+        {
+            sfxManager.PlayExplodingSFX();
+        }
+
         // Tunggu durasi animasi ledakan
         AnimatorStateInfo animStateInfo = animator.GetCurrentAnimatorStateInfo(0);
         float animLength = animStateInfo.length;
@@ -222,17 +267,16 @@ public class PlayerController : NetworkBehaviour
 
     }
 
-
-
     private void OnTriggerExit2D(Collider2D other)
     {
-        if ((other.gameObject.CompareTag("Tanko")|| other.gameObject.CompareTag("Gaspi")))
+        if ((other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi")))
         {
             jumpLeft = 1;
+            pressedPlayer = 0;
             drown = false;
+
         }
     }
-
 
     [ServerRpc]
     private void UpdateAnimationMovingServerRpc(float newMovingValue)
@@ -248,9 +292,9 @@ public class PlayerController : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void UpdateFacingServerRpc(float newFacingDirection)
+    private void UpdateFacingServerRpc(bool isFacingRight)
     {
-        netFacingDirection.Value = newFacingDirection;
+        netFacingRight.Value = isFacingRight;
     }
 
     [ServerRpc]
@@ -273,5 +317,19 @@ public class PlayerController : NetworkBehaviour
 
         trigger.triggers.Add(pointerDown);
         trigger.triggers.Add(pointerUp);
+    }
+
+    [ClientRpc]
+    public void SetParentClientRpc(string platformName)
+    {
+        Debug.Log("PARENT IS CALLED");
+        GameObject platform = GameObject.Find(platformName);
+        transform.SetParent(platform.transform);
+    }
+
+    [ClientRpc]
+    public void UnsetParentClientRpc()
+    {
+        transform.SetParent(null);
     }
 }

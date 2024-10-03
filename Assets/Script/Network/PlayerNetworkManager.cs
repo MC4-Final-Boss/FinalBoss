@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CustomNetworkManagerWithTag : NetworkBehaviour
+public class PlayerNetworkManager : NetworkBehaviour
 {
     public GameObject tankoPrefab;
     public GameObject gaspiPrefab;
@@ -59,15 +59,36 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
 
         if (NetworkManager.Singleton.IsHost)
         {
-            // Host mengirim sinyal ke semua client untuk kembali ke menuScene
-            NotifyAllClientsToCloseGameClientRpc("A player has disconnected, returning to main menu.");
+            // Check if there are any clients left
+            if (NetworkManager.Singleton.ConnectedClients.Count <= 1) // Only the host is left
+            {
+                Debug.Log("All clients have disconnected, shutting down the room.");
+                ShutdownRoom();
+            }
+            else
+            {
+                // Host mengirim sinyal ke semua client untuk kembali ke menuScene
+                NotifyAllClientsToCloseGameClientRpc("A player has disconnected, returning to main menu.");
+            }
         }
         else if (clientId == NetworkManager.LocalClientId)
         {
             // Untuk client yang terputus, tampilkan alert dan kembali ke menuScene
             dialogDisconnect.ShowDisconnectAlert("You have been disconnected from the server.");
+            // Optionally return to main menu for the client
+            CloseGameOnDisconnect();
         }
     }
+
+    // Method to handle room shutdown
+    private void ShutdownRoom()
+    {
+        Debug.Log("Shutting down the room and returning to the main menu.");
+        NotifyAllClientsToCloseGameClientRpc("The room is closing as all clients have disconnected.");
+        NetworkManager.Singleton.Shutdown();
+        SceneManager.LoadScene("RizuMenuScene");
+    }
+
 
     private void SpawnAndSetupPlayer(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clients, List<ulong> clientsTimedOut)
     {
@@ -142,6 +163,7 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
             {
                 Debug.LogWarning("Client disconnected unexpectedly!");
                 dialogDisconnect.ShowDisconnectAlert("You have been disconnected from the server.");
+                CloseGameOnDisconnect();
                 wasConnected = false;
             }
             else if (!wasConnected && NetworkManager.Singleton.IsConnectedClient)
@@ -189,7 +211,7 @@ public class CustomNetworkManagerWithTag : NetworkBehaviour
     {
         Debug.Log("Closing game and returning to main menu due to disconnection.");
         NetworkManager.Singleton.Shutdown();
-        SceneManager.LoadScene("menuScene");
+        SceneManager.LoadScene("RizuMenuScene");
     }
 
     // ClientRpc untuk memberitahu semua client untuk menutup game

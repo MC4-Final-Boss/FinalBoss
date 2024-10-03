@@ -13,28 +13,31 @@ public class NextScene : MonoBehaviour
     private bool tankoTriggered = false;
 
     public bool buttonActive = false;
+    private bool sceneLoaded = false; // Variable to prevent scene reloading
 
     private void Update()
     {
-        // Load scene only when both conditions are met
-        if (gaspiTriggered && tankoTriggered)
-        {
-            buttonActive = true;
-        }
-        else
-        {
-            buttonActive = false;
-        }
+        // Set buttonActive to true only when both Gaspi and Tanko are on the button
+        buttonActive = gaspiTriggered && tankoTriggered;
 
-        LoadGameScene();
+        // Load scene only if the button is activated and scene hasn't been loaded yet
+        if (buttonActive && !sceneLoaded)
+        {
+            // Ensure only the server loads the scene
+            if (NetworkManager.Singleton.IsServer)
+            {
+                LoadGameScene();
+            }
+        }
     }
 
     private void LoadGameScene()
     {
-        if (buttonActive == true)
-        {
-            NetworkManager.Singleton.SceneManager.LoadScene("BustlingCityScene", LoadSceneMode.Single);
-        }
+        Debug.Log("Loading game scene 'BustlingCityScene'");
+        sceneLoaded = true; // Prevents further scene loading
+
+        // Use the NetworkManager's SceneManager to load the scene for all clients
+        NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);
     }
 
     // Detect when an object with tag "Gaspi" or "Tanko" enters the button collider

@@ -1,113 +1,277 @@
 using UnityEngine;
+using Unity.Netcode;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using System;
+using System.Collections;
 
-public class PlayerControllerDummy : MonoBehaviour
+
+public class PlayerControllerDummy : NetworkBehaviour
 {
     [SerializeField] private float movementSpeed = 7f;
     [SerializeField] private float jumpForce = 3f;
-    public float horizontalAxis;
     [SerializeField] private int jumpLeft = 1;
     [SerializeField] private int pressedPlayer = 0;
+    [SerializeField] private bool explodePlayer = false;
+    [SerializeField] private bool drown = false;
     [SerializeField] private float fallThreshold = -15f;
+
+    private Button leftButton;
+    private Button rightButton;
+    private Button jumpButton;
 
     [SerializeField] private Rigidbody2D rb;
     private Animator animator;
+    private Vector3 movement;
+
+    private NetworkVariable<Vector2> netPosition = new NetworkVariable<Vector2>();
+    private NetworkVariable<float> netFacingDirection = new NetworkVariable<float>();
+    private NetworkVariable<float> netAnimationMoving = new NetworkVariable<float>();
+    private NetworkVariable<bool> netExplodePlayer = new NetworkVariable<bool>();
+    private NetworkVariable<bool> netDrown = new NetworkVariable<bool>();
+
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        leftButton = GameObject.Find("Left Button").GetComponent<Button>();
+        rightButton = GameObject.Find("Right Button").GetComponent<Button>();
+        jumpButton = GameObject.Find("Jump Button").GetComponent<Button>();
+
+        if (IsOwner)
+        {
+            SetupButtons();
+            netFacingDirection.Value = transform.localScale.x;
+        }
+    }
+
+    void SetupButtons()
+    {
+        AddButtonEvent(leftButton, () => movement = Vector3.left, () => movement = Vector3.zero);
+        AddButtonEvent(rightButton, () => movement = Vector3.right, () => movement = Vector3.zero);
+
+        if (jumpButton != null)
+        {
+            jumpButton.onClick.AddListener(Jump);
+
+        }
+
     }
 
     void FixedUpdate()
     {
-        Movement();
+        if (IsOwner)
+        {
+            Movement();
+        }
+        else
+        {
+            rb.MovePosition(netPosition.Value);
+            transform.localScale = new Vector3(netFacingDirection.Value, transform.localScale.y, transform.localScale.z);
+        }
     }
 
     void Update()
     {
-        HandleInput();
-        Facing();
-        Animations();
-    }
+        if (IsOwner)
+        {
+            Facing();
+            Animations();
+            UpdatePositionServerRpc(rb.position);
 
-    void HandleInput()
-    {
-        if (Input.GetKey(KeyCode.J))
-            horizontalAxis = -1f;
-        else if (Input.GetKey(KeyCode.L))
-            horizontalAxis = 1f;
+            // Sync the animation parameter with the server
+            UpdateAnimationMovingServerRpc(Mathf.Abs(movement.x));
+            UpdateAnimationBoolsServerRpc(explodePlayer, drown);
+        }
         else
-            horizontalAxis = 0f;
-
-        if (Input.GetKeyDown(KeyCode.I) && jumpLeft > 0)
-            Jump();
+        {
+            // Apply synced animation from the server
+            animator.SetFloat("Moving", netAnimationMoving.Value);
+            animator.SetBool("ExplodePlayer", netExplodePlayer.Value);
+            animator.SetBool("Drown", netDrown.Value);
+        }
     }
 
     void Movement()
     {
-        Vector2 movement = new Vector2(horizontalAxis * movementSpeed, rb.velocity.y);
-        rb.velocity = movement;
+        Vector2 currentMovement = new Vector2(movement.x * movementSpeed, rb.velocity.y);
+        rb.velocity = currentMovement;
     }
 
-    void Jump()
+    public void Jump()
     {
-        if (pressedPlayer == 0)
+        if (IsOwner && pressedPlayer == 0 && jumpLeft > 0)
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             jumpLeft--;
         }
     }
 
+
     void Animations()
     {
-        animator.SetFloat("Moving", Mathf.Abs(horizontalAxis));
+        animator.SetFloat("Moving", Mathf.Abs(movement.x));
+        animator.SetBool("ExplodePlayer", explodePlayer);
+        animator.SetBool("Drown", drown);
     }
 
     void Facing()
     {
-        if (horizontalAxis != 0)
+        if (movement.x != 0)
         {
-            transform.localScale = new Vector3(Mathf.Sign(horizontalAxis) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            // Determine the new facing direction based on movement direction
+            float newFacingDirection = Mathf.Sign(movement.x) * Mathf.Abs(transform.localScale.x);
+            transform.localScale = new Vector3(newFacingDirection, transform.localScale.y, transform.localScale.z);
+
+            // Update facing direction on the server
+            UpdateFacingServerRpc(newFacingDirection);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.gameObject.CompareTag("Tanko"))
+        if (IsOwner)
         {
-            jumpLeft = 1;
-        }
-        else if (other.gameObject.CompareTag("Tanko"))
-        {
-            if (transform.position.y < other.transform.position.y)
-            {
-                jumpLeft = 0;
-                pressedPlayer = 1;
-            }
-            else
-            {
-                jumpLeft = 1;
-            }
-        }
+            PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
 
-        if (rb.velocity.y <= fallThreshold)
-        {
-            // PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
-            // if (respawnScript != null)
-            // {
-            //     respawnScript.RespawnPlayer();
-            //     print("Player Death");
-            // }
+            // Memeriksa kecepatan jatuh
+            if (rb.velocity.y <= fallThreshold)
+            {
+                if (respawnScript != null)
+                {
+                    // Jalankan Coroutine untuk ledakan dan respawn
+                    StartCoroutine(HandleExplosionAndRespawn(respawnScript));
+                }
+                return;
+            }
+
+            if (other.gameObject.CompareTag("Water"))
+            {
+                // Debug: Pastikan OnTriggerEnter mendeteksi air
+                Debug.Log("Player touched water, starting HandleDrownAndRespawn...");
+                StartCoroutine(HandleDrownAndRespawn(respawnScript));
+            }
+
+            if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
+            {
+                if (other.transform.position.y > transform.position.y)
+                {
+                    jumpLeft = 0;
+                    drown = true;
+                    Debug.Log("Ada player diatasnya");
+                }
+                else
+                {
+                    jumpLeft = 1;
+                }
+            }
+            else // Jika objek lain bukan Gaspi atau Tanko
+            {
+                // Jika berada di atas objek ini
+                if (other.transform.position.y > transform.position.y && other.gameObject.CompareTag("BasicBox"))
+                {
+                    if (respawnScript != null)
+                    {
+                        // Jalankan Coroutine untuk ledakan dan respawn
+                        StartCoroutine(HandleExplosionAndRespawn(respawnScript));
+                        Debug.Log("Ada sesuatu diatasnya");
+                    }
+                    return;
+                }
+                else
+                {
+                    jumpLeft = 1; // Objek lain berada di bawah
+                }
+            }
         }
     }
+
+    // Coroutine untuk menangani ledakan dan respawn ketika player jatuh terlalu jauh
+    IEnumerator HandleExplosionAndRespawn(PlayerRespawn respawnScript)
+    {
+        explodePlayer = true; // Aktifkan animasi ledakan
+
+        // Tunggu durasi animasi ledakan
+        AnimatorStateInfo animStateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        float animLength = animStateInfo.length;
+        float customDuration = animLength * 2f; // Ganti durasi jika perlu
+        yield return new WaitForSeconds(customDuration); // Tunggu sesuai durasi kustom
+
+        // Reset explodePlayer setelah animasi selesai
+        explodePlayer = false;
+
+        // Respawn player setelah animasi selesai
+        respawnScript.RespawnPlayer();
+        Debug.Log("Player Death and Respawned");
+    }
+
+
+    IEnumerator HandleDrownAndRespawn(PlayerRespawn respawnScript)
+    {
+        drown = true; // Aktifkan animasi tenggelam
+
+        yield return new WaitForSeconds(2f); // Tunggu 2 detik
+
+        // Respawn player setelah durasi
+        respawnScript.RespawnPlayer();
+        Debug.Log("Player Death and Respawned");
+
+        // Reset drown
+        drown = false;
+
+    }
+
+
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Tanko"))
+        if ((other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi")))
         {
             jumpLeft = 1;
-            pressedPlayer = 0;
+            drown = false;
         }
     }
 
+
+    [ServerRpc]
+    private void UpdateAnimationMovingServerRpc(float newMovingValue)
+    {
+        netAnimationMoving.Value = newMovingValue;
+    }
+
+    [ServerRpc]
+    private void UpdateAnimationBoolsServerRpc(bool newExplodePlayer, bool newDrown)
+    {
+        netExplodePlayer.Value = newExplodePlayer;
+        netDrown.Value = newDrown;
+    }
+
+    [ServerRpc]
+    private void UpdateFacingServerRpc(float newFacingDirection)
+    {
+        netFacingDirection.Value = newFacingDirection;
+    }
+
+    [ServerRpc]
+    private void UpdatePositionServerRpc(Vector2 newPosition)
+    {
+        netPosition.Value = newPosition;
+    }
+
+    private void AddButtonEvent(Button button, Action onPress, Action onRelease)
+    {
+        if (button == null) return;
+
+        EventTrigger trigger = button.gameObject.AddComponent<EventTrigger>();
+
+        EventTrigger.Entry pointerDown = new EventTrigger.Entry { eventID = EventTriggerType.PointerDown };
+        pointerDown.callback.AddListener((data) => { onPress?.Invoke(); });
+
+        EventTrigger.Entry pointerUp = new EventTrigger.Entry { eventID = EventTriggerType.PointerUp };
+        pointerUp.callback.AddListener((data) => { onRelease?.Invoke(); });
+
+        trigger.triggers.Add(pointerDown);
+        trigger.triggers.Add(pointerUp);
+    }
 }
