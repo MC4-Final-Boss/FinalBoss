@@ -155,7 +155,7 @@ public class TankoControllerDummy : MonoBehaviour
         explodePlayer = false;
 
         // Respawn player setelah animasi selesai
-        respawnScript.RespawnPlayer();
+        // respawnScript.RespawnPlayer();
         Debug.Log("Player Death and Respawned");
     }
 
@@ -173,7 +173,7 @@ public class TankoControllerDummy : MonoBehaviour
         drown = false;
 
         // Respawn player setelah animasi selesai
-        respawnScript.RespawnPlayer();
+        // respawnScript.RespawnPlayer();
         Debug.Log("Player Death and Respawned");
     }
 
