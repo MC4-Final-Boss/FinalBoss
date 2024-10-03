@@ -1477,14 +1477,14 @@ RectTransform:
   m_GameObject: {fileID: 255534500}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.4894693, y: 1.4894693, z: 1.4894693}
+  m_LocalScale: {x: 2.6875982, y: 2.6875982, z: 2.6875982}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 125186427}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -811.57, y: -312}
+  m_AnchoredPosition: {x: -719, y: -416}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &255534502
@@ -2167,14 +2167,14 @@ RectTransform:
   m_GameObject: {fileID: 345724466}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5215, y: 1.5215, z: 1.5215}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 125186427}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 711, y: -309.00003}
+  m_AnchoredPosition: {x: 711, y: -416}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &345724468
@@ -6037,14 +6037,14 @@ RectTransform:
   m_GameObject: {fileID: 972052068}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.4894693, y: 1.4894693, z: 1.4894693}
+  m_LocalScale: {x: 2.6875982, y: 2.6875982, z: 2.6875982}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 125186427}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -720.1, y: -312.00003}
+  m_AnchoredPosition: {x: -541, y: -416}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &972052070
@@ -7132,7 +7132,11 @@ GameObject:
   - component: {fileID: 1265053286}
   - component: {fileID: 1265053285}
   m_Layer: 5
+<<<<<<< Updated upstream
   m_Name: Action Button
+=======
+  m_Name: Pause Button
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7154,7 +7158,11 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
+<<<<<<< Updated upstream
   m_AnchoredPosition: {x: 553, y: -309.00003}
+=======
+  m_AnchoredPosition: {x: 866, y: 433}
+>>>>>>> Stashed changes
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1265053285
@@ -7221,7 +7229,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1a674d2ef1cfd49e08aa0abcd287fafb, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8ba8ce2b69ff84a7882477aa3ce3cc90, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7945,6 +7953,7 @@ MonoBehaviour:
   exploding: {fileID: 0}
   walking: {fileID: 8300000, guid: b31764d76ea3042279c148477561a8eb, type: 3}
   jumping: {fileID: 8300000, guid: b31764d76ea3042279c148477561a8eb, type: 3}
+  buttonPress: {fileID: 0}
 --- !u!4 &1362056723
 Transform:
   m_ObjectHideFlags: 0

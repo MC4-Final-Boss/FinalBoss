@@ -143,7 +143,12 @@ public class RoomUIManager : MonoBehaviour
     {
         if (NetworkManager.Singleton.IsServer)
         {
+<<<<<<< Updated upstream
             NetworkManager.Singleton.SceneManager.LoadScene("NewBustlingCityScene", LoadSceneMode.Single);
+=======
+            // saveCheckpoint.ClearCheckpoint();
+            NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);
+>>>>>>> Stashed changes
         }
     }
 }

@@ -4,7 +4,11 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 using System.Collections;
+<<<<<<< Updated upstream
 
+=======
+using UnityEngine.SceneManagement;
+>>>>>>> Stashed changes
 
 public class PlayerController : NetworkBehaviour
 {
