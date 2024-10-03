@@ -10,6 +10,7 @@ public class RoomUIManager : MonoBehaviour
     [SerializeField] private Button clientButton; // button join pertama
     [SerializeField] private TextMeshProUGUI statusText; // status waiting
     [SerializeField] private TextMeshProUGUI relayCodeText; // kode relay yang ditampilkan
+    [SerializeField] private GameObject hostCodePanel; // UI Panel for host code
     [SerializeField] private GameObject clientInputPanel; // UI Panel for client input
     [SerializeField] private TMP_InputField relayCodeInput; // client input kode relay
     [SerializeField] private Button joinButton; // join dengan kode relay
@@ -19,6 +20,7 @@ public class RoomUIManager : MonoBehaviour
     {
         // Hide client input panel and status text initially
         clientInputPanel.SetActive(false);
+        hostCodePanel.SetActive(false);
         statusText.gameObject.SetActive(false);
         joinButton.gameObject.SetActive(false);
         relayCodeText.gameObject.SetActive(false);
@@ -26,14 +28,16 @@ public class RoomUIManager : MonoBehaviour
         // Create button functionality
         createButton.onClick.AddListener(async () => {
             Debug.Log("RoomUIManager: Create button clicked");
+            hostCodePanel.SetActive(false);
             createButton.gameObject.SetActive(false);
             clientButton.gameObject.SetActive(false);
-            backButton.gameObject.SetActive(false);
+            //backButton.gameObject.SetActive(false);
             statusText.gameObject.SetActive(true);
             statusText.text = "Loading";
             string relayCode = await RelayManager.Instance.CreateRelay();
             if (relayCode != null)
             {
+                hostCodePanel.SetActive(true);
                 ShowRelayCode(relayCode);
                 NetworkManager.Singleton.StartHost();
                 UpdateUI();
@@ -72,7 +76,7 @@ public class RoomUIManager : MonoBehaviour
 
         // Back button functionality
         backButton.onClick.AddListener(() => {
-            if (clientInputPanel.activeSelf)
+            if (clientInputPanel.activeSelf || hostCodePanel.activeSelf)
             {
                 // Close client input panel and show create & client buttons
                 clientInputPanel.SetActive(false);
@@ -80,6 +84,9 @@ public class RoomUIManager : MonoBehaviour
                 clientButton.gameObject.SetActive(true);
                 statusText.gameObject.SetActive(false); // Hide status text when returning
                 joinButton.gameObject.SetActive(false);
+
+                hostCodePanel.SetActive(false);
+                NetworkManager.Singleton.Shutdown();
             }
             else
             {
