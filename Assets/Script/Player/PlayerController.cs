@@ -120,6 +120,12 @@ public class PlayerController : NetworkBehaviour
         {
                 // Create a jump direction that combines upward and horizontal movement
             Vector2 jumpDirection = Vector2.up;
+
+            // Play jumping sound
+            if (sfxManager != null)
+            {
+                sfxManager.PlayJumpingSFX();
+            }
             
             // Add horizontal movement to the jump if the player is moving
             if (movement.x != 0)
@@ -141,11 +147,7 @@ public class PlayerController : NetworkBehaviour
 
             jumpLeft--;
 
-            // Play jumping sound
-            if (sfxManager != null)
-            {
-                sfxManager.PlayJumpingSFX();
-            }
+            
         }
     }
 
@@ -173,6 +175,12 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
+
+            //Platform
+            // if (other.gameObject.CompareTag("Platform")) {
+            //     Debug.Log("Kena platform");
+            //     transform.SetParent(other.gameObject.transform);
+            // }
 
             // Memeriksa kecepatan jatuh
             if (rb.velocity.y <= fallThreshold)
@@ -229,13 +237,13 @@ public class PlayerController : NetworkBehaviour
     // Coroutine untuk menangani ledakan dan respawn ketika player jatuh terlalu jauh
     IEnumerator HandleExplosionAndRespawn(PlayerRespawn respawnScript)
     {
-        explodePlayer = true; // Aktifkan animasi ledakan
-
         // Play explosion sound effect
         if (sfxManager != null)
         {
             sfxManager.PlayExplodingSFX();
         }
+
+        explodePlayer = true; // Aktifkan animasi ledakan
 
         // Tunggu durasi animasi ledakan
         AnimatorStateInfo animStateInfo = animator.GetCurrentAnimatorStateInfo(0);
@@ -319,17 +327,35 @@ public class PlayerController : NetworkBehaviour
         trigger.triggers.Add(pointerUp);
     }
 
-    [ClientRpc]
-    public void SetParentClientRpc(string platformName)
+    [ServerRpc(RequireOwnership = false)]
+    public void SetParentServerRpc(string playerName, string platformName)
     {
         Debug.Log("PARENT IS CALLED");
         GameObject platform = GameObject.Find(platformName);
         transform.SetParent(platform.transform);
     }
 
-    [ClientRpc]
-    public void UnsetParentClientRpc()
+    [ServerRpc(RequireOwnership = false)]
+    public void UnsetParentServerRpc(string playerName)
     {
         transform.SetParent(null);
     }
+
+    private void OnCollisionEnter2D(Collision2D other) {
+        if (!other.gameObject.CompareTag("Platform")) {
+            UnsetParentServerRpc(gameObject.name);
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D other) {
+        if (other.gameObject.CompareTag("Platform")) {
+            SetParentServerRpc(gameObject.name, other.gameObject.name);
+        }
+    }
+
+    // private void OnCollisionExit2D(Collision2D other) {
+    //     if (other.gameObject.CompareTag("Platform")) {
+    //         UnsetParentServerRpc(gameObject.name);
+    //     }
+    // }
 }

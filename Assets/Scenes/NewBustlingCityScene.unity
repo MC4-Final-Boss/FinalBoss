@@ -2089,7 +2089,7 @@ GameObject:
   - component: {fileID: 247621691}
   m_Layer: 0
   m_Name: Moving Horizontal  4
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6955,7 +6955,7 @@ GameObject:
   - component: {fileID: 982791307}
   m_Layer: 0
   m_Name: Moving Horizontal  3
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11342,7 +11342,7 @@ GameObject:
   - component: {fileID: 1471085283}
   m_Layer: 0
   m_Name: Moving Horizontal  2
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -14209,7 +14209,7 @@ GameObject:
   - component: {fileID: 1942710934}
   m_Layer: 0
   m_Name: Moving Horizontal  1
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
