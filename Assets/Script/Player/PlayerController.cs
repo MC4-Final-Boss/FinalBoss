@@ -2,15 +2,17 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
-
+using System.Linq;
 
 public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private float movementSpeed = 7f;
     [SerializeField] private float jumpForce = 3f;
-    [SerializeField] private int jumpLeft = 1;
+    [SerializeField] private bool OnGround = true;
+    [SerializeField] private bool isCollidingWithObjectBelow = true;
     [SerializeField] private int pressedPlayer = 0;
     [SerializeField] private bool explodePlayer = false;
     [SerializeField] private bool drown = false;
@@ -22,7 +24,7 @@ public class PlayerController : NetworkBehaviour
     private Button leftButton;
     private Button rightButton;
     private Button jumpButton;
-
+    private Button restartButton;
     [SerializeField] private Rigidbody2D rb;
     private Animator animator;
     private Vector3 movement;
@@ -35,12 +37,14 @@ public class PlayerController : NetworkBehaviour
 
     void Start()
     {
+
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         sfxManager = FindObjectOfType<SFXManager>();
         leftButton = GameObject.Find("Left Button").GetComponent<Button>();
         rightButton = GameObject.Find("Right Button").GetComponent<Button>();
         jumpButton = GameObject.Find("Jump Button").GetComponent<Button>();
+        restartButton = GameObject.Find("Restart Button").GetComponent<Button>();
 
         if (IsOwner)
         {
@@ -57,6 +61,8 @@ public class PlayerController : NetworkBehaviour
         {
             jumpButton.onClick.AddListener(Jump);
         }
+        restartButton.onClick.AddListener(RequestRestartServerRpc);
+
     }
 
     void FixedUpdate()
@@ -91,34 +97,56 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestRestartServerRpc()
+    {
+        RestartClientRpc();
+    }
+
+    [ClientRpc]
+    private void RestartClientRpc()
+    {
+        if (IsServer)
+        {
+            NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);
+        }
+        else
+        {
+            SceneManager.LoadScene("YurikoBustlingCityScene");
+        }
+    }
+
 
     void Movement()
     {
-        Vector2 currentMovement = new Vector2(movement.x * movementSpeed, rb.velocity.y);
+        float currentYVelocity = rb.velocity.y;
+        Vector2 currentMovement = new Vector2(movement.x * movementSpeed, currentYVelocity);
+
         rb.velocity = currentMovement;
 
         if (Mathf.Abs(movement.x) > 0.01f)
         {
             if (sfxManager != null)
             {
-                sfxManager.PlayWalkingSFX(); // Start playing walking sound
+                sfxManager.PlayWalkingSFX();
             }
         }
         else
         {
             if (sfxManager != null)
             {
-                sfxManager.StopWalkingSFX(); // Stop walking sound when not moving
+                sfxManager.StopWalkingSFX();
             }
         }
-        
+
     }
+
 
     public void Jump()
     {
-        if (IsOwner && pressedPlayer == 0 && jumpLeft > 0)
+        if (IsOwner && pressedPlayer == 0 && OnGround)
         {
-                // Create a jump direction that combines upward and horizontal movement
+            // Create a jump direction that combines upward and horizontal movement
             Vector2 jumpDirection = Vector2.up;
 
             // Play jumping sound
@@ -126,7 +154,7 @@ public class PlayerController : NetworkBehaviour
             {
                 sfxManager.PlayJumpingSFX();
             }
-            
+
             // Add horizontal movement to the jump if the player is moving
             if (movement.x != 0)
             {
@@ -134,9 +162,9 @@ public class PlayerController : NetworkBehaviour
                 // You can adjust these values to change the feel of the directional jump
                 float horizontalJumpForce = jumpForce * 0.5f; // Adjust this multiplier as needed
                 jumpDirection = new Vector2(movement.x, 1f).normalized;
-                
+
                 // Apply the jump force
-                rb.AddForce(new Vector2(jumpDirection.x * horizontalJumpForce, jumpDirection.y * jumpForce), 
+                rb.AddForce(new Vector2(jumpDirection.x * horizontalJumpForce, jumpDirection.y * jumpForce),
                     ForceMode2D.Impulse);
             }
             else
@@ -144,9 +172,6 @@ public class PlayerController : NetworkBehaviour
                 // If not moving horizontally, just jump straight up
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             }
-
-            jumpLeft--;
-
             
         }
     }
@@ -204,13 +229,13 @@ public class PlayerController : NetworkBehaviour
             {
                 if (other.transform.position.y > transform.position.y)
                 {
-                    jumpLeft = 0;
-                    drown = true;
+                    OnGround = false;
                     Debug.Log("Ada player diatasnya");
                 }
                 else
                 {
-                    jumpLeft = 1;
+                    isCollidingWithObjectBelow = true;
+                    OnGround = true;
                 }
             }
             else // Jika objek lain bukan Gaspi atau Tanko
@@ -228,13 +253,50 @@ public class PlayerController : NetworkBehaviour
                 }
                 else
                 {
-                    jumpLeft = 1; // Objek lain berada di bawah
+                    if (other.gameObject.CompareTag("Ground"))
+                    {
+                        rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, 0));
+                        isCollidingWithObjectBelow = true;
+                        OnGround = true;
+                    }
+                    else
+                    {
+                        isCollidingWithObjectBelow = true;
+                        OnGround = true; // Objek lain berada di bawah
+                    }
                 }
             }
         }
     }
 
-    // Coroutine untuk menangani ledakan dan respawn ketika player jatuh terlalu jauh
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
+        {
+            if (other.transform.position.y > transform.position.y)
+            {
+                if (isCollidingWithObjectBelow)
+                {
+                    OnGround = true;
+                }
+                else
+                {
+                    OnGround = false;
+                }
+            }
+            else
+            {
+                isCollidingWithObjectBelow = false;
+                OnGround = false;
+            }
+        }
+        else
+        {
+            isCollidingWithObjectBelow = false;
+            OnGround = false;
+        }
+    }
+
     IEnumerator HandleExplosionAndRespawn(PlayerRespawn respawnScript)
     {
         // Play explosion sound effect
@@ -255,10 +317,9 @@ public class PlayerController : NetworkBehaviour
         explodePlayer = false;
 
         // Respawn player setelah animasi selesai
-        respawnScript.RespawnPlayer();
+        respawnScript.RespawnPlayerServerRpc();
         Debug.Log("Player Death and Respawned");
     }
-
 
     IEnumerator HandleDrownAndRespawn(PlayerRespawn respawnScript)
     {
@@ -267,7 +328,7 @@ public class PlayerController : NetworkBehaviour
         yield return new WaitForSeconds(2f); // Tunggu 2 detik
 
         // Respawn player setelah durasi
-        respawnScript.RespawnPlayer();
+        respawnScript.RespawnPlayerServerRpc();
         Debug.Log("Player Death and Respawned");
 
         // Reset drown
@@ -275,16 +336,6 @@ public class PlayerController : NetworkBehaviour
 
     }
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if ((other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi")))
-        {
-            jumpLeft = 1;
-            pressedPlayer = 0;
-            drown = false;
-
-        }
-    }
 
     [ServerRpc]
     private void UpdateAnimationMovingServerRpc(float newMovingValue)
@@ -341,21 +392,20 @@ public class PlayerController : NetworkBehaviour
         transform.SetParent(null);
     }
 
-    private void OnCollisionEnter2D(Collision2D other) {
-        if (!other.gameObject.CompareTag("Platform")) {
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (!other.gameObject.CompareTag("Platform"))
+        {
             UnsetParentServerRpc(gameObject.name);
         }
     }
 
-    private void OnCollisionStay2D(Collision2D other) {
-        if (other.gameObject.CompareTag("Platform")) {
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Platform"))
+        {
             SetParentServerRpc(gameObject.name, other.gameObject.name);
         }
     }
 
-    // private void OnCollisionExit2D(Collision2D other) {
-    //     if (other.gameObject.CompareTag("Platform")) {
-    //         UnsetParentServerRpc(gameObject.name);
-    //     }
-    // }
 }

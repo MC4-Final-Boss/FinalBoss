@@ -148,7 +148,7 @@ public class GaspiControllerDummy : MonoBehaviour
         explodePlayer = false;
 
         // Respawn player setelah animasi selesai
-        respawnScript.RespawnPlayer();
+        // respawnScript.RespawnPlayer();
         Debug.Log("Player Death and Respawned");
     }
 
@@ -166,7 +166,7 @@ public class GaspiControllerDummy : MonoBehaviour
         drown = false;
 
         // Respawn player setelah animasi selesai
-        respawnScript.RespawnPlayer();
+        // respawnScript.RespawnPlayer();
         Debug.Log("Player Death and Respawned");
     }
 
