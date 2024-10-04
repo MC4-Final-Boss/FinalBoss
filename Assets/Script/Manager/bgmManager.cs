@@ -41,7 +41,7 @@ public class BGMManager : MonoBehaviour
         AudioClip clipToPlay = null;
 
         // Check which scene is currently loaded
-        if (currentScene == "RizuIntroScene" || currentScene == "RizuMainMenu")
+        if (currentScene == "RizuIntroScene" || currentScene == "RizuMainMenu" || currentScene == "ShabStoryScene")
         {
             clipToPlay = introAndMenuBGM;
         }

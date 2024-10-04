@@ -112,24 +112,6 @@ public class PlayerController : NetworkBehaviour
 
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void RequestRestartServerRpc()
-    {
-        RestartClientRpc();
-    }
-
-    [ClientRpc]
-    private void RestartClientRpc()
-    {
-        if (IsServer)
-        {
-            NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);
-        }
-        else
-        {
-            SceneManager.LoadScene("YurikoBustlingCityScene");
-        }
-    }
 
     [ServerRpc(RequireOwnership = false)]
     private void RequestRestartServerRpc()
@@ -338,23 +320,23 @@ public class PlayerController : NetworkBehaviour
     }
 
 
-IEnumerator HandleExplodeAndRespawn(PlayerRespawn respawnScript)
-{
-    if (sfxManager != null)
+    IEnumerator HandleExplodeAndRespawn(PlayerRespawn respawnScript)
     {
-        sfxManager.PlayExplodingSFX();
+        if (sfxManager != null)
+        {
+            sfxManager.PlayExplodingSFX();
+        }
+        explodePlayer = true;
+
+        AnimatorStateInfo animStateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        float animLength = animStateInfo.length;
+        yield return new WaitForSeconds(animLength);
+
+        respawnScript.RespawnPlayer();
+        Debug.Log("Player Death and Respawned");
+
+        explodePlayer = false;
     }
-    explodePlayer = true;
-
-    AnimatorStateInfo animStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-    float animLength = animStateInfo.length;
-    yield return new WaitForSeconds(animLength);
-
-    respawnScript.RespawnPlayer();
-    Debug.Log("Player Death and Respawned");
-
-    explodePlayer = false;
-}
 
 
     IEnumerator HandleDrownAndRespawn(PlayerRespawn respawnScript)
@@ -364,7 +346,7 @@ IEnumerator HandleExplodeAndRespawn(PlayerRespawn respawnScript)
         yield return new WaitForSeconds(2f); // Tunggu 2 detik
 
         // Respawn player setelah durasi
-        respawnScript.RespawnPlayerServerRpc();
+        respawnScript.RespawnPlayer();
         Debug.Log("Player Death and Respawned");
 
         // Reset drown

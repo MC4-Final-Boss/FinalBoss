@@ -37,7 +37,7 @@ public class DeathZone : NetworkBehaviour
         PlayerRespawn[] players = FindObjectsOfType<PlayerRespawn>();
         foreach (PlayerRespawn player in players)
         {
-            player.RespawnPlayerClientRpc();
+            player.RespawnPlayer();
         }
     }
 }

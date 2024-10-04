@@ -22,10 +22,14 @@ public class PlayerRespawn : NetworkBehaviour
         return IsHost ? initialTankoPosition : initialGaspiPosition;
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void RespawnPlayerServerRpc() 
+    public void RespawnPlayer() 
     {
-        RespawnPlayerClientRpc();
+        RespawnPlayerServerRpc();
+    }
+    
+    [ServerRpc(RequireOwnership = false)]
+    public void RespawnPlayerServerRpc(){
+
     }
 
     [ClientRpc]

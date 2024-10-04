@@ -83,7 +83,7 @@ public class GameStateManager : MonoBehaviour
         PlayerRespawn[] players = FindObjectsOfType<PlayerRespawn>();
         foreach (var player in players)
         {
-            player.RespawnPlayerServerRpc(); // Respawn each player
+            player.RespawnPlayer(); // Respawn each player
         }
     }
 
