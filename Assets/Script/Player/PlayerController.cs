@@ -9,13 +9,14 @@ using System.Linq;
 public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private float movementSpeed = 7f;
-    [SerializeField] private float jumpForce = 3f;
+    [SerializeField] private float jumpForce = 6f;
     [SerializeField] private bool OnGround = true;
     [SerializeField] private bool isCollidingWithObjectBelow = true;
     [SerializeField] private int pressedPlayer = 0;
     [SerializeField] private bool explodePlayer = false;
     [SerializeField] private bool drown = false;
     [SerializeField] private float fallThreshold = -15f;
+    [SerializeField] private bool isFalling = false;
     private SFXManager sfxManager;
 
     [SerializeField] private float jumpVelocityThreshold = 0.1f;
@@ -28,11 +29,14 @@ public class PlayerController : NetworkBehaviour
     private Animator animator;
     private Vector3 movement;
 
+    private NetworkVariable<float> netVelocityX = new NetworkVariable<float>();
+    private NetworkVariable<float> netVelocityY = new NetworkVariable<float>();
     private NetworkVariable<Vector2> netPosition = new NetworkVariable<Vector2>();
     private NetworkVariable<bool> netFacingRight = new NetworkVariable<bool>(true);
     private NetworkVariable<float> netAnimationMoving = new NetworkVariable<float>();
     private NetworkVariable<bool> netExplodePlayer = new NetworkVariable<bool>();
     private NetworkVariable<bool> netDrown = new NetworkVariable<bool>();
+    private NetworkVariable<bool> netIsFalling = new NetworkVariable<bool>(false);
 
     void Start()
     {
@@ -66,10 +70,25 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             Movement();
+
+            if (rb.velocity.y <= -15f)
+            {
+                isFalling = true;
+            }
+            else
+            {
+                isFalling = false;
+            }
+
+            UpdateIsFallingServerRpc(isFalling);
+
+            UpdateVelocityServerRpc(rb.velocity.x, rb.velocity.y);
         }
         else
         {
+            rb.velocity = new Vector2(netVelocityX.Value, netVelocityY.Value);
             rb.MovePosition(netPosition.Value);
+            isFalling = netIsFalling.Value;
         }
     }
 
@@ -92,17 +111,37 @@ public class PlayerController : NetworkBehaviour
             animator.SetBool("Drown", netDrown.Value);
         }
 
-        Debug.Log(isCollidingWithObjectBelow);
-        Debug.Log(OnGround);
     }
 
 
     void Movement()
     {
         float currentYVelocity = rb.velocity.y;
-        Vector2 currentMovement = new Vector2(movement.x * movementSpeed, currentYVelocity);
+        float currentXVelocity = rb.velocity.x;
 
+        if (currentYVelocity > 6f)
+        {
+            currentYVelocity = 6f;
+        }
+        else if (currentYVelocity < -25f)
+        {
+            currentYVelocity = -25f;
+        }
+
+        if (currentXVelocity > 6f)
+        {
+            currentXVelocity = 6f;
+        }
+        else if (currentXVelocity < -6f)
+        {
+            currentXVelocity = -6f;
+        }
+
+        Vector2 currentMovement = new Vector2(currentXVelocity * movementSpeed, currentYVelocity);
         rb.velocity = currentMovement;
+
+        UpdateVelocityServerRpc(currentMovement.x, currentMovement.y);
+        Debug.Log($"x: {rb.velocity.x}, y: {rb.velocity.y}");
 
         if (Mathf.Abs(movement.x) > 0.01f)
         {
@@ -118,7 +157,7 @@ public class PlayerController : NetworkBehaviour
                 sfxManager.StopWalkingSFX();
             }
         }
-        
+
     }
 
 
@@ -126,36 +165,34 @@ public class PlayerController : NetworkBehaviour
     {
         if (IsOwner && pressedPlayer == 0 && OnGround)
         {
-                // Create a jump direction that combines upward and horizontal movement
             Vector2 jumpDirection = Vector2.up;
 
-            // Play jumping sound
             if (sfxManager != null)
             {
                 sfxManager.PlayJumpingSFX();
             }
-            
-            // Add horizontal movement to the jump if the player is moving
+
             if (movement.x != 0)
             {
-                // Combine vertical and horizontal movement
-                // You can adjust these values to change the feel of the directional jump
-                float horizontalJumpForce = jumpForce * 0.5f; // Adjust this multiplier as needed
+                float horizontalJumpForce = jumpForce * 0.5f;
                 jumpDirection = new Vector2(movement.x, 1f).normalized;
-                
-                // Apply the jump force
-                rb.AddForce(new Vector2(jumpDirection.x * horizontalJumpForce, jumpDirection.y * jumpForce), 
+
+                rb.AddForce(new Vector2(jumpDirection.x * horizontalJumpForce, jumpDirection.y * jumpForce),
                     ForceMode2D.Impulse);
             }
             else
             {
-                // If not moving horizontally, just jump straight up
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             }
-            
-        }
-    }
 
+            if (rb.velocity.y > 6f)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, 6f);
+            }
+
+        }
+
+    }
 
 
     void Animations()
@@ -183,20 +220,14 @@ public class PlayerController : NetworkBehaviour
         {
             PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
 
-            if (rb.velocity.y <= fallThreshold)
+
+            if (isFalling)
             {
-                if (respawnScript != null)
-                {
-                    // Jalankan Coroutine untuk ledakan dan respawn
-                    StartCoroutine(HandleExplosionAndRespawn(respawnScript));
-                }
-                return;
+                StartCoroutine(HandleExplodeAndRespawn(respawnScript));
             }
 
             if (other.gameObject.CompareTag("Water"))
             {
-                // Debug: Pastikan OnTriggerEnter mendeteksi air
-                Debug.Log("Player touched water, starting HandleDrownAndRespawn...");
                 StartCoroutine(HandleDrownAndRespawn(respawnScript));
             }
 
@@ -205,7 +236,6 @@ public class PlayerController : NetworkBehaviour
                 if (other.transform.position.y > transform.position.y)
                 {
                     OnGround = false;
-                    Debug.Log("Ada player diatasnya");
                 }
                 else
                 {
@@ -213,15 +243,13 @@ public class PlayerController : NetworkBehaviour
                     OnGround = true;
                 }
             }
-            else // Jika objek lain bukan Gaspi atau Tanko
+            else
             {
-                // Jika berada di atas objek ini
                 if (other.transform.position.y > transform.position.y && other.gameObject.CompareTag("BasicBox"))
                 {
                     if (respawnScript != null)
                     {
-                        // Jalankan Coroutine untuk ledakan dan respawn
-                        StartCoroutine(HandleExplosionAndRespawn(respawnScript));
+                        StartCoroutine(HandleExplodeAndRespawn(respawnScript));
                         Debug.Log("Ada sesuatu diatasnya");
                     }
                     return;
@@ -237,7 +265,7 @@ public class PlayerController : NetworkBehaviour
                     else
                     {
                         isCollidingWithObjectBelow = true;
-                        OnGround = true; // Objek lain berada di bawah
+                        OnGround = true;
                     }
                 }
             }
@@ -272,29 +300,25 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    IEnumerator HandleExplosionAndRespawn(PlayerRespawn respawnScript)
+
+IEnumerator HandleExplodeAndRespawn(PlayerRespawn respawnScript)
+{
+    if (sfxManager != null)
     {
-        // Play explosion sound effect
-        if (sfxManager != null)
-        {
-            sfxManager.PlayExplodingSFX();
-        }
-
-        explodePlayer = true; // Aktifkan animasi ledakan
-
-        // Tunggu durasi animasi ledakan
-        AnimatorStateInfo animStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-        float animLength = animStateInfo.length;
-        float customDuration = animLength * 2f; // Ganti durasi jika perlu
-        yield return new WaitForSeconds(customDuration); // Tunggu sesuai durasi kustom
-
-        // Reset explodePlayer setelah animasi selesai
-        explodePlayer = false;
-
-        // Respawn player setelah animasi selesai
-        respawnScript.RespawnPlayer();
-        Debug.Log("Player Death and Respawned");
+        sfxManager.PlayExplodingSFX();
     }
+    explodePlayer = true;
+
+    AnimatorStateInfo animStateInfo = animator.GetCurrentAnimatorStateInfo(0);
+    float animLength = animStateInfo.length;
+    yield return new WaitForSeconds(animLength);
+
+    respawnScript.RespawnPlayer();
+    Debug.Log("Player Death and Respawned");
+
+    explodePlayer = false;
+}
+
 
     IEnumerator HandleDrownAndRespawn(PlayerRespawn respawnScript)
     {
@@ -309,6 +333,20 @@ public class PlayerController : NetworkBehaviour
         // Reset drown
         drown = false;
 
+    }
+
+    [ServerRpc]
+    private void UpdateIsFallingServerRpc(bool newIsFalling)
+    {
+        netIsFalling.Value = newIsFalling;
+    }
+
+
+    [ServerRpc]
+    private void UpdateVelocityServerRpc(float newVelocityX, float newVelocityY)
+    {
+        netVelocityX.Value = newVelocityX;
+        netVelocityY.Value = newVelocityY;
     }
 
 
@@ -367,14 +405,18 @@ public class PlayerController : NetworkBehaviour
         transform.SetParent(null);
     }
 
-    private void OnCollisionEnter2D(Collision2D other) {
-        if (!other.gameObject.CompareTag("Platform")) {
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (!other.gameObject.CompareTag("Platform"))
+        {
             UnsetParentServerRpc(gameObject.name);
         }
     }
 
-    private void OnCollisionStay2D(Collision2D other) {
-        if (other.gameObject.CompareTag("Platform")) {
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Platform"))
+        {
             SetParentServerRpc(gameObject.name, other.gameObject.name);
         }
     }
