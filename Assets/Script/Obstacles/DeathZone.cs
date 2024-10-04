@@ -7,11 +7,11 @@ public class DeathZone : NetworkBehaviour
 
     private void Start()
     {
-        gameStateManager = FindObjectOfType<GameStateManager>();
-        if (gameStateManager == null)
-        {
-            Debug.LogError("GameStateManager not found in the scene!");
-        }
+        // gameStateManager = FindObjectOfType<GameStateManager>();
+        // if (gameStateManager == null)
+        // {
+        //     Debug.LogError("GameStateManager not found in the scene!");
+        // }
     }
 
     private void OnTriggerEnter2D(Collider2D other)

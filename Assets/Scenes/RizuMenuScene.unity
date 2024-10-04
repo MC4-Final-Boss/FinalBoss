@@ -618,6 +618,7 @@ GameObject:
   m_Component:
   - component: {fileID: 637202224}
   - component: {fileID: 637202225}
+  - component: {fileID: 637202226}
   m_Layer: 0
   m_Name: MenuUI
   m_TagString: Untagged
@@ -669,6 +670,18 @@ MonoBehaviour:
   relayCodeInput: {fileID: 1595715}
   joinButton: {fileID: 2107248101}
   backButton: {fileID: 2055435197}
+--- !u!114 &637202226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 637202223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e466913513f92452980bf441343cac56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &767601679
 GameObject:
   m_ObjectHideFlags: 0

@@ -34,17 +34,20 @@ public class PlayerController : NetworkBehaviour
     private NetworkVariable<float> netAnimationMoving = new NetworkVariable<float>();
     private NetworkVariable<bool> netExplodePlayer = new NetworkVariable<bool>();
     private NetworkVariable<bool> netDrown = new NetworkVariable<bool>();
+    private PlayerRespawn playerRespawn;
 
     void Start()
     {
 
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        playerRespawn = GetComponent<PlayerRespawn>();
         sfxManager = FindObjectOfType<SFXManager>();
         leftButton = GameObject.Find("Left Button").GetComponent<Button>();
         rightButton = GameObject.Find("Right Button").GetComponent<Button>();
         jumpButton = GameObject.Find("Jump Button").GetComponent<Button>();
         restartButton = GameObject.Find("Restart Button").GetComponent<Button>();
+
 
         if (IsOwner)
         {
@@ -56,13 +59,8 @@ public class PlayerController : NetworkBehaviour
     {
         AddButtonEvent(leftButton, () => movement = Vector3.left, () => movement = Vector3.zero);
         AddButtonEvent(rightButton, () => movement = Vector3.right, () => movement = Vector3.zero);
-
-        if (jumpButton != null)
-        {
-            jumpButton.onClick.AddListener(Jump);
-        }
+        AddButtonEvent(jumpButton, Jump, null);
         restartButton.onClick.AddListener(RequestRestartServerRpc);
-
     }
 
     void FixedUpdate()
@@ -172,7 +170,7 @@ public class PlayerController : NetworkBehaviour
                 // If not moving horizontally, just jump straight up
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             }
-            
+
         }
     }
 

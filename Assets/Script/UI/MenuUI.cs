@@ -16,6 +16,8 @@ public class RoomUIManager : MonoBehaviour
     [SerializeField] private Button joinButton; // join dengan kode relay
     [SerializeField] private Button backButton; // back button
 
+    private PlayerSaveCheckPoint playerSaveCheckPoint;
+
     private void Start()
     {
         // Hide client input panel and status text initially
@@ -24,6 +26,8 @@ public class RoomUIManager : MonoBehaviour
         statusText.gameObject.SetActive(false);
         joinButton.gameObject.SetActive(false);
         relayCodeText.gameObject.SetActive(false);
+        playerSaveCheckPoint = GetComponent<PlayerSaveCheckPoint>();
+
 
         // Create button functionality
         createButton.onClick.AddListener(async () => {
@@ -148,6 +152,7 @@ public class RoomUIManager : MonoBehaviour
 
     private void LoadGameScene()
     {
+        playerSaveCheckPoint.ClearCheckpoint();
         if (NetworkManager.Singleton.IsServer)
         {
             NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);

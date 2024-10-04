@@ -29,10 +29,11 @@ public class PlayerSaveCheckPoint : MonoBehaviour
 
     public void ClearCheckpoint()
     {
-        PlayerPrefs.DeleteKey("CheckpointX");
-        PlayerPrefs.DeleteKey("CheckpointY");
-        PlayerPrefs.DeleteKey("CheckpointZ");
-        PlayerPrefs.Save(); // Save changes to PlayerPrefs
+        // PlayerPrefs.DeleteKey("CheckpointX");
+        // PlayerPrefs.DeleteKey("CheckpointY");
+        // PlayerPrefs.DeleteKey("CheckpointZ");
+        // PlayerPrefs.Save(); // Save changes to PlayerPrefs
+        PlayerPrefs.DeleteAll();
         Debug.Log("Checkpoint cleared.");
     }
 }
