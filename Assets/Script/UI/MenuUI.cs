@@ -126,6 +126,7 @@ public class RoomUIManager : MonoBehaviour
 
     private void UpdateUI()
     {
+
         createButton.gameObject.SetActive(!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost);
         clientButton.gameObject.SetActive(!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost);
         relayCodeText.gameObject.SetActive(true);

@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using Unity.Netcode;
 
-public class DialogDisconnect : MonoBehaviour
+public class DialogDisconnect : NetworkBehaviour
 {
     [SerializeField] private GameObject disconnectAlertPanel; // The UI panel for the disconnect alert
 
