@@ -136,31 +136,22 @@ public class PlayerController : NetworkBehaviour
     void Movement()
     {
         float currentYVelocity = rb.velocity.y;
-        float currentXVelocity = rb.velocity.x;
 
         if (currentYVelocity > 6f)
         {
             currentYVelocity = 6f;
         }
-        else if (currentYVelocity < -25f)
-        {
-            currentYVelocity = -25f;
-        }
 
-        if (currentXVelocity > 6f)
-        {
-            currentXVelocity = 6f;
-        }
-        else if (currentXVelocity < -6f)
-        {
-            currentXVelocity = -6f;
-        }
 
-        Vector2 currentMovement = new Vector2(currentXVelocity * movementSpeed, currentYVelocity);
+        Vector2 currentMovement = new Vector2(movement.x * movementSpeed, currentYVelocity);
         rb.velocity = currentMovement;
+
 
         UpdateVelocityServerRpc(currentMovement.x, currentMovement.y);
         Debug.Log($"x: {rb.velocity.x}, y: {rb.velocity.y}");
+
+
+
 
         if (Mathf.Abs(movement.x) > 0.01f)
         {
