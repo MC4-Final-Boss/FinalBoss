@@ -4,9 +4,11 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using Unity.Netcode;
 
-public class DialogDisconnect : NetworkBehaviour
+public class DialogDisconnect : MonoBehaviour
 {
     [SerializeField] private GameObject disconnectAlertPanel; // The UI panel for the disconnect alert
+
+     [SerializeField] private GameObject controllerPanel; 
     [SerializeField] private TextMeshProUGUI disconnectMessageText; // The text component for displaying the message
     [SerializeField] private Button okButton; // The OK button
 
@@ -22,6 +24,7 @@ public class DialogDisconnect : NetworkBehaviour
     // Method to show the disconnect alert
     public void ShowDisconnectAlert(string message)
     {
+        controllerPanel.SetActive(false);
         Debug.LogWarning(message);
         
         // Set the message in the text component

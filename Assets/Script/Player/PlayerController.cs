@@ -108,11 +108,11 @@ public class PlayerController : NetworkBehaviour
     {
         if (IsServer)
         {
-            NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);
+            NetworkManager.Singleton.SceneManager.LoadScene("NewBustlingCityScene", LoadSceneMode.Single);
         }
         else
         {
-            SceneManager.LoadScene("YurikoBustlingCityScene");
+            SceneManager.LoadScene("NewBustlingCityScene");
         }
     }
 
