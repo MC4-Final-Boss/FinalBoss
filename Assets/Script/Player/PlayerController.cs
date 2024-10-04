@@ -239,6 +239,7 @@ public class PlayerController : NetworkBehaviour
             if (other.gameObject.CompareTag("Water"))
             {
                 StartCoroutine(HandleDrownAndRespawn(respawnScript));
+                Debug.Log("Player menyentuh air");
             }
 
             if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
@@ -338,7 +339,7 @@ public class PlayerController : NetworkBehaviour
 
         // Respawn player setelah durasi
         respawnScript.RespawnPlayer();
-        Debug.Log("Player Death and Respawned");
+        Debug.Log("Player tenggelam and Respawned");
 
         // Reset drown
         drown = false;
