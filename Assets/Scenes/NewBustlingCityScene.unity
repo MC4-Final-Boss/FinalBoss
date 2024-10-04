@@ -6693,7 +6693,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pressedButton: {fileID: 559959238}
   movementGround: {fileID: 1094052540}
-  targetPosition: {x: 6.61, y: -0.19, z: 0}
+  targetPosition: {x: 6.61, y: -0.11, z: 0}
   moveSpeed: 2
 --- !u!212 &559959242
 SpriteRenderer:
@@ -13513,7 +13513,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 606340350743820985, guid: 0213e74bb521e4a42858db59d9b675c7, type: 3}
       propertyPath: m_Size.y
-      value: 0.7022005
+      value: 0.71898663
       objectReference: {fileID: 0}
     - target: {fileID: 606340350743820985, guid: 0213e74bb521e4a42858db59d9b675c7, type: 3}
       propertyPath: m_Offset.x
@@ -13521,7 +13521,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 606340350743820985, guid: 0213e74bb521e4a42858db59d9b675c7, type: 3}
       propertyPath: m_Offset.y
-      value: -0.022481829
+      value: -0.014088765
       objectReference: {fileID: 0}
     - target: {fileID: 606340350743820985, guid: 0213e74bb521e4a42858db59d9b675c7, type: 3}
       propertyPath: m_SpriteTilingProperty.newSize.x
@@ -24225,7 +24225,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -2.2767143, y: -2.734554}
+  m_Offset: {x: -2.2767143, y: -2.6118717}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -24236,7 +24236,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 13.576954, y: 3.1667886}
+  m_Size: {x: 13.576954, y: 3.4121532}
   m_EdgeRadius: 0
 --- !u!61 &2129241047
 BoxCollider2D:
@@ -24503,6 +24503,8 @@ SceneRoots:
   - {fileID: 2043983777}
   - {fileID: 832200229}
   - {fileID: 1800297254}
+  - {fileID: 140235190}
+  - {fileID: 934755785}
   - {fileID: 1008726966}
   - {fileID: 214817340}
   - {fileID: 22600296}
