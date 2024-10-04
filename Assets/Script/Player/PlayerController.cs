@@ -60,15 +60,10 @@ public class PlayerController : NetworkBehaviour
     {
         AddButtonEvent(leftButton, () => movement = Vector3.left, () => movement = Vector3.zero);
         AddButtonEvent(rightButton, () => movement = Vector3.right, () => movement = Vector3.zero);
-
-        if (jumpButton != null)
-        {
-            jumpButton.onClick.AddListener(Jump);
-        }
+        AddButtonEvent(jumpButton, Jump, null);
         restartButton.onClick.AddListener(RequestRestartServerRpc);
-
     }
-
+    
     void FixedUpdate()
     {
         if (IsOwner)
@@ -147,11 +142,11 @@ public class PlayerController : NetworkBehaviour
     {
         if (IsServer)
         {
-            NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);
+            NetworkManager.Singleton.SceneManager.LoadScene("NewBustlingCityScene", LoadSceneMode.Single);
         }
         else
         {
-            SceneManager.LoadScene("YurikoBustlingCityScene");
+            SceneManager.LoadScene("NewBustlingCityScene");
         }
     }
 

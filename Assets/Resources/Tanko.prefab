@@ -309,7 +309,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementSpeed: 5
   jumpForce: 6
-  jumpLeft: 1
+  OnGround: 1
+  isCollidingWithObjectBelow: 1
   pressedPlayer: 0
   explodePlayer: 0
   drown: 0
@@ -323,7 +324,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8478861834695638335}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 661902b4a694a4433946bdb66e5d4996, type: 3}
   m_Name: 
