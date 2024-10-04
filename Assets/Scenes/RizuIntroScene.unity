@@ -948,6 +948,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playButton: {fileID: 1990092018}
+  storyButton: {fileID: 1126139040}
   buttonSoundObject: {fileID: 1883060258}
 --- !u!1 &1628714349
 GameObject:
