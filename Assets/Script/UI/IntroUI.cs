@@ -7,7 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class IntroUI : MonoBehaviour
 {
-    [SerializeField] private Button playButton; 
+    [SerializeField] private Button playButton;
+    [SerializeField] private Button storyButton;
     [SerializeField] private GameObject buttonSoundObject; // Drag the GameObject with the AudioSource to this field
 
     private AudioSource buttonSound; // To store the AudioSource of the button sound
@@ -30,6 +31,14 @@ public class IntroUI : MonoBehaviour
             SceneManager.LoadScene("RizuMenuScene"); // Loads the "RizuMenuScene" scene
             Debug.Log("IntroUI: Play button clicked");
         });
+
+        storyButton.onClick.AddListener(() =>
+        {
+            PlayButtonSound(); // Play the button sound
+            SceneManager.LoadScene("ShabStoryScene"); // Loads the "ShabStoryScene" scene
+            Debug.Log("IntroUI: Story button clicked");
+        });
+
     }
 
     private void PlayButtonSound()
