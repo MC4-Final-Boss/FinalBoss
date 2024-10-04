@@ -126,6 +126,7 @@ public class RoomUIManager : MonoBehaviour
 
     private void UpdateUI()
     {
+
         createButton.gameObject.SetActive(!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost);
         clientButton.gameObject.SetActive(!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost);
         relayCodeText.gameObject.SetActive(true);
@@ -150,7 +151,7 @@ public class RoomUIManager : MonoBehaviour
     {
         if (NetworkManager.Singleton.IsServer)
         {
-            NetworkManager.Singleton.SceneManager.LoadScene("NewBustlingCityScene", LoadSceneMode.Single);
+            NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);
         }
     }
 }

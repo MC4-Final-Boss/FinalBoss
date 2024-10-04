@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
 using System.Linq;
@@ -24,7 +25,7 @@ public class PlayerController : NetworkBehaviour
     private Button leftButton;
     private Button rightButton;
     private Button jumpButton;
-
+    private Button restartButton;
     [SerializeField] private Rigidbody2D rb;
     private Animator animator;
     private Vector3 movement;
@@ -47,6 +48,7 @@ public class PlayerController : NetworkBehaviour
         leftButton = GameObject.Find("Left Button").GetComponent<Button>();
         rightButton = GameObject.Find("Right Button").GetComponent<Button>();
         jumpButton = GameObject.Find("Jump Button").GetComponent<Button>();
+        restartButton = GameObject.Find("Restart Button").GetComponent<Button>();
 
         if (IsOwner)
         {
@@ -63,6 +65,8 @@ public class PlayerController : NetworkBehaviour
         {
             jumpButton.onClick.AddListener(Jump);
         }
+        restartButton.onClick.AddListener(RequestRestartServerRpc);
+
     }
 
     void FixedUpdate()
@@ -111,6 +115,44 @@ public class PlayerController : NetworkBehaviour
             animator.SetBool("Drown", netDrown.Value);
         }
 
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestRestartServerRpc()
+    {
+        RestartClientRpc();
+    }
+
+    [ClientRpc]
+    private void RestartClientRpc()
+    {
+        if (IsServer)
+        {
+            NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);
+        }
+        else
+        {
+            SceneManager.LoadScene("YurikoBustlingCityScene");
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestRestartServerRpc()
+    {
+        RestartClientRpc();
+    }
+
+    [ClientRpc]
+    private void RestartClientRpc()
+    {
+        if (IsServer)
+        {
+            NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);
+        }
+        else
+        {
+            SceneManager.LoadScene("YurikoBustlingCityScene");
+        }
     }
 
 
@@ -327,7 +369,7 @@ IEnumerator HandleExplodeAndRespawn(PlayerRespawn respawnScript)
         yield return new WaitForSeconds(2f); // Tunggu 2 detik
 
         // Respawn player setelah durasi
-        respawnScript.RespawnPlayer();
+        respawnScript.RespawnPlayerServerRpc();
         Debug.Log("Player Death and Respawned");
 
         // Reset drown
@@ -421,9 +463,4 @@ IEnumerator HandleExplodeAndRespawn(PlayerRespawn respawnScript)
         }
     }
 
-    // private void OnCollisionExit2D(Collision2D other) {
-    //     if (other.gameObject.CompareTag("Platform")) {
-    //         UnsetParentServerRpc(gameObject.name);
-    //     }
-    // }
 }

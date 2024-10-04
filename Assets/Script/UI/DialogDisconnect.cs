@@ -2,8 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using Unity.Netcode;
 
-public class DialogDisconnect : MonoBehaviour
+public class DialogDisconnect : NetworkBehaviour
 {
     [SerializeField] private GameObject disconnectAlertPanel; // The UI panel for the disconnect alert
     [SerializeField] private TextMeshProUGUI disconnectMessageText; // The text component for displaying the message
@@ -33,11 +34,13 @@ public class DialogDisconnect : MonoBehaviour
     // Called when the OK button is clicked
     private void OnOkButtonClicked()
     {
+        NetworkManager.Singleton.Shutdown();
         // Hide the panel
         disconnectAlertPanel.SetActive(false);
 
         // Load the menu scene
         SceneManager.LoadScene("RizuMenuScene");
+        
     }
 
     // This function can be called when a disconnect happens in your game (for example, in a network manager or connection handler)

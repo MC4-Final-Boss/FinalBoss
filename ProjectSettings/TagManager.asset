@@ -19,7 +19,7 @@ TagManager:
   - UI
   - 
   - 
-  - 
+  - Limitation
   - 
   - 
   - 
@@ -67,4 +67,7 @@ TagManager:
     locked: 0
   - name: Water
     uniqueID: 1090059781
+    locked: 0
+  - name: Limitation
+    uniqueID: 3470531845
     locked: 0

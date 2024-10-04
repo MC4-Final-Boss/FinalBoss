@@ -81,7 +81,7 @@ public class PlayerNetworkManager : NetworkBehaviour
             // Untuk client yang terputus, tampilkan alert dan kembali ke menuScene
             dialogDisconnect.ShowDisconnectAlert("You have been disconnected from the server.");
             // Optionally return to main menu for the client
-            CloseGameOnDisconnect();
+            // CloseGameOnDisconnect();
         }
     }
 
@@ -89,9 +89,9 @@ public class PlayerNetworkManager : NetworkBehaviour
     private void ShutdownRoom()
     {
         Debug.Log("Shutting down the room and returning to the main menu.");
-        NotifyAllClientsToCloseGameClientRpc("The room is closing as all clients have disconnected.");
         NetworkManager.Singleton.Shutdown();
-        SceneManager.LoadScene("RizuMenuScene");
+        NotifyAllClientsToCloseGameClientRpc("The room is closing as all clients have disconnected.");
+        // SceneManager.LoadScene("RizuMenuScene");
     }
 
 
@@ -167,7 +167,7 @@ public class PlayerNetworkManager : NetworkBehaviour
             {
                 Debug.LogWarning("Client disconnected unexpectedly!");
                 dialogDisconnect.ShowDisconnectAlert("You have been disconnected from the server.");
-                CloseGameOnDisconnect();
+                // CloseGameOnDisconnect();
                 wasConnected = false;
             }
             else if (!wasConnected && NetworkManager.Singleton.IsConnectedClient)
@@ -211,12 +211,13 @@ public class PlayerNetworkManager : NetworkBehaviour
     }
 
         // Method untuk menutup game dan kembali ke main menu saat disconnect
-    private void CloseGameOnDisconnect()
-    {
-        Debug.Log("Closing game and returning to main menu due to disconnection.");
-        NetworkManager.Singleton.Shutdown();
-        SceneManager.LoadScene("RizuMenuScene");
-    }
+    // private void CloseGameOnDisconnect()
+    // {
+    //     Debug.Log("Closing game and returning to main menu due to disconnection.");
+    //     dialogDisconnect.ShowDisconnectAlert("You have been disconnected from the server.");
+    //     // NetworkManager.Singleton.Shutdown();
+    //     // SceneManager.LoadScene("RizuMenuScene");
+    // }
 
     // ClientRpc untuk memberitahu semua client untuk menutup game
     [ClientRpc]
