@@ -8,6 +8,7 @@ public class DialogDisconnect : MonoBehaviour
     [SerializeField] private GameObject disconnectAlertPanel; // The UI panel for the disconnect alert
     [SerializeField] private TextMeshProUGUI disconnectMessageText; // The text component for displaying the message
     [SerializeField] private Button okButton; // The OK button
+    [SerializeField] private GameObject controllerCanvas;
 
     private void Start()
     {
@@ -25,6 +26,9 @@ public class DialogDisconnect : MonoBehaviour
         
         // Set the message in the text component
         disconnectMessageText.text = message;
+
+        // Deactive controller canvas
+        controllerCanvas.SetActive(false);
 
         // Activate the disconnect alert panel
         disconnectAlertPanel.SetActive(true);

@@ -58,6 +58,8 @@ public class PlayerController : NetworkBehaviour
     {
         AddButtonEvent(leftButton, () => movement = Vector3.left, () => movement = Vector3.zero);
         AddButtonEvent(rightButton, () => movement = Vector3.right, () => movement = Vector3.zero);
+        AddButtonEvent(jumpButton, Jump, null);
+
 
         if (jumpButton != null)
         {

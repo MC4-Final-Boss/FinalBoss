@@ -1107,7 +1107,7 @@ GameObject:
   - component: {fileID: 203702740}
   - component: {fileID: 203702739}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Controller Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11457,6 +11457,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6170171884169405353, guid: 8cd22f2172a9740919bd1ab79ae82cc1, type: 3}
+      propertyPath: controllerCanvas
+      value: 
+      objectReference: {fileID: 203702738}
     - target: {fileID: 7743056226843977122, guid: 8cd22f2172a9740919bd1ab79ae82cc1, type: 3}
       propertyPath: m_Enabled
       value: 1
