@@ -148,7 +148,7 @@ public class PlayerController : NetworkBehaviour
 
 
         UpdateVelocityServerRpc(currentMovement.x, currentMovement.y);
-        Debug.Log($"x: {rb.velocity.x}, y: {rb.velocity.y}");
+        //Debug.Log($"x: {rb.velocity.x}, y: {rb.velocity.y}");
 
 
 
@@ -234,12 +234,12 @@ public class PlayerController : NetworkBehaviour
 
             if (isFalling)
             {
-                StartCoroutine(HandleExplodeAndRespawn(respawnScript));
+                StartCoroutine(HandleExplodeAndRespawn());
             }
 
             if (other.gameObject.CompareTag("Water"))
             {
-                StartCoroutine(HandleDrownAndRespawn(respawnScript));
+                StartCoroutine(HandleDrownAndRespawn());
                 Debug.Log("Player menyentuh air");
             }
 
@@ -262,7 +262,7 @@ public class PlayerController : NetworkBehaviour
                 {
                     if (respawnScript != null)
                     {
-                        StartCoroutine(HandleExplodeAndRespawn(respawnScript));
+                        StartCoroutine(HandleExplodeAndRespawn());
                         Debug.Log("Ada sesuatu di atasnya");
                     }
                     return;
@@ -323,8 +323,7 @@ public class PlayerController : NetworkBehaviour
     }
 
 
-
-    IEnumerator HandleExplodeAndRespawn(PlayerRespawn respawnScript)
+    IEnumerator HandleExplodeAndRespawn()
     {
         if (sfxManager != null)
         {
@@ -336,27 +335,27 @@ public class PlayerController : NetworkBehaviour
         float animLength = animStateInfo.length;
         yield return new WaitForSeconds(animLength);
 
-        respawnScript.RespawnPlayer();
+        //respawnScript.RespawnPlayer();
+        RequestRestartServerRpc();
         Debug.Log("Player Death and Respawned");
 
         explodePlayer = false;
     }
 
 
-    IEnumerator HandleDrownAndRespawn(PlayerRespawn respawnScript)
+    IEnumerator HandleDrownAndRespawn()
     {
-        drown = true; // Aktifkan animasi tenggelam
+        drown = true;
 
-        yield return new WaitForSeconds(2f); // Tunggu 2 detik
+        yield return new WaitForSeconds(2f);
 
-        // Respawn player setelah durasi
-        respawnScript.RespawnPlayer();
-        Debug.Log("Player tenggelam and Respawned");
+        //respawnScript.RespawnPlayer();
+        RequestRestartServerRpc();
+        Debug.Log("Player tenggelam");
 
-        // Reset drown
         drown = false;
-
     }
+
 
     [ServerRpc]
     private void UpdateIsFallingServerRpc(bool newIsFalling)
