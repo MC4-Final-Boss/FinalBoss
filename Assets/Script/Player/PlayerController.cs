@@ -224,12 +224,13 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    private int groundCollisionCount = 0;  
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (IsOwner)
         {
             PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
-
 
             if (isFalling)
             {
@@ -252,6 +253,7 @@ public class PlayerController : NetworkBehaviour
                 {
                     isCollidingWithObjectBelow = true;
                     OnGround = true;
+                    groundCollisionCount++;
                 }
             }
             else
@@ -261,7 +263,7 @@ public class PlayerController : NetworkBehaviour
                     if (respawnScript != null)
                     {
                         StartCoroutine(HandleExplodeAndRespawn(respawnScript));
-                        Debug.Log("Ada sesuatu diatasnya");
+                        Debug.Log("Ada sesuatu di atasnya");
                     }
                     return;
                 }
@@ -272,6 +274,7 @@ public class PlayerController : NetworkBehaviour
                         rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, 0));
                         isCollidingWithObjectBelow = true;
                         OnGround = true;
+                        groundCollisionCount++;
                     }
                     else
                     {
@@ -301,15 +304,24 @@ public class PlayerController : NetworkBehaviour
             else
             {
                 isCollidingWithObjectBelow = false;
+                groundCollisionCount--; 
+                if (groundCollisionCount <= 0)
+                {
+                    OnGround = false;
+                }
+            }
+        }
+        else if (other.gameObject.CompareTag("Ground"))
+        {
+            isCollidingWithObjectBelow = false;
+            groundCollisionCount--; 
+            if (groundCollisionCount <= 0)  // Jika tidak ada lagi objek yang disentuh
+            {
                 OnGround = false;
             }
         }
-        else
-        {
-            isCollidingWithObjectBelow = false;
-            OnGround = false;
-        }
     }
+
 
 
     IEnumerator HandleExplodeAndRespawn(PlayerRespawn respawnScript)
