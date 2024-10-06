@@ -4,82 +4,51 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using Unity.Netcode;
 
-public class DialogDisconnect : MonoBehaviour
+public class DialogDisconnect : NetworkBehaviour
 {
-    [SerializeField] private GameObject disconnectAlertPanel;
-    [SerializeField] private GameObject controllerPanel;
-    [SerializeField] private TextMeshProUGUI disconnectMessageText;
-    [SerializeField] private Button okButton;
+    [SerializeField] private GameObject disconnectAlertPanel; // The UI panel for the disconnect alert
 
-    public static DialogDisconnect Instance { get; private set; }
-
-    private void Awake()
-    {
-        // Singleton pattern to ensure only one instance exists
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
+     [SerializeField] private GameObject controllerPanel; 
+    [SerializeField] private TextMeshProUGUI disconnectMessageText; // The text component for displaying the message
+    [SerializeField] private Button okButton; // The OK button
 
     private void Start()
     {
+        // Ensure the panel is disabled at the start
         disconnectAlertPanel.SetActive(false);
+
+        // Attach the OK button listener
         okButton.onClick.AddListener(OnOkButtonClicked);
-        
-        // Subscribe to the scene loaded event
-        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        // Find and cache the controller panel in the new scene if it exists
-        GameObject newControllerPanel = GameObject.FindGameObjectWithTag("Controller");
-        if (newControllerPanel != null)
-        {
-            controllerPanel = newControllerPanel;
-        }
-    }
-
-   
-
+    // Method to show the disconnect alert
     public void ShowDisconnectAlert(string message)
     {
-        // Check if the panel still exists
-        if (disconnectAlertPanel == null)
-        {
-            Debug.LogError("Disconnect Alert Panel is missing. Cannot show alert.");
-            return;
-        }
-
-        if (controllerPanel != null)
-        {
-            controllerPanel.SetActive(false);
-        }
-
+        controllerPanel.SetActive(false);
         Debug.LogWarning(message);
+        
+        // Set the message in the text component
         disconnectMessageText.text = message;
+
+        // Activate the disconnect alert panel
         disconnectAlertPanel.SetActive(true);
     }
 
-
+    // Called when the OK button is clicked
     private void OnOkButtonClicked()
     {
-        if (NetworkManager.Singleton != null)
-        {
-            NetworkManager.Singleton.Shutdown();
-        }
+        NetworkManager.Singleton.Shutdown();
+        // Hide the panel
         disconnectAlertPanel.SetActive(false);
+
+        // Load the menu scene
         SceneManager.LoadScene("RizuMenuScene");
+        
     }
 
-    private void OnDestroy()
+    // This function can be called when a disconnect happens in your game (for example, in a network manager or connection handler)
+    private void OnClientDisconnected()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        ShowDisconnectAlert("You have been disconnected from the server.");
     }
 }

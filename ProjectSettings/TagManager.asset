@@ -10,7 +10,6 @@ TagManager:
   - Ground
   - Water
   - Platform
-  - Controller
   layers:
   - Default
   - TransparentFX
