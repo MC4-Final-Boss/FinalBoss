@@ -37,12 +37,13 @@ public class DialogDisconnect : NetworkBehaviour
     // Called when the OK button is clicked
     private void OnOkButtonClicked()
     {
-        NetworkManager.Singleton.Shutdown();
-        // Hide the panel
-        disconnectAlertPanel.SetActive(false);
+        Application.Quit();
+        // NetworkManager.Singleton.Shutdown();
+        // // Hide the panel
+        // disconnectAlertPanel.SetActive(false);
 
-        // Load the menu scene
-        SceneManager.LoadScene("RizuMenuScene");
+        // // Load the menu scene
+        // SceneManager.LoadScene("RizuMenuScene");
         
     }
 

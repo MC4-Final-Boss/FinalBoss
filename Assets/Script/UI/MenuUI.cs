@@ -33,7 +33,7 @@ public class RoomUIManager : MonoBehaviour
             clientButton.gameObject.SetActive(false);
             //backButton.gameObject.SetActive(false);
             statusText.gameObject.SetActive(true);
-            statusText.text = "Loading";
+            statusText.text = "Loading...";
             string relayCode = await RelayManager.Instance.CreateRelay();
             if (relayCode != null)
             {
