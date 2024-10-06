@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
 using System.Linq;
+using System.Collections.Generic;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -39,6 +40,7 @@ public class PlayerController : NetworkBehaviour
     private NetworkVariable<bool> netDrown = new NetworkVariable<bool>();
     private NetworkVariable<bool> netIsFalling = new NetworkVariable<bool>(false);
 
+
     void Start()
     {
 
@@ -63,7 +65,7 @@ public class PlayerController : NetworkBehaviour
         AddButtonEvent(jumpButton, Jump, null);
         restartButton.onClick.AddListener(RequestRestartServerRpc);
     }
-    
+
     void FixedUpdate()
     {
         if (IsOwner)
@@ -224,7 +226,8 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    private int groundCollisionCount = 0;  
+    private int groundCollisionCount = 0;
+    private Dictionary<ulong, HashSet<string>> playerCheckpoints = new Dictionary<ulong, HashSet<string>>();
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -241,6 +244,29 @@ public class PlayerController : NetworkBehaviour
             {
                 StartCoroutine(HandleDrownAndRespawn());
                 Debug.Log("Player menyentuh air");
+            }
+
+            if (other.CompareTag("CheckPoint1") || other.CompareTag("CheckPoint2") || other.CompareTag("CheckPoint3") || other.CompareTag("Finish"))
+            {
+                ulong clientId = NetworkManager.LocalClientId;
+                string checkpointTag = other.tag;
+
+                // Periksa dan simpan status checkpoint untuk pemain lokal
+                if (!playerCheckpoints.ContainsKey(clientId))
+                {
+                    playerCheckpoints[clientId] = new HashSet<string>();
+                }
+
+                if (playerCheckpoints[clientId].Add(checkpointTag))
+                {
+                    // Simpan di PlayerPrefs
+                    PlayerPrefs.SetString($"Player_{clientId}_Checkpoint", checkpointTag);
+                    PlayerPrefs.Save();
+                    Debug.Log($"Player {clientId} reached checkpoint: {checkpointTag}");
+
+                    // Kirim informasi checkpoint ke semua klien
+                    NotifyAllPlayersAboutCheckpoint(clientId, checkpointTag);
+                }
             }
 
             if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
@@ -285,7 +311,31 @@ public class PlayerController : NetworkBehaviour
             }
         }
     }
+    private void NotifyAllPlayersAboutCheckpoint(ulong clientId, string checkpointTag)
+    {
+        // Contoh penggunaan RPC untuk memberi tahu semua pemain
+        // Gantilah dengan implementasi yang sesuai dengan sistem jaringan Anda
+        foreach (var player in playerCheckpoints.Keys)
+        {
+            if (player != clientId)
+            {
+                // Panggil RPC untuk memperbarui status checkpoint pada pemain lain
+                UpdateCheckpointForPlayer(player, checkpointTag);
+            }
+        }
+    }
 
+    private void UpdateCheckpointForPlayer(ulong playerId, string checkpointTag)
+    {
+        // Update status checkpoint untuk pemain lain
+        if (!playerCheckpoints.ContainsKey(playerId))
+        {
+            playerCheckpoints[playerId] = new HashSet<string>();
+        }
+
+        playerCheckpoints[playerId].Add(checkpointTag);
+        Debug.Log($"Updated Player {playerId} checkpoint: {checkpointTag}");
+    }
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("Tanko") || other.gameObject.CompareTag("Gaspi"))
@@ -304,7 +354,7 @@ public class PlayerController : NetworkBehaviour
             else
             {
                 isCollidingWithObjectBelow = false;
-                groundCollisionCount--; 
+                groundCollisionCount--;
                 if (groundCollisionCount <= 0)
                 {
                     OnGround = false;
@@ -314,7 +364,7 @@ public class PlayerController : NetworkBehaviour
         else if (other.gameObject.CompareTag("Ground"))
         {
             isCollidingWithObjectBelow = false;
-            groundCollisionCount--; 
+            groundCollisionCount--;
             if (groundCollisionCount <= 0)  // Jika tidak ada lagi objek yang disentuh
             {
                 OnGround = false;
@@ -337,7 +387,7 @@ public class PlayerController : NetworkBehaviour
 
         //respawnScript.RespawnPlayer();
         RequestRestartServerRpc();
-        Debug.Log("Player Death and Respawned");
+        //Debug.Log("Player Death and Respawned");
 
         explodePlayer = false;
     }
@@ -351,7 +401,7 @@ public class PlayerController : NetworkBehaviour
 
         //respawnScript.RespawnPlayer();
         RequestRestartServerRpc();
-        Debug.Log("Player tenggelam");
+        //Debug.Log("Player tenggelam");
 
         drown = false;
     }
@@ -416,7 +466,7 @@ public class PlayerController : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void SetParentServerRpc(string playerName, string platformName)
     {
-        Debug.Log("PARENT IS CALLED");
+        //Debug.Log("PARENT IS CALLED");
         GameObject platform = GameObject.Find(platformName);
         transform.SetParent(platform.transform);
     }

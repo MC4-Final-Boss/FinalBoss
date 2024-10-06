@@ -13,7 +13,7 @@ public class Checkpoint : MonoBehaviour
 
         if (saveCheckpoint == null)
         {
-            Debug.LogError("PlayerSaveCheckPoint component is missing!");
+            //Debug.LogError("PlayerSaveCheckPoint component is missing!");
         }
     }
 
@@ -23,7 +23,7 @@ public class Checkpoint : MonoBehaviour
         {
 
             SaveCheckpoint();
-            Debug.Log("Checkpoint saved at: " + new Vector3(transform.position.x, transform.position.y, 0));
+            //Debug.Log("Checkpoint saved at: " + new Vector3(transform.position.x, transform.position.y, 0));
             // hasTriggered = true;
         }
     }

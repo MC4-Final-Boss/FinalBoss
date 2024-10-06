@@ -23,7 +23,7 @@ public class PlayerSaveCheckPoint : MonoBehaviour
         float y = PlayerPrefs.GetFloat("CheckpointY", 0f); // Default to 0 if not found
         float z = PlayerPrefs.GetFloat("CheckpointZ", 0f); // Default to 0 if not found
         
-        Debug.Log("Checkpoint retrieved: " + checkpointPosition);
+        //Debug.Log("Checkpoint retrieved: " + checkpointPosition);
         return checkpointPosition;
     }
 
@@ -33,6 +33,6 @@ public class PlayerSaveCheckPoint : MonoBehaviour
         PlayerPrefs.DeleteKey("CheckpointY");
         PlayerPrefs.DeleteKey("CheckpointZ");
         PlayerPrefs.Save(); // Save changes to PlayerPrefs
-        Debug.Log("Checkpoint cleared.");
+        //Debug.Log("Checkpoint cleared.");
     }
 }

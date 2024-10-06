@@ -146,7 +146,29 @@ public class PlayerNetworkManager : NetworkBehaviour
 
     private Vector3 GetSpawnPositionForPlayer(bool isHost)
     {
-        // Kembalikan posisi spawn berdasarkan apakah pemain adalah host
+        // Mengambil checkpoint yang disimpan
+        string savedCheckpoint = PlayerPrefs.GetString($"Player_{NetworkManager.LocalClientId}_Checkpoint", null);
+
+        // Memeriksa apakah checkpoint tidak null
+        if (savedCheckpoint != null)
+        {
+            Debug.Log($"Restoring player to checkpoint {savedCheckpoint}");
+
+            // Mengembalikan posisi spawn berdasarkan checkpoint yang disimpan
+            switch (savedCheckpoint)
+            {
+                case "CheckPoint1":
+                    return isHost ? new Vector3(54, 5.6f, 0) : new Vector3(55, 5.6f, 0);
+                case "CheckPoint2":
+                    return isHost ? new Vector3(84, 14.2f, 0) : new Vector3(85, 14.2f, 0);
+                case "CheckPoint3":
+                    return isHost ? new Vector3(144, 1.4f, 0) : new Vector3(145, 1.4f, 0);
+                case "Finish":
+                    return isHost ? new Vector3(-5, 0, 0) : new Vector3(-4, 0, 0);
+            }
+        }
+
+        // Posisi default jika tidak ada checkpoint yang ditemukan
         return isHost ? new Vector3(-5, 0, 0) : new Vector3(-4, 0, 0);
     }
 
