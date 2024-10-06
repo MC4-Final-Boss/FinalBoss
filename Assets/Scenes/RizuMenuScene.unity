@@ -669,6 +669,9 @@ MonoBehaviour:
   relayCodeInput: {fileID: 1595715}
   joinButton: {fileID: 2107248101}
   backButton: {fileID: 2055435197}
+  menuSceneName: RizuIntroScene
+  gameSceneName: NewBustlingCityScene
+  connectionTimeout: 30
 --- !u!1 &767601679
 GameObject:
   m_ObjectHideFlags: 0
