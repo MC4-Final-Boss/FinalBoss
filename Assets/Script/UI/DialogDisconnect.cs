@@ -46,16 +46,27 @@ public class DialogDisconnect : MonoBehaviour
         }
     }
 
+   
+
     public void ShowDisconnectAlert(string message)
     {
+        // Check if the panel still exists
+        if (disconnectAlertPanel == null)
+        {
+            Debug.LogError("Disconnect Alert Panel is missing. Cannot show alert.");
+            return;
+        }
+
         if (controllerPanel != null)
         {
             controllerPanel.SetActive(false);
         }
+
         Debug.LogWarning(message);
         disconnectMessageText.text = message;
         disconnectAlertPanel.SetActive(true);
     }
+
 
     private void OnOkButtonClicked()
     {
