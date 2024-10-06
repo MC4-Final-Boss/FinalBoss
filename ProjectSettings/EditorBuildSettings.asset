@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/NewBustlingCityScene.unity
     guid: 7c4a8f15532f642c5aaa39bdf0da0f62
+  - enabled: 1
+    path: Assets/Scenes/Scene Backup/YurikoBustlingCityScene.unity
+    guid: fc8c3d7c36dfb4d31b2ab057a3739a84
   m_configObjects: {}

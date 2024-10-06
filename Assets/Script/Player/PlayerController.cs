@@ -19,8 +19,10 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float fallThreshold = -15f;
     [SerializeField] private bool isFalling = false;
     private SFXManager sfxManager;
+    
 
     [SerializeField] private float jumpVelocityThreshold = 0.1f;
+    private PlayerRespawn respawnScript;
 
     private Button leftButton;
     private Button rightButton;
@@ -49,11 +51,18 @@ public class PlayerController : NetworkBehaviour
         rightButton = GameObject.Find("Right Button").GetComponent<Button>();
         jumpButton = GameObject.Find("Jump Button").GetComponent<Button>();
         restartButton = GameObject.Find("Restart Button").GetComponent<Button>();
+        respawnScript = GetComponent<PlayerRespawn>();
+        respawnScript.RespawnPlayer();
+        Debug.Log("Player start to respawn");
+
+
 
         if (IsOwner)
         {
             SetupButtons();
         }
+
+    
     }
 
     void SetupButtons()
@@ -124,11 +133,11 @@ public class PlayerController : NetworkBehaviour
     {
         if (IsServer)
         {
-            NetworkManager.Singleton.SceneManager.LoadScene("NewBustlingCityScene", LoadSceneMode.Single);
+            NetworkManager.Singleton.SceneManager.LoadScene("YurikoBustlingCityScene", LoadSceneMode.Single);
         }
         else
         {
-            SceneManager.LoadScene("NewBustlingCityScene");
+            SceneManager.LoadScene("YurikoBustlingCityScene");
         }
     }
 
@@ -209,7 +218,7 @@ public class PlayerController : NetworkBehaviour
     {
         bool isJumping = Mathf.Abs(rb.velocity.y) > jumpVelocityThreshold;
         animator.SetFloat("Moving", isJumping ? 0 : Mathf.Abs(movement.x));
-        animator.SetBool("IsJumping", isJumping);
+        // animator.SetBool("IsJumping", isJumping);
         animator.SetBool("ExplodePlayer", explodePlayer);
         animator.SetBool("Drown", drown);
     }
@@ -230,8 +239,6 @@ public class PlayerController : NetworkBehaviour
     {
         if (IsOwner)
         {
-            PlayerRespawn respawnScript = GetComponent<PlayerRespawn>();
-
             if (isFalling)
             {
                 StartCoroutine(HandleExplodeAndRespawn());
@@ -335,7 +342,7 @@ public class PlayerController : NetworkBehaviour
         float animLength = animStateInfo.length;
         yield return new WaitForSeconds(animLength);
 
-        //respawnScript.RespawnPlayer();
+        // respawnScript.RespawnPlayer();
         RequestRestartServerRpc();
         Debug.Log("Player Death and Respawned");
 
