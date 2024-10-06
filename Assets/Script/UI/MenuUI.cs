@@ -18,7 +18,7 @@ public class RoomUIManager : MonoBehaviour
     [SerializeField] private Button backButton;
 
     [Header("Settings")]
-    [SerializeField] private string menuSceneName = "RizuIntroScene";
+    [SerializeField] private string menuSceneName = "RizuMenuScene";
     [SerializeField] private string gameSceneName = "NewBustlingCityScene";
     [SerializeField] private float connectionTimeout = 30f;
 
