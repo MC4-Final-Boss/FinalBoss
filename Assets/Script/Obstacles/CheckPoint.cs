@@ -40,8 +40,8 @@ public class Checkpoint : MonoBehaviour
     {
         if (saveCheckpoint != null)
         {
-            // saveCheckpoint.SaveCheckpoint(transform.position);
-            saveCheckpoint.ClearCheckpoint();
+            saveCheckpoint.SaveCheckpoint(transform.position);
+            // saveCheckpoint.ClearCheckpoint();
         }
     }
 }

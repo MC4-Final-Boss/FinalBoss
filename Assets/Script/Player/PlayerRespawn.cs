@@ -29,35 +29,36 @@ public class PlayerRespawn : NetworkBehaviour
     
     [ServerRpc(RequireOwnership = false)]
     public void RespawnPlayerServerRpc(){
-
+        RespawnPlayerClientRpc();
     }
 
     [ClientRpc]
     public void RespawnPlayerClientRpc()
     {
-        if (PlayerPrefs.HasKey("CheckpointX"))
+        if (PlayerPrefs.GetFloat("CheckpointX", 0f) != 0f)
         {
             Vector3 checkpointPosition = saveCheckpoint.GetCheckpointPosition();
             
             if (IsHost)
             {
                 respawnPosition = checkpointPosition;
-                Debug.Log("Host respawning to checkpoint: " + respawnPosition);
+                //Debug.Log("Host respawning to checkpoint: " + respawnPosition);
             }
             else
             {
                 respawnPosition = new Vector3(checkpointPosition.x + 2f, checkpointPosition.y, checkpointPosition.z);
-                Debug.Log("Client respawning to offset checkpoint: " + respawnPosition);
+                //Debug.Log("Client respawning to offset checkpoint: " + respawnPosition);
             }
         }
         else
         {
             respawnPosition = GetInitialPosition();
-            Debug.Log("Respawning to initial position: " + respawnPosition + " for " + gameObject.name);
+            //Debug.Log("Respawning to initial position: " + respawnPosition + " for " + gameObject.name);
         }
 
-        Debug.Log("Now player want to checkpoint");
+        //Debug.Log("Now player want to checkpoint");
         transform.position = respawnPosition; // Update the player position
-        Debug.Log($"Respawned {gameObject.name} at position: {respawnPosition}");
+        //Debug.Log($"Respawned {gameObject.name} at position: {respawnPosition}");
+        GetComponent<BoxCollider2D>().enabled = false;
     }
 }

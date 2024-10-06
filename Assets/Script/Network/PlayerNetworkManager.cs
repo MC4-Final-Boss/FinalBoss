@@ -119,7 +119,7 @@ public class PlayerNetworkManager : NetworkBehaviour
                 string tagToAssign = clientId == NetworkManager.ServerClientId ? "Tanko" : "Gaspi";
 
                 // Instantiate prefab di posisi spawn
-                GameObject playerInstance = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
+                GameObject playerInstance = Instantiate(playerPrefab);
                 playerInstance.tag = tagToAssign;
 
                 // Pastikan objek memiliki komponen NetworkObject untuk dikendalikan oleh NetworkManager
@@ -147,7 +147,9 @@ public class PlayerNetworkManager : NetworkBehaviour
     private Vector3 GetSpawnPositionForPlayer(bool isHost)
     {
         // Kembalikan posisi spawn berdasarkan apakah pemain adalah host
-        return isHost ? new Vector3(-5, 0, 0) : new Vector3(-4, 0, 0);
+        return isHost ? new Vector3(-6, -2.83f, 0) : new Vector3(-4, -2.83f, 0);
+        // return isHost ? new Vector3(-6, 0, 0) : new Vector3(-4, 0, 0);
+
     }
 
     [ClientRpc]
