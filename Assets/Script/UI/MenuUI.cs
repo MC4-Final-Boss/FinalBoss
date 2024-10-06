@@ -6,105 +6,186 @@ using UnityEngine.SceneManagement;
 
 public class RoomUIManager : MonoBehaviour
 {
-    [SerializeField] private Button createButton; // button create
-    [SerializeField] private Button clientButton; // button join pertama
-    [SerializeField] private TextMeshProUGUI statusText; // status waiting
-    [SerializeField] private TextMeshProUGUI relayCodeText; // kode relay yang ditampilkan
-    [SerializeField] private GameObject hostCodePanel; // UI Panel for host code
-    [SerializeField] private GameObject clientInputPanel; // UI Panel for client input
-    [SerializeField] private TMP_InputField relayCodeInput; // client input kode relay
-    [SerializeField] private Button joinButton; // join dengan kode relay
-    [SerializeField] private Button backButton; // back button
+    [Header("UI Elements")]
+    [SerializeField] private Button createButton;
+    [SerializeField] private Button clientButton;
+    [SerializeField] private TextMeshProUGUI statusText;
+    [SerializeField] private TextMeshProUGUI relayCodeText;
+    [SerializeField] private GameObject hostCodePanel;
+    [SerializeField] private GameObject clientInputPanel;
+    [SerializeField] private TMP_InputField relayCodeInput;
+    [SerializeField] private Button joinButton;
+    [SerializeField] private Button backButton;
+
+    [Header("Settings")]
+    [SerializeField] private string menuSceneName = "RizuMenuScene";
+    [SerializeField] private string gameSceneName = "NewBustlingCityScene";
+    [SerializeField] private float connectionTimeout = 30f;
+
+    private bool isConnecting = false;
+    private float connectionTimer = 0f;
 
     private void Start()
     {
-        // Hide client input panel and status text initially
+        InitializeUI();
+        SetupButtonListeners();
+        SetupNetworkCallbacks();
+    }
+
+    private void Update()
+    {
+        if (isConnecting)
+        {
+            connectionTimer += Time.deltaTime;
+            if (connectionTimer >= connectionTimeout)
+            {
+                HandleConnectionTimeout();
+            }
+        }
+    }
+
+    private void InitializeUI()
+    {
         clientInputPanel.SetActive(false);
         hostCodePanel.SetActive(false);
         statusText.gameObject.SetActive(false);
         joinButton.gameObject.SetActive(false);
         relayCodeText.gameObject.SetActive(false);
+    }
 
-        // Create button functionality
-        createButton.onClick.AddListener(async () => {
-            Debug.Log("RoomUIManager: Create button clicked");
-            hostCodePanel.SetActive(false);
-            createButton.gameObject.SetActive(false);
-            clientButton.gameObject.SetActive(false);
-            //backButton.gameObject.SetActive(false);
-            statusText.gameObject.SetActive(true);
-            statusText.text = "Loading";
-            string relayCode = await RelayManager.Instance.CreateRelay();
-            if (relayCode != null)
-            {
-                hostCodePanel.SetActive(true);
-                ShowRelayCode(relayCode);
-                NetworkManager.Singleton.StartHost();
-                UpdateUI();
-            }
-            else
-            {
-                Debug.LogError("Failed to create relay");
-            }
-        });
+    private void SetupButtonListeners()
+    {
+        createButton.onClick.AddListener(OnCreateButtonClicked);
+        clientButton.onClick.AddListener(OnClientButtonClicked);
+        joinButton.onClick.AddListener(OnJoinButtonClicked);
+        backButton.onClick.AddListener(OnBackButtonClicked);
+    }
 
-        // Client button functionality
-        clientButton.onClick.AddListener(() => {
-            Debug.Log("RoomUIManager: Client button clicked");
-            ShowClientInputPanel();
-        });
+    private void SetupNetworkCallbacks()
+    {
+        if (NetworkManager.Singleton == null)
+        {
+            Debug.LogError("NetworkManager is null! Ensure it exists in the scene.");
+            return;
+        }
 
-        // Join button functionality
-                joinButton.onClick.AddListener(async () => {
-            bool joinSuccess = await RelayManager.Instance.JoinRelay(relayCodeInput.text);
-            if (joinSuccess)
-            {
-                NetworkManager.Singleton.StartClient();
-                UpdateUI();
-            }
-            else
-            {
-                // Menampilkan teks kesalahan dalam warna merah
-                statusText.gameObject.SetActive(true);
-                statusText.text = "Code mismatch, try again!";
-                statusText.color = Color.red; // Mengubah warna teks menjadi merah
-                Debug.LogError("Failed to join relay");
-                // ShowClientInputPanel();
-            }
-        });
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+    }
 
+    private async void OnCreateButtonClicked()
+    {
+        Debug.Log("RoomUIManager: Create button clicked");
+        SetActiveMainButtons(false);
+        ShowLoadingStatus();
+        StartConnectionTimer();
 
-        // Back button functionality
-        backButton.onClick.AddListener(() => {
-            if (clientInputPanel.activeSelf || hostCodePanel.activeSelf)
-            {
-                // Close client input panel and show create & client buttons
-                clientInputPanel.SetActive(false);
-                createButton.gameObject.SetActive(true);
-                clientButton.gameObject.SetActive(true);
-                statusText.gameObject.SetActive(false); // Hide status text when returning
-                joinButton.gameObject.SetActive(false);
-
-                hostCodePanel.SetActive(false);
-                NetworkManager.Singleton.Shutdown();
-            }
-            else
-            {
-                // Go back to 'IntroScene'
-                SceneManager.LoadScene("RizuIntroScene");
-            }
-        });
-
-        // Client connected callback
-        NetworkManager.Singleton.OnClientConnectedCallback += (id) => {
-            Debug.Log($"RoomUIManager: Client connected callback. ID: {id}");
+        string relayCode = await RelayManager.Instance.CreateRelay();
+        if (relayCode != null)
+        {
+            hostCodePanel.SetActive(true);
+            ShowRelayCode(relayCode);
+            NetworkManager.Singleton.StartHost();
             UpdateUI();
-            if (NetworkManager.Singleton.IsHost && NetworkManager.Singleton.ConnectedClientsList.Count > 1)
-            {
-                Debug.Log("RoomUIManager: All clients connected. Loading game scene 'Bustling City'.");
-                LoadGameScene();
-            }
-        };
+        }
+        else
+        {
+            StopConnectionTimer();
+            Debug.LogError("Failed to create relay");
+            SetActiveMainButtons(true);
+            ShowErrorStatus("Failed to create room");
+        }
+    }
+
+    private void OnClientButtonClicked()
+    {
+        Debug.Log("RoomUIManager: Client button clicked");
+        ShowClientInputPanel();
+    }
+
+    private async void OnJoinButtonClicked()
+    {
+        if (string.IsNullOrEmpty(relayCodeInput.text))
+        {
+            ShowErrorStatus("Please enter a code");
+            return;
+        }
+
+        ShowLoadingStatus();
+        StartConnectionTimer();
+
+        bool joinSuccess = await RelayManager.Instance.JoinRelay(relayCodeInput.text);
+        if (joinSuccess)
+        {
+            NetworkManager.Singleton.StartClient();
+            UpdateUI();
+        }
+        else
+        {
+            StopConnectionTimer();
+            ShowErrorStatus("Code mismatch, try again!");
+        }
+    }
+
+    private void OnBackButtonClicked()
+    {
+        if (clientInputPanel.activeSelf || hostCodePanel.activeSelf)
+        {
+            ResetToInitialState();
+        }
+        else
+        {
+            LoadMenuScene();
+        }
+    }
+
+    private void OnClientConnected(ulong clientId)
+    {
+        Debug.Log($"RoomUIManager: Client connected callback. ID: {clientId}");
+        StopConnectionTimer();
+        UpdateUI();
+        
+        if (NetworkManager.Singleton.IsHost && NetworkManager.Singleton.ConnectedClientsList.Count > 1)
+        {
+            Debug.Log($"RoomUIManager: All clients connected. Loading game scene '{gameSceneName}'.");
+            LoadGameScene();
+        }
+    }
+
+    private void OnClientDisconnected(ulong clientId)
+    {
+        Debug.Log($"Client disconnected: {clientId}");
+        StopConnectionTimer();
+        
+        if (DialogDisconnect.Instance != null)
+        {
+            DialogDisconnect.Instance.ShowDisconnectAlert("You have been disconnected from the server.");
+        }
+        else
+        {
+            Debug.LogError("DialogDisconnect instance not found!");
+            ResetToInitialState();
+        }
+    }
+
+    private void HandleConnectionTimeout()
+    {
+        Debug.Log("Connection attempt timed out");
+        StopConnectionTimer();
+        ShowErrorStatus("Connection timed out. Please try again.");
+        ResetToInitialState();
+    }
+
+    private void StartConnectionTimer()
+    {
+        isConnecting = true;
+        connectionTimer = 0f;
+    }
+
+    private void StopConnectionTimer()
+    {
+        isConnecting = false;
+        connectionTimer = 0f;
     }
 
     private void ShowRelayCode(string code)
@@ -116,22 +197,21 @@ public class RoomUIManager : MonoBehaviour
 
     private void ShowClientInputPanel()
     {
-        clientInputPanel.SetActive(true); // Show client input panel
+        clientInputPanel.SetActive(true);
         joinButton.gameObject.SetActive(true);
         statusText.gameObject.SetActive(true);
         statusText.text = "Enter Code to join";
-        createButton.gameObject.SetActive(false);
-        clientButton.gameObject.SetActive(false);
+        SetActiveMainButtons(false);
     }
 
     private void UpdateUI()
     {
-
-        createButton.gameObject.SetActive(!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost);
-        clientButton.gameObject.SetActive(!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost);
-        relayCodeText.gameObject.SetActive(true);
-        statusText.color = Color.white; 
+        bool isConnected = NetworkManager.Singleton.IsClient || NetworkManager.Singleton.IsHost;
+        SetActiveMainButtons(!isConnected);
+        
+        relayCodeText.gameObject.SetActive(NetworkManager.Singleton.IsHost);
         statusText.gameObject.SetActive(true);
+        statusText.color = Color.white;
 
         if (NetworkManager.Singleton.IsHost)
         {
@@ -151,7 +231,71 @@ public class RoomUIManager : MonoBehaviour
     {
         if (NetworkManager.Singleton.IsServer)
         {
-            NetworkManager.Singleton.SceneManager.LoadScene("NewBustlingCityScene", LoadSceneMode.Single);
+            NetworkManager.Singleton.SceneManager.LoadScene(gameSceneName, LoadSceneMode.Single);
+        }
+    }
+
+    private void LoadMenuScene()
+    {
+        NetworkManager.Singleton.Shutdown();
+        SceneManager.LoadScene(menuSceneName);
+    }
+
+    private void SetActiveMainButtons(bool active)
+    {
+        if (createButton != null) createButton.gameObject.SetActive(active);
+        if (clientButton != null) clientButton.gameObject.SetActive(active);
+    }
+
+    private void ShowLoadingStatus()
+    {
+        if (statusText != null)
+        {
+            statusText.gameObject.SetActive(true);
+            statusText.text = "Loading...";
+            statusText.color = Color.white;
+        }
+    }
+
+    private void ShowErrorStatus(string message)
+    {
+        if (statusText != null)
+        {
+            statusText.gameObject.SetActive(true);
+            statusText.text = message;
+            statusText.color = Color.red;
+        }
+    }
+
+    private void ResetToInitialState()
+    {
+        StopConnectionTimer();
+        
+        if (clientInputPanel != null) clientInputPanel.SetActive(false);
+        if (hostCodePanel != null) hostCodePanel.SetActive(false);
+        if (relayCodeText != null) relayCodeText.gameObject.SetActive(false);
+        if (joinButton != null) joinButton.gameObject.SetActive(false);
+        
+        SetActiveMainButtons(true);
+        
+        if (statusText != null)
+        {
+            statusText.gameObject.SetActive(false);
+            statusText.color = Color.white;
+        }
+        
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.Shutdown();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
         }
     }
 }
