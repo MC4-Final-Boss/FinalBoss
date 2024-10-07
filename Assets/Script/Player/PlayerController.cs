@@ -295,18 +295,18 @@ public class PlayerController : NetworkBehaviour
                 }
                 else
                 {
-                    if (other.gameObject.CompareTag("Ground"))
-                    {
+                    //if (other.gameObject.CompareTag("Ground"))
+                    //{
                         rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, 0));
                         isCollidingWithObjectBelow = true;
                         OnGround = true;
                         groundCollisionCount++;
-                    }
-                    else
-                    {
-                        isCollidingWithObjectBelow = true;
-                        OnGround = true;
-                    }
+                    //}
+                    //else
+                    //{
+                    //    isCollidingWithObjectBelow = true;
+                    //    OnGround = true;
+                    //}
                 }
             }
         }
@@ -370,7 +370,8 @@ public class PlayerController : NetworkBehaviour
                 }
             }
         }
-        else if (other.gameObject.CompareTag("Ground"))
+        else
+        //if (other.gameObject.CompareTag("Ground"))
         {
             isCollidingWithObjectBelow = false;
             groundCollisionCount--;
