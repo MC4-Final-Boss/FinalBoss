@@ -12,12 +12,15 @@ public class StoryScene : MonoBehaviour
     [SerializeField] GameObject[] background;
     int index;
 
+    private SFXManager sfxManager;
+
     // Start is called before the first frame update
     void Start()
     {
         nextButton.gameObject.SetActive(true);
         prevButton.gameObject.SetActive(false);
         mmButton.gameObject.SetActive(false);
+        sfxManager = FindObjectOfType<SFXManager>();
         index = 0;
 
     }
@@ -68,6 +71,11 @@ public class StoryScene : MonoBehaviour
             background[i].gameObject.SetActive(false);
             background[index].gameObject.SetActive(true);
         }
+         // Play button press sound
+            if (sfxManager != null)
+            {
+                sfxManager.PlayButtonPressSFX();
+            }
         Debug.Log(index);
     }
 
@@ -79,6 +87,11 @@ public class StoryScene : MonoBehaviour
             background[i].gameObject.SetActive(false);
             background[index].gameObject.SetActive(true);
         }
+         // Play button press sound
+            if (sfxManager != null)
+            {
+                sfxManager.PlayButtonPressSFX();
+            }
         Debug.Log(index);
     }
 
