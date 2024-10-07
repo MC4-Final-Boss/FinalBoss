@@ -5,6 +5,8 @@ using Unity.Netcode;
 
 public class EndPoint : NetworkBehaviour
 {
+
+    PlayerController playerController;
     [SerializeField] private GameObject levelClearPanel;
     [SerializeField] private GameObject controllerPanel;
 
@@ -26,7 +28,7 @@ public class EndPoint : NetworkBehaviour
         
         backhomeButton.onClick.AddListener(() => 
         {    
-            // NetworkManager.Singleton.Shutdown();
+            NetworkManager.Singleton.Shutdown();
             Time.timeScale = 1f;
             SceneManager.LoadScene("RizuMenuScene"); // Loads the "RizuMenuScene" scene
             Debug.Log("IntroUI: button home clicked");
@@ -41,7 +43,7 @@ public class EndPoint : NetworkBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         // if (!IsServer) return;
-        bgmManager.gameObject.SetActive(false);
+        // bgmManager.gameObject.SetActive(false);
 
         if (other.CompareTag("Tanko"))
             tankoReached = true;
@@ -80,17 +82,21 @@ public class EndPoint : NetworkBehaviour
             sfxManager.PlayLevelClearSFX();
         levelClearPanel.SetActive(true);
         Time.timeScale = 0f;
+
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void RequestRestartServerRpc()
     {
+        Debug.Log("Trying to restart server");
+
         RestartClientRpc();
     }
 
     [ClientRpc]
     private void RestartClientRpc()
     {
+        Debug.Log("Trying to restart client");
         if (IsServer)
         {
             NetworkManager.Singleton.SceneManager.LoadScene("NewBustlingCityScene", LoadSceneMode.Single);

@@ -163,8 +163,8 @@ public class PlayerNetworkManager : NetworkBehaviour
                     return isHost ? new Vector3(88, 14.2f, 0) : new Vector3(85, 14.2f, 0);
                 // case "CheckPoint3":
                 //     return isHost ? new Vector3(144, 1.4f, 0) : new Vector3(145, 1.4f, 0);
-                case "Finish":
-                    return isHost ? new Vector3(-5, 0, 0) : new Vector3(-4, 0, 0);
+                // case "Finish":
+                //     return isHost ? new Vector3(-5, 0, 0) : new Vector3(-4, 0, 0);
             }
         }
 
