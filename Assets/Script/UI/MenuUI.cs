@@ -30,6 +30,7 @@ public class RoomUIManager : MonoBehaviour
         InitializeUI();
         SetupButtonListeners();
         SetupNetworkCallbacks();
+        PlayerPrefs.DeleteAll();
     }
 
     private void Update()

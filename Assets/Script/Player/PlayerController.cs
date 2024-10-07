@@ -260,8 +260,7 @@ public class PlayerController : NetworkBehaviour
                 if (playerCheckpoints[clientId].Add(checkpointTag))
                 {
                     // Simpan di PlayerPrefs
-                    PlayerPrefs.SetString($"Player_{clientId}_Checkpoint", checkpointTag);
-                    PlayerPrefs.Save();
+                    SaveCheckPointServerRpc(clientId, checkpointTag);
                     Debug.Log($"Player {clientId} reached checkpoint: {checkpointTag}");
 
                     // Kirim informasi checkpoint ke semua klien
@@ -311,6 +310,13 @@ public class PlayerController : NetworkBehaviour
             }
         }
     }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SaveCheckPointServerRpc(ulong clientId, string checkpointTag) {
+        PlayerPrefs.SetString($"Checkpoint", checkpointTag);
+        PlayerPrefs.Save();
+    }
+
     private void NotifyAllPlayersAboutCheckpoint(ulong clientId, string checkpointTag)
     {
         // Contoh penggunaan RPC untuk memberi tahu semua pemain

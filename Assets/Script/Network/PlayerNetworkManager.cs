@@ -110,7 +110,7 @@ public class PlayerNetworkManager : NetworkBehaviour
             try
             {
                 // Tentukan posisi spawn berdasarkan apakah client adalah host atau bukan
-                var spawnPosition = GetSpawnPositionForPlayer(clientId == NetworkManager.ServerClientId);
+                var spawnPosition = GetSpawnPositionForPlayer(clientId == NetworkManager.ServerClientId, clientId);
                 
                 // Tentukan prefab yang akan digunakan untuk pemain
                 GameObject playerPrefab = clientId == NetworkManager.ServerClientId ? tankoPrefab : gaspiPrefab;
@@ -144,10 +144,10 @@ public class PlayerNetworkManager : NetworkBehaviour
         StartGameClientRpc();
     }
 
-    private Vector3 GetSpawnPositionForPlayer(bool isHost)
+    private Vector3 GetSpawnPositionForPlayer(bool isHost, ulong clientId)
     {
         // Mengambil checkpoint yang disimpan
-        string savedCheckpoint = PlayerPrefs.GetString($"Player_{NetworkManager.LocalClientId}_Checkpoint", null);
+        string savedCheckpoint = PlayerPrefs.GetString($"Checkpoint", null);
 
         // Memeriksa apakah checkpoint tidak null
         if (savedCheckpoint != null)
@@ -157,12 +157,12 @@ public class PlayerNetworkManager : NetworkBehaviour
             // Mengembalikan posisi spawn berdasarkan checkpoint yang disimpan
             switch (savedCheckpoint)
             {
-                case "CheckPoint1":
-                    return isHost ? new Vector3(54, 5.6f, 0) : new Vector3(55, 5.6f, 0);
+                // case "CheckPoint1":
+                //     return isHost ? new Vector3(54, 5.6f, 0) : new Vector3(55, 5.6f, 0);
                 case "CheckPoint2":
                     return isHost ? new Vector3(84, 14.2f, 0) : new Vector3(85, 14.2f, 0);
-                case "CheckPoint3":
-                    return isHost ? new Vector3(144, 1.4f, 0) : new Vector3(145, 1.4f, 0);
+                // case "CheckPoint3":
+                //     return isHost ? new Vector3(144, 1.4f, 0) : new Vector3(145, 1.4f, 0);
                 case "Finish":
                     return isHost ? new Vector3(-5, 0, 0) : new Vector3(-4, 0, 0);
             }
