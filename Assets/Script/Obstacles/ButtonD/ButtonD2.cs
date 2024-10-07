@@ -11,7 +11,7 @@ public class ButtonD2 : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Gaspi") || other.gameObject.CompareTag("Tanko"))
+        if (other.gameObject.CompareTag("Gaspi"))
         {
             buttonD2 = true;
             Debug.Log("Button 2 : " + buttonD2);
@@ -27,7 +27,7 @@ public class ButtonD2 : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Gaspi") || other.gameObject.CompareTag("Tanko"))
+        if (other.gameObject.CompareTag("Gaspi"))
         {
             buttonD2 = false;
             Debug.Log("Button 2 : " + buttonD2);
