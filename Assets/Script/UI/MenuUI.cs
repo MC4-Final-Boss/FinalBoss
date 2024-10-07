@@ -24,6 +24,7 @@ public class RoomUIManager : MonoBehaviour
         statusText.gameObject.SetActive(false);
         joinButton.gameObject.SetActive(false);
         relayCodeText.gameObject.SetActive(false);
+        PlayerPrefs.DeleteAll();
 
         // Create button functionality
         createButton.onClick.AddListener(async () => {
