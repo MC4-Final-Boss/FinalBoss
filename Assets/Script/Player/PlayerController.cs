@@ -12,8 +12,8 @@ public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private float movementSpeed = 7f;
     [SerializeField] private float jumpForce = 6f;
-    [SerializeField] private bool OnGround = true;
-    [SerializeField] private bool isCollidingWithObjectBelow = true;
+    [SerializeField] private bool OnGround = false;
+    [SerializeField] private bool isCollidingWithObjectBelow = false;
     [SerializeField] private int pressedPlayer = 0;
     [SerializeField] private bool explodePlayer = false;
     [SerializeField] private bool drown = false;
