@@ -1,9 +1,9 @@
 <div align="center">
 <br>
   <br>
-  <h1>Sentify</h1>
+  <h1>Gasses Journey Home</h1>
 <!--  <br>-->
-<!--  [**View the App in App Store**](https://www.apple.com/id/app-store/) -->
+<!--  [**View the App in TestFlight**]((https://testflight.apple.com/join/vsqXp2UU)) -->
 </div>
 
 ## Table of Contents
@@ -20,7 +20,7 @@
 
 ## Description
 
-Sentify is An App that helps new managers to improve their feedback by evaluating their feedback.
+Gasses Journey Home is an online multiplayer co-op puzzle game built with Unity Netcode for GameObjects and Unity Relay, offering real-time collaboration and seamless connectivity. Players control two LPG tanks, Gaspi and Tanko, who fall off a delivery truck and get lost in the busy city streets. To return to the LPG base, they must work together to solve puzzles and overcome urban obstacles like busy intersections and construction sites. The game emphasizes teamwork, with players needing to communicate and coordinate their actions to navigate the challenges and bring the duo home safely.
 
 ## Branches
 
